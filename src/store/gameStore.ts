@@ -6,9 +6,9 @@ import {
   DEFAULT_WAGE_PER_WORKER,
   DEFAULT_WORKERS,
   DEFAULT_RENT_PER_UNIT,
-  FAIR_WAGE_THRESHOLD,
   LOGISTICS_UNIT_COST,
 } from '../data/economyConstants'
+import { getDifficultyForCapital, type DifficultyId } from '../data/difficulty'
 
 export type Feature =
   | 'hours'
@@ -22,6 +22,16 @@ export type Feature =
   | 'rent'
   | 'surplus_reveal'
 
+export type GameOverReason = 'completed' | null
+
+export interface ResolvedGameEvent {
+  id: string
+  round: number
+  title: string
+  description: string
+  effect: Record<string, never>
+}
+
 function getUnlockedFeatures(round: number): Feature[] {
   const features: Feature[] = ['hours', 'reinvest']
   if (round >= 3) features.push('machines', 'materials')
@@ -34,37 +44,22 @@ function getUnlockedFeatures(round: number): Feature[] {
 }
 
 export interface RoundDecisions {
-  // Labor
-  h: number                  // hours per day
-  v_per_worker: number       // wage per worker
-  workers: number            // number of workers
-
-  // Capital
-  invest_machines: number    // invest in new fixed capital
-  invest_materials: number   // purchase circulating capital
-
-  // R&D
+  h: number
+  v_per_worker: number
+  workers: number
+  invest_machines: number
+  invest_materials: number
   invest_rnd: number
-
-  // Logistics
-  invest_logistics: number   // spend to increase logistics level
-
-  // Distribution
+  invest_logistics: number
   use_merchant: boolean
   merchant_rate: number
-
-  // Finance
-  take_loan: number          // borrow this amount
-  repay_loan: number         // repay this amount
-  lend_out: number           // lend this amount
-  recall_lending: number     // recall lending
-
-  // Land
-  buy_land: number           // buy N units of land
-  rent_mode: boolean         // true = rent land from landlord
-
-  // Reinvestment
-  alpha: number              // fraction to reinvest
+  take_loan: number
+  repay_loan: number
+  lend_out: number
+  recall_lending: number
+  buy_land: number
+  rent_mode: boolean
+  alpha: number
 }
 
 export interface HistoryEntry {
@@ -72,6 +67,7 @@ export interface HistoryEntry {
   decisions: RoundDecisions
   result: RoundResult
   state_after: GameSnapshot
+  event?: ResolvedGameEvent
 }
 
 export interface GameSnapshot {
@@ -92,25 +88,26 @@ export interface GameSnapshot {
 }
 
 export interface GameState {
-  // Meta
   playerName: string
   started: boolean
   round: number
   maxRounds: number
   gameOver: boolean
+  gameOverReason: GameOverReason
+  initialCapital: number
+  difficultyId: DifficultyId
 
-  // Capital state
   cash: number
-  c_fixed_book: number        // book value of fixed capital
-  c_circulating_stock: number // available circulating capital
-  v_per_worker: number        // base wage per worker
+  c_fixed_book: number
+  c_circulating_stock: number
+  v_per_worker: number
   workers: number
-  h: number                   // hours
-  t_n: number                 // necessary labor time
-  base_t_n: number            // minimum t_n (floor)
+  h: number
+  t_n: number
+  base_t_n: number
   tech_lead: number
   logistics_level: number
-  ch_base: number             // base circulation time
+  ch_base: number
   debt: number
   lending: number
   land_units: number
@@ -121,20 +118,18 @@ export interface GameState {
   alpha: number
   morale: number
   marketTechLevel: number
-  p_bar: number               // market average rate of profit
+  p_bar: number
 
-  // Derived config
   depreciation_rate: number
   bank_interest_rate: number
-  CH: number                  // annual production periods
+  CH: number
 
-  // Game flow
   history: HistoryEntry[]
   unlockedFeatures: Feature[]
-  pendingLesson: boolean      // show theory modal after round
+  pendingLesson: boolean
   lastResult: RoundResult | null
+  lastEvent: ResolvedGameEvent | null
 
-  // Actions
   startGame: (name: string, initialCapital: number) => void
   applyRound: (decisions: RoundDecisions) => void
   dismissLesson: () => void
@@ -148,6 +143,9 @@ const DEFAULT_STATE = {
   round: 1,
   maxRounds: 18,
   gameOver: false,
+  gameOverReason: null as GameOverReason,
+  initialCapital: 0,
+  difficultyId: 'normal' as DifficultyId,
   cash: 0,
   c_fixed_book: 0,
   c_circulating_stock: 0,
@@ -177,6 +175,7 @@ const DEFAULT_STATE = {
   unlockedFeatures: ['hours', 'reinvest'] as Feature[],
   pendingLesson: false,
   lastResult: null as RoundResult | null,
+  lastEvent: null as ResolvedGameEvent | null,
 }
 
 function calcSnapshotNetWorth(
@@ -200,22 +199,28 @@ export const useGameStore = create<GameState>((set, get) => ({
   ...DEFAULT_STATE,
 
   startGame: (name: string, initialCapital: number) => {
-    const startCash = initialCapital
+    const profile = getDifficultyForCapital(initialCapital)
     const c_fixed = Math.floor(initialCapital * 0.4)
     const c_circ = Math.floor(initialCapital * 0.2)
-    const cash = startCash - c_fixed - c_circ
+    const cash = initialCapital - c_fixed - c_circ
     set({
       ...DEFAULT_STATE,
       playerName: name,
       started: true,
       round: 1,
       gameOver: false,
+      gameOverReason: null,
+      initialCapital,
+      difficultyId: profile.id,
       cash,
       c_fixed_book: c_fixed,
       c_circulating_stock: c_circ,
+      p_bar: profile.p_bar,
+      bank_interest_rate: profile.bank_interest_rate,
       unlockedFeatures: getUnlockedFeatures(1),
       history: [],
       lastResult: null,
+      lastEvent: null,
       pendingLesson: false,
     })
   },
@@ -224,7 +229,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     const s = get()
     if (!s.started || s.gameOver) return
 
-    // Apply player decisions to state
+    const profile = getDifficultyForCapital(s.initialCapital)
+
     let cash = s.cash
     let c_fixed_book = s.c_fixed_book
     let c_circulating_stock = s.c_circulating_stock
@@ -235,7 +241,6 @@ export const useGameStore = create<GameState>((set, get) => ({
     let t_n = s.t_n
     let tech_lead = s.tech_lead
 
-    // Finance decisions
     cash += decisions.take_loan
     debt += decisions.take_loan
     cash -= decisions.repay_loan
@@ -245,14 +250,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     cash += decisions.recall_lending
     lending = Math.max(0, lending - decisions.recall_lending)
 
-    // Investment decisions
     cash -= decisions.invest_machines
     c_fixed_book += decisions.invest_machines
 
     cash -= decisions.invest_materials
     c_circulating_stock += decisions.invest_materials
 
-    // R&D
     cash -= decisions.invest_rnd
     const { new_t_n: rnd_t_n, new_tech_lead } = applyRnD(
       decisions.invest_rnd,
@@ -263,14 +266,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     t_n = rnd_t_n
     tech_lead = new_tech_lead
 
-    // Logistics upgrade
     if (decisions.invest_logistics > 0) {
       const upgrade = Math.floor(decisions.invest_logistics / LOGISTICS_UNIT_COST)
       logistics_level = Math.min(5, logistics_level + upgrade)
       cash -= decisions.invest_logistics
     }
 
-    // Land purchase
     if (decisions.buy_land > 0) {
       const land_price = s.rent_per_unit / s.bank_interest_rate
       const total_cost = decisions.buy_land * land_price
@@ -278,13 +279,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       land_units += decisions.buy_land
     }
 
-    // Variable capital per round = workers × wage × hours_factor
     const v_total = decisions.workers * decisions.v_per_worker
     const c_circulating_used =
       c_circulating_stock > 0 ? c_circulating_stock * 0.8 : 0
     const rent_land_units = decisions.rent_mode ? Math.max(1, land_units) : 0
 
-    // Run economy engine
     const result = calcRound({
       c_fixed_book,
       depreciation_rate: s.depreciation_rate,
@@ -311,36 +310,30 @@ export const useGameStore = create<GameState>((set, get) => ({
       alpha: decisions.alpha,
     })
 
-    // Apply result to state
     cash += result.cash_delta
     c_fixed_book = Math.max(0, c_fixed_book - result.c_depreciation)
     c_circulating_stock = Math.max(0, c_circulating_stock - c_circulating_used)
 
-    // Reinvestment goes to fixed capital or circulating
     const reinvest = result.reinvestment
     c_fixed_book += reinvest * 0.6
     c_circulating_stock += reinvest * 0.4
 
-    // Tech lead decays (already applied in calcRound)
     tech_lead = result.new_tech_lead
 
-    // Market evolves: AI capital movement + tech diffusion
-    const new_market_tech = s.marketTechLevel + 0.02 + (tech_lead < 0.05 ? 0.01 : 0)
+    let new_market_tech =
+      s.marketTechLevel + profile.market_tech_growth + (tech_lead < 0.05 ? 0.01 : 0)
     let new_t_n = t_n
     if (tech_lead < 0.05 && s.marketTechLevel > 0.1) {
-      // Super-surplus converts to relative surplus as rivals catch up
       new_t_n = Math.max(s.base_t_n, t_n * 0.995)
     }
-    const new_p_bar = s.p_bar + (Math.random() * 0.02 - 0.01)
+    let new_p_bar = s.p_bar + (Math.random() * 2 - 1) * profile.p_bar_volatility
 
-    // Morale: working long hours decreases morale, fair wages increase it
-    const morale_delta =
-      (decisions.h <= 8 ? 2 : -3) +
-      (decisions.v_per_worker >= FAIR_WAGE_THRESHOLD ? 2 : -1)
-    const new_morale = Math.max(10, Math.min(100, s.morale + morale_delta))
+    const new_morale = s.morale
+    const lastEvent: ResolvedGameEvent | null = null
+
+    new_p_bar = Math.max(0.05, Math.min(0.5, new_p_bar))
 
     const newRound = s.round + 1
-    const isGameOver = newRound > s.maxRounds
 
     const snapshot: GameSnapshot = {
       cash,
@@ -359,18 +352,25 @@ export const useGameStore = create<GameState>((set, get) => ({
       p_bar: new_p_bar,
     }
 
+    const netWorth = calcSnapshotNetWorth(snapshot, s.rent_per_unit, s.bank_interest_rate)
+    const completedAllRounds = newRound > s.maxRounds
+    const isGameOver = completedAllRounds
+    const gameOverReason: GameOverReason = completedAllRounds
+        ? 'completed'
+        : null
+
     const entry: HistoryEntry = {
       round: s.round,
       decisions,
       result,
       state_after: snapshot,
+      event: lastEvent ?? undefined,
     }
 
     if (isGameOver) {
-      const netWorth = calcSnapshotNetWorth(snapshot, s.rent_per_unit, s.bank_interest_rate)
       saveLeaderboard({
         name: s.playerName,
-        score: Math.round(netWorth),
+        score: Math.max(0, Math.round(netWorth)),
         rounds: s.maxRounds,
         date: new Date().toLocaleDateString('vi-VN'),
       })
@@ -395,11 +395,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       alpha: decisions.alpha,
       morale: new_morale,
       marketTechLevel: new_market_tech,
-      p_bar: Math.max(0.05, Math.min(0.5, new_p_bar)),
+      p_bar: new_p_bar,
       history: [...s.history, entry],
       lastResult: result,
+      lastEvent,
       round: newRound,
       gameOver: isGameOver,
+      gameOverReason,
       unlockedFeatures: getUnlockedFeatures(newRound),
       pendingLesson: true,
     })

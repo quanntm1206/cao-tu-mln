@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { CAPITAL_OPTIONS, DEFAULT_CAPITAL } from '../data/economyConstants'
+import {
+  CAPITAL_OPTIONS,
+  DEFAULT_CAPITAL,
+} from '../data/economyConstants'
+import { getDifficultyForCapital } from '../data/difficulty'
 
 interface Props {
   onShowLeaderboard: () => void
@@ -25,16 +29,16 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
 
       <div className="relative z-10 text-center mb-10">
         <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="text-5xl">🏭</span>
+          <span className="text-5xl">🦊</span>
           <h1 className="text-5xl font-black tracking-tight">
-            <span className="text-white">Cap</span>
-            <span className="text-blue-400">Accumulate</span>
+            <span className="text-white">Cáo Tử</span>
+            <span className="text-blue-400"> MLN</span>
           </h1>
         </div>
         <p className="text-gray-400 text-lg max-w-md mx-auto">
-          Mô phỏng tích lũy tư bản theo lý luận kinh tế chính trị Marx–Engels
+          Game học Chương 3 Kinh tế chính trị Mác–Lênin
         </p>
-        <p className="text-gray-500 text-sm mt-2">Quy mô doanh nghiệp sản xuất SME Việt Nam · mỗi vòng = 1 quý</p>
+        <p className="text-gray-500 text-sm mt-2">Mô phỏng Chương 3 KTCT Mác–Lênin · mỗi vòng = 1 quý</p>
       </div>
 
       <div className="relative z-10 glass-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
@@ -55,7 +59,14 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
         <div className="mb-7">
           <label className="block text-sm text-gray-400 mb-2">Vốn khởi đầu T</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {CAPITAL_OPTIONS.map((opt) => (
+            {CAPITAL_OPTIONS.map((opt) => {
+              const profile = getDifficultyForCapital(opt.value)
+              const hints: Record<string, string> = {
+                easy: 'P̄ thấp · lãi suất 3,5% · vốn nhiều hơn',
+                normal: 'Cân bằng · lãi suất 4%',
+                hard: 'P̄ cao · lãi suất 5% · vốn ít hơn',
+              }
+              return (
               <button
                 key={opt.value}
                 onClick={() => setCapital(opt.value)}
@@ -65,9 +76,12 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                 }`}
               >
-                {opt.label}
+                <span className="block">{opt.label}</span>
+                <span className="block text-[10px] mt-1 opacity-80 font-normal">
+                  {hints[profile.id]}
+                </span>
               </button>
-            ))}
+            )})}
           </div>
         </div>
 
@@ -82,9 +96,9 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
 
       <div className="relative z-10 mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
         {[
-          { icon: '⚙️', title: '18 Vòng sản xuất', desc: 'Mỗi vòng là một quý sản xuất – phân phối' },
-          { icon: '📚', title: 'Học qua chơi', desc: 'Mỗi vòng khám phá một khái niệm kinh tế Marx mới' },
-          { icon: '🏆', title: 'Bảng xếp hạng', desc: 'So sánh tích lũy tư bản với những người chơi khác' },
+          { icon: '⚙️', title: '18 vòng lý thuyết', desc: 'Mỗi vòng minh họa một ý trong Chương 3' },
+          { icon: '📚', title: 'Bám giáo trình', desc: 'Tập trung giá trị thặng dư và các hình thức biểu hiện' },
+          { icon: '🏆', title: 'Tổng kết', desc: 'So sánh kết quả tích lũy sau khi hoàn thành học phần' },
         ].map((item) => (
           <div key={item.title} className="glass-card rounded-xl p-4 text-center">
             <div className="text-3xl mb-2">{item.icon}</div>

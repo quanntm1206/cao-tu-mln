@@ -1,53 +1,55 @@
-# Capaccumulate — public hosting
+# Hosting Cáo Tử MLN
 
-## Live URL (no password — share with friends)
+Tên hiển thị của game: **Cáo Tử MLN**.
 
-| | |
-|---|---|
-| **Site** | https://behaviour-tap-redhead-presents.trycloudflare.com |
-| **Type** | Cloudflare Quick Tunnel (temporary; no uptime guarantee) |
-| **Password** | None — open link and play |
+Tên repo/site nên dùng dạng ASCII để URL sạch và tránh lỗi tooling: **`cao-tu-mln`**.
 
-Deployed **2026-06-23** from `dist/` via `serve` on port **4173** + `cloudflared tunnel --url http://localhost:4173`.
+## Khuyến nghị: Netlify + GitHub
 
-### Keep the tunnel alive (this machine)
+1. Tạo GitHub repo mới tên `cao-tu-mln`.
+2. Push thư mục này lên repo đó.
+3. Vào Netlify → **Add new site** → **Import an existing project**.
+4. Chọn repo `cao-tu-mln`.
+5. Build settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+6. Deploy xong, Netlify cấp link dạng `https://cao-tu-mln.netlify.app` nếu tên site còn trống.
 
-While the quick tunnel runs, the URL stays up. If the link stops working, rebuild and restart:
+Sau này chỉ cần sửa game, commit và push. Netlify tự build/redeploy.
 
-```bash
-cd /home/minhquan/capaccumulate
+```powershell
+cd E:\MLN\MLN\capaccumulate
+npm test
 npm run build
-# static server (SPA) on 4173 — stop any old serve on 4173 first if needed
-npx serve -s dist -l 4173 &
-/tmp/cloudflared tunnel --url http://localhost:4173
-# Copy the https://….trycloudflare.com URL from cloudflared output
+git add .
+git commit -m "update game"
+git push
 ```
 
-### Verify (must be HTTP 200, no password POST)
+## GitHub Pages
 
-```bash
-curl -sS -o /dev/null -w "%{http_code}\n" \
-  "https://behaviour-tap-redhead-presents.trycloudflare.com"
-# Expected: 200
+Repo đã có workflow `.github/workflows/deploy-pages.yml`.
+
+Vì `vite.config.ts` dùng base path `/cao-tu-mln/` khi `GITHUB_PAGES=true`, GitHub repo nên đặt đúng tên `cao-tu-mln`.
+
+Link sau khi bật Pages sẽ là:
+
+```text
+https://USERNAME.github.io/cao-tu-mln/
 ```
 
-## Permanent hosting (not active on this machine)
+## Vercel
 
-| Provider | Result |
-|----------|--------|
-| GitHub Pages | `gh` not logged in — run `gh auth login`, then `gh repo create capaccumulate-mln --public --source=. --remote=origin --push` and add Pages workflow |
-| Cloudflare Pages | `CLOUDFLARE_API_TOKEN` not set |
-| Netlify (token) | `NETLIFY_AUTH_TOKEN` not set |
-| Netlify Drop (anonymous) | Daily anonymous deploy limit reached |
-| Vercel | No `VERCEL_TOKEN` / login in this session |
-| Surge | `SURGE_TOKEN` not set |
+Repo có sẵn `vercel.json`. Có thể import repo `cao-tu-mln` vào Vercel, giữ mặc định Vite:
 
-### Previous Netlify Drop (password required — do not share)
+- Build command: `npm run build`
+- Output directory: `dist`
 
-- https://earnest-gaufre-6f28ff.netlify.app — gated with drop password `My-Drop-Site` until claimed on Netlify.
+## Kiểm tra trước deploy
 
-## SPA fallback files
+```powershell
+npm test
+npm run build
+```
 
-- `public/_redirects` → copied to `dist/` (Netlify / Cloudflare)
-- `netlify.toml` → `/*` → `/index.html` (200)
-- `vercel.json` → rewrite all routes to `index.html`
+Nếu cả hai lệnh qua, repo sẵn sàng deploy.

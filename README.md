@@ -1,78 +1,50 @@
-# CapAccumulate – Tích lũy Tư bản
+# Cáo Tử MLN – Mô phỏng Chương 3 KTCT Mác–Lênin
 
-Trò chơi mô phỏng quá trình tích lũy tư bản theo lý luận kinh tế chính trị Marx–Engels.
-Người chơi đóng vai nhà tư bản **doanh nghiệp sản xuất SME Việt Nam**, đưa ra quyết định qua 18 vòng (mỗi vòng = 1 quý) và học các khái niệm:
-giá trị thặng dư, tỷ suất lợi nhuận, thành phần hữu cơ, vòng quay tư bản, tín dụng, địa tô, v.v.
+**Cáo Tử MLN** là game web giáo dục mô phỏng **Chương 3: Giá trị thặng dư trong nền kinh tế thị trường** theo giáo trình Kinh tế chính trị Mác–Lênin. Người chơi điều chỉnh một mô hình sản xuất tối giản để thấy các quan hệ `c`, `v`, `m`, tích lũy tư bản và các hình thức biểu hiện của giá trị thặng dư.
 
-**Quy mô tiền tệ:** vốn khởi đầu 1,5–5 tỷ ₫, lương ~15–45 triệu/người/quý, đầu tư máy móc theo bước 50 triệu ₫.
+## Phạm vi nội dung
+
+- Công thức chung của tư bản `T–H–T'`.
+- Hàng hóa sức lao động, tiền công, sản xuất giá trị thặng dư.
+- Tư bản bất biến `c`, tư bản khả biến `v`, giá trị thặng dư `m`.
+- Giá trị thặng dư tuyệt đối, tương đối và siêu ngạch.
+- Tuần hoàn, chu chuyển, tái sản xuất giản đơn và tái sản xuất mở rộng.
+- Tích lũy tư bản, cấu tạo hữu cơ, tích tụ và tập trung tư bản.
+- Lợi nhuận, lợi nhuận bình quân, lợi nhuận thương nghiệp, lợi tức, địa tô và giá đất.
+
+## Nguyên tắc thiết kế
+
+- Game chỉ bao quát nội dung Chương 3 của giáo trình, không mở rộng thành môn quản trị kinh doanh.
+- Các yếu tố như sự kiện ngẫu nhiên, tinh thần công nhân, phá sản, khủng hoảng tín dụng, M&A hoặc tư bản ảo không còn là nội dung gameplay.
+- Các quyết định trong game chỉ đóng vai trò minh họa công thức và quan hệ lý luận.
 
 ## Công nghệ
 
-- **Vite** + **React** + **TypeScript**
-- **Zustand** – quản lý trạng thái game
-- **Tailwind CSS v4** – giao diện dark dashboard
-- **Recharts** – biểu đồ tích lũy
-- **Vitest** – kiểm thử engine kinh tế
+Vite · React · TypeScript · Zustand · Tailwind v4 · Recharts · Vitest
 
-## Cài đặt và chạy
+## Cài đặt
 
 ```bash
-# Cài phụ thuộc
 npm install
-
-# Chạy development server
 npm run dev
-
-# Build production
-npm run build
-
-# Chạy kiểm thử
 npm test
+npm run build
 ```
 
-Mở trình duyệt tại `http://localhost:5173`
+## Tài liệu
 
-## Cơ chế kinh tế
+| File | Nội dung |
+|---|---|
+| [AGENT_CONTEXT.md](./AGENT_CONTEXT.md) | Bản đồ repo cho AI agent |
+| [GAME_CONTENT.md](./GAME_CONTENT.md) | Nội dung game và mapping giáo trình |
+| [HOSTING.md](./HOSTING.md) | Deploy GitHub Pages / Netlify |
 
-### 5 Mảnh ghép lý thuyết (Supplements)
+## Cấu trúc `src/`
 
-| # | Khái niệm | Công thức |
-|---|-----------|-----------|
-| 1 | Phương trình giá trị | `G = c + v + m` |
-| 2 | Vòng quay tư bản | `M_năm = m' × V × n`, `n = CH/ch` |
-| 3 | GTTT tương đối & siêu GTTT | `m' = (h−t_n)/t_n`, R&D giảm `t_n` |
-| 4 | Bình quân hóa tỷ suất LN | `p'_cá_thể → p̄` (thị trường) |
-| 5 | Phân phối GTTT | `m → z (lãi) + R (địa tô) + p_tn (thương nghiệp) + p (còn lại)` |
-
-### Mở khóa theo vòng
-
-| Vòng | Tính năng mới |
-|------|---------------|
-| 1–2  | Giờ làm, tái đầu tư α |
-| 3–4  | Máy móc (c_cố_định), nguyên liệu (c_lưu_động) |
-| 5–6  | Nghiên cứu & Phát triển (giảm t_n, tăng tech_lead) |
-| 7–8  | Kho vận (tăng n), kênh thương nghiệp |
-| 9–10 | Vay vốn, cho vay (tư bản tài chính) |
-| 11–12| Thuê/mua đất (địa tô) |
-| 13+  | Hiển thị đầy đủ m, m', p', q |
-
-## Cấu trúc dự án
-
-```
-src/
-  engine/economy.ts       – Hàm thuần túy: tất cả công thức kinh tế
-  engine/economy.test.ts  – Kiểm thử 5 mảnh ghép lý thuyết
-  store/gameStore.ts      – Zustand: trạng thái + hành động game
-  data/theory.ts          – Bài học lý luận theo vòng
-  lib/storage.ts          – Lưu bảng xếp hạng vào LocalStorage
-  components/
-    IntroScreen.tsx       – Màn hình giới thiệu
-    Dashboard.tsx         – Bảng điều khiển chính
-    MetricsPanel.tsx      – Bảng chỉ số kinh tế
-    DecisionPanel.tsx     – Các đòn bẩy quyết định
-    SurplusFlow.tsx       – Biểu đồ dòng chảy GTTT
-    Charts.tsx            – Biểu đồ Recharts
-    RoundResultModal.tsx  – Kết quả vòng + bài học
-    Leaderboard.tsx       – Bảng xếp hạng
-    TheoryTooltip.tsx     – Tooltip công thức
+```text
+engine/economy.ts      – công thức mô phỏng giá trị, chu chuyển, phân phối GTTD
+store/gameStore.ts     – state Zustand + vòng chơi 18 quý
+data/theory.ts         – 18 bài học bám Chương 3 giáo trình
+components/            – UI React
+lib/                   – currency, networth, storage
 ```

@@ -253,10 +253,11 @@ describe('Integration – full round calculation', () => {
     expect(r.cash_delta).toBeCloseTo(r.net_profit - r.reinvestment, 5)
   })
 
-  it('calcMoraleEffect: low morale reduces productivity', () => {
+  it('calcMoraleEffect: stays neutral to avoid non-textbook management mechanics', () => {
     const low = calcMoraleEffect(20)
     const high = calcMoraleEffect(90)
-    expect(low.productivity_mult).toBeLessThan(high.productivity_mult)
+    expect(low).toEqual({ productivity_mult: 1, t_n_mult: 1 })
+    expect(high).toEqual({ productivity_mult: 1, t_n_mult: 1 })
   })
 
   it('tech_lead decays each round in calcRound', () => {

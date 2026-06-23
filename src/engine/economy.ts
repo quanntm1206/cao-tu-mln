@@ -240,15 +240,18 @@ export function calcLandPrice(R: number, i: number): number {
 
 // ─── Morale effect ────────────────────────────────────────────────────────────
 
-/** Worker morale (0–100) affects effective t_n and productivity. */
+/**
+ * Neutral baseline: the game teaches value categories from the textbook,
+ * not workplace-management morale mechanics.
+ */
 export function calcMoraleEffect(morale: number): {
   productivity_mult: number
   t_n_mult: number
 } {
-  const n = Math.max(0, Math.min(100, morale)) / 100
+  void morale
   return {
-    productivity_mult: 0.75 + n * 0.5,   // [0.75, 1.25]
-    t_n_mult: 1 + (0.5 - n) * 0.12,      // low morale raises t_n slightly
+    productivity_mult: 1,
+    t_n_mult: 1,
   }
 }
 

@@ -4,7 +4,14 @@ import { formatVnd } from '../lib/currency'
 import SurplusFlow from './SurplusFlow'
 
 export default function RoundResultModal() {
-  const { round, lastResult, dismissLesson, unlockedFeatures, history } = useGameStore()
+  const {
+    round,
+    lastResult,
+    dismissLesson,
+    unlockedFeatures,
+    history,
+    gameOver,
+  } = useGameStore()
   const prevRound = round - 1
   const lesson = getLessonForRound(prevRound)
   const surplusRevealed = unlockedFeatures.includes('surplus_reveal')
@@ -16,11 +23,13 @@ export default function RoundResultModal() {
 
   const fmt = (n: number) => formatVnd(n, true)
   const fmtPct = (n: number) => (n * 100).toFixed(1) + '%'
+  const continueLabel = gameOver
+      ? 'Xem tổng kết 18 vòng →'
+      : `Tiếp tục vòng ${round} →`
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70">
       <div className="glass-card rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-blue-900/40 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div>
             <p className="text-xs text-gray-400">Kết thúc vòng</p>
@@ -32,7 +41,6 @@ export default function RoundResultModal() {
           </div>
         </div>
 
-        {/* Key metrics */}
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
             {
@@ -58,10 +66,8 @@ export default function RoundResultModal() {
           ))}
         </div>
 
-        {/* Surplus flow */}
         <SurplusFlow result={lastResult} surplusRevealed={surplusRevealed} />
 
-        {/* Theory lesson */}
         {lesson && (
           <div className="mt-5 bg-blue-950/40 border border-blue-800/40 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -80,13 +86,12 @@ export default function RoundResultModal() {
           </div>
         )}
 
-        {/* New unlocks */}
         {history.length > 0 && (() => {
           const newFeatureRounds: Record<number, string> = {
             3: '🏗️ Đầu tư máy móc đã mở khóa!',
-            5: '🔬 Nghiên cứu & Phát triển đã mở khóa!',
-            7: '🚚 Kho vận & Thương nghiệp đã mở khóa!',
-            9: '🏦 Tín dụng & Lãi suất đã mở khóa!',
+            5: '🔬 Tăng năng suất lao động đã mở khóa!',
+            7: '🚚 Chu chuyển & thương nghiệp đã mở khóa!',
+            9: '🏦 Lợi tức đã mở khóa!',
             11: '🌾 Đất đai & Địa tô đã mở khóa!',
             13: '📊 Tất cả chỉ số GTTT đã hiển thị!',
           }
@@ -102,9 +107,9 @@ export default function RoundResultModal() {
 
         <button
           onClick={dismissLesson}
-          className="w-full mt-5 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white transition-all"
+          className="w-full mt-5 py-3 rounded-xl font-bold text-white transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
         >
-          Tiếp tục vòng {round} →
+          {continueLabel}
         </button>
       </div>
     </div>

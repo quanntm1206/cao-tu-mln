@@ -141,6 +141,7 @@ export default function DecisionPanel() {
     h,
     alpha,
     debt,
+    lending,
     bank_interest_rate,
     rent_per_unit,
     applyRound,
@@ -180,7 +181,8 @@ export default function DecisionPanel() {
     decisions.invest_logistics +
     decisions.repay_loan +
     decisions.lend_out +
-    landPurchaseCost
+    landPurchaseCost -
+    decisions.recall_lending
 
   const canAfford = totalSpend <= cash
 
@@ -281,14 +283,14 @@ export default function DecisionPanel() {
         </Section>
       )}
 
-      {/* R&D */}
+      {/* Productivity */}
       {has('rnd') && (
-        <Section title="🔬 Nghiên cứu & Phát triển">
+        <Section title="🔬 Tăng năng suất lao động">
           <p className="text-xs text-gray-500 mb-3">
-            R&D rút ngắn t_n (giảm lao động tất yếu) → GTTT tương đối ↑
+            Tăng năng suất làm giảm t_n (lao động tất yếu) → GTTT tương đối ↑
           </p>
           <NumberInput
-            label="Chi R&D"
+            label="Chi cải tiến năng suất"
             value={decisions.invest_rnd}
             min={0}
             max={maxInvest}
@@ -298,15 +300,15 @@ export default function DecisionPanel() {
         </Section>
       )}
 
-      {/* Logistics */}
+      {/* Circulation */}
       {has('logistics') && (
-        <Section title="🚚 Kho vận & Lưu thông">
+        <Section title="🚚 Thời gian lưu thông">
           <p className="text-xs text-gray-500 mb-3">
-            Nâng cấp kho vận giảm ch → tăng vòng quay n → tăng M_năm (mỗi cấp:{' '}
+            Rút ngắn thời gian lưu thông ch → tăng vòng quay n → tăng M_năm (mỗi cấp:{' '}
             {formatVnd(LOGISTICS_UNIT_COST, true)})
           </p>
           <NumberInput
-            label="Chi nâng cấp kho vận"
+            label="Chi rút ngắn lưu thông"
             value={decisions.invest_logistics}
             min={0}
             max={maxInvest}
@@ -334,7 +336,7 @@ export default function DecisionPanel() {
 
       {/* Finance */}
       {has('interest') && (
-        <Section title="🏦 Tín dụng & Tài chính">
+        <Section title="🏦 Lợi tức">
           <p className="text-xs text-gray-500 mb-3">
             Lãi suất: {(bank_interest_rate * 100).toFixed(0)}%/vòng. Nợ hiện tại: {formatVnd(debt, true)}
           </p>
@@ -364,6 +366,16 @@ export default function DecisionPanel() {
             step={LEND_STEP}
             onChange={(v) => set('lend_out', v)}
           />
+          {lending > 0 && (
+            <NumberInput
+              label={`Thu hồi cho vay (đang cho vay: ${formatVnd(lending, true)})`}
+              value={decisions.recall_lending}
+              min={0}
+              max={lending}
+              step={LEND_STEP}
+              onChange={(v) => set('recall_lending', v)}
+            />
+          )}
         </Section>
       )}
 

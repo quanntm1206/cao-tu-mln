@@ -1,4 +1,4 @@
-const LEADERBOARD_KEY = 'capaccumulate_leaderboard'
+const LEADERBOARD_KEY = 'cao_tu_mln_leaderboard'
 
 export interface LeaderboardEntry {
   name: string

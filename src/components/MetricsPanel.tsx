@@ -43,7 +43,6 @@ export default function MetricsPanel() {
     lending,
     workers,
     v_per_worker,
-    morale,
     lastResult,
     unlockedFeatures,
     round,
@@ -94,23 +93,14 @@ export default function MetricsPanel() {
 
       {/* Labor */}
       <div className="glass-card rounded-xl p-4">
-        <p className="text-xs text-gray-400 mb-2">Lực lượng lao động</p>
+        <p className="text-xs text-gray-400 mb-2">Sức lao động</p>
         <div className="flex justify-between text-sm">
           <span className="text-gray-300">{workers} công nhân</span>
           <span className="text-gray-300">{formatVnd(v_per_worker, true)}/người/vòng</span>
         </div>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs text-gray-400">Tinh thần:</span>
-          <div className="flex-1 bg-gray-700 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${
-                morale >= 70 ? 'bg-green-500' : morale >= 40 ? 'bg-yellow-500' : 'bg-red-500'
-              }`}
-              style={{ width: `${morale}%` }}
-            />
-          </div>
-          <span className="text-xs text-gray-300">{morale}%</span>
-        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Tiền công biểu hiện bằng tiền của giá trị hàng hóa sức lao động.
+        </p>
       </div>
 
       {/* Economy metrics */}

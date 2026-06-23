@@ -21,11 +21,11 @@ export default function App() {
       {showLeaderboard && (
         <Leaderboard onClose={() => setShowLeaderboard(false)} />
       )}
-      {gameOver ? (
+      {gameOver && !pendingLesson ? (
         <GameOverScreen onLeaderboard={() => setShowLeaderboard(true)} />
-      ) : (
+      ) : !gameOver ? (
         <Dashboard onLeaderboard={() => setShowLeaderboard(true)} />
-      )}
+      ) : null}
     </div>
   )
 }
@@ -60,13 +60,17 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     <div className="flex flex-col items-center justify-center min-h-screen gap-8 px-4">
       <div className="text-center">
         <div className="text-6xl mb-4">🏭</div>
-        <h1 className="text-4xl font-bold text-yellow-400 mb-2">Kết thúc!</h1>
+        <h1 className="text-4xl font-bold mb-2 text-yellow-400">Kết thúc học phần!</h1>
         <p className="text-gray-300 text-lg">{playerName}</p>
+        <p className="text-gray-500 text-sm mt-2 max-w-sm mx-auto">
+          Bạn đã đi qua các khái niệm chính của Chương 3: giá trị thặng dư,
+          tích lũy tư bản, lợi nhuận, lợi tức và địa tô.
+        </p>
       </div>
 
       <div className="glass-card rounded-2xl p-8 w-full max-w-md text-center">
         <p className="text-gray-400 text-sm mb-2">Tổng tài sản ròng</p>
-        <p className="text-5xl font-bold text-green-400">
+        <p className={`text-5xl font-bold ${netWorth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
           {formatVnd(netWorth)}
         </p>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
