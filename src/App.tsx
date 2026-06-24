@@ -3,6 +3,7 @@ import { useGameStore } from './store/gameStore'
 import { calcNetWorth } from './lib/networth'
 import { formatVnd } from './lib/currency'
 import { FINAL_CHECKLIST } from './data/teachingAids'
+import { deriveEnding } from './data/endings'
 import IntroScreen from './components/IntroScreen'
 import Dashboard from './components/Dashboard'
 import RoundResultModal from './components/RoundResultModal'
@@ -52,6 +53,7 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     land_units,
     rent_per_unit,
     bank_interest_rate,
+    initialCapital,
     history,
     eventLog,
     lectureMode,
@@ -80,6 +82,27 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     !best || entry.result.net_profit > best.result.net_profit ? entry : best
   ), null)
   const finalOrganicComp = history.length > 0 ? history[history.length - 1].result.organic_comp : 0
+  const ending = deriveEnding({
+    initialCapital: Math.max(1, initialCapital),
+    netWorth,
+    debt,
+    landUnits: land_units,
+    eventCount: eventLog.length,
+    rounds: history.map((entry) => ({
+      alpha: entry.decisions.alpha,
+      h: entry.decisions.h,
+      invest_rnd: entry.decisions.invest_rnd,
+      use_merchant: entry.decisions.use_merchant,
+      m: entry.result.m,
+      m_super: entry.result.m_super,
+      net_profit: entry.result.net_profit,
+      reinvestment: entry.result.reinvestment,
+      organic_comp: entry.result.organic_comp,
+      z_interest: entry.result.z_interest,
+      rent_cost: entry.result.rent_cost,
+      p_merchant: entry.result.p_merchant,
+    })),
+  })
 
   const overviewItems = [
     { label: 'Tổng giá trị thặng dư', value: formatVnd(totalSurplus, true) },
@@ -119,6 +142,7 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
         bestRound: bestRound?.round ?? null,
         finalOrganicComp,
       },
+      ending,
       checklist: FINAL_CHECKLIST.map((item) => ({ item, done: checkedItems.includes(item) })),
       events: eventLog.map((event) => ({
         round: event.round,
@@ -173,6 +197,41 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
             <div className="bg-stone-900/70 rounded-lg p-3">
               <p className="text-stone-400">Tư bản cố định</p>
               <p className="text-stone-50 font-bold leading-tight break-words">{formatVnd(c_fixed_book, true)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="theory-card rounded-2xl p-5 w-full max-w-2xl">
+        <div className="relative z-10">
+          <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Kết cục mô phỏng</p>
+          <h2 className="text-2xl font-black text-stone-50 mb-2">{ending.title}</h2>
+          <p className="text-sm text-stone-300 leading-relaxed mb-4">{ending.summary}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            {ending.keySignals.map((signal) => (
+              <div key={signal.label} className="rounded-lg bg-stone-950/45 border border-amber-900/25 p-3">
+                <p className="text-[11px] text-stone-500">{signal.label}</p>
+                <p className="text-sm font-bold text-amber-100 mt-1 leading-tight break-words">{signal.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-amber-900/35 bg-stone-950/35 p-4">
+            <p className="text-sm text-stone-300 leading-relaxed"><span className="font-bold text-amber-200">Vì sao ra kết cục này?</span> {ending.whyThisHappened}</p>
+            <p className="text-sm text-stone-300 leading-relaxed"><span className="font-bold text-amber-200">Liên hệ giáo trình:</span> {ending.textbookConnection}</p>
+            {ending.secondaryConsequences.length > 0 && (
+              <p className="text-sm text-stone-300 leading-relaxed"><span className="font-bold text-amber-200">Hệ quả phụ:</span> {ending.secondaryConsequences.join('; ')}.</p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Câu hỏi thảo luận</p>
+            <div className="space-y-2">
+              {ending.reflectionQuestions.map((question) => (
+                <p key={question} className="text-sm text-stone-300 leading-relaxed">• {question}</p>
+              ))}
             </div>
           </div>
         </div>
@@ -233,4 +292,6 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     </div>
   )
 }
+
+
 

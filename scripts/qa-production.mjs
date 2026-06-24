@@ -82,6 +82,10 @@ async function runScenario(viewport) {
     throw new Error(`Game did not reach final screen at ${viewport.width}x${viewport.height}`)
   }
 
+  if (!finalText.toLowerCase().includes('kết cục mô phỏng')) {
+    throw new Error(`Ending card missing at ${viewport.width}x${viewport.height}`)
+  }
+
   await page.getByRole('button', { name: /Xuất báo cáo/ }).click()
   await page.waitForTimeout(250)
 
@@ -124,6 +128,10 @@ if (failures.length > 0) {
   console.error(`QA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
+
+
+
+
 
 
 
