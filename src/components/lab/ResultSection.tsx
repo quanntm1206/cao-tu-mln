@@ -58,11 +58,10 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase1Result
               return (
                 <>
-                  <MetricRow label="Lợi nhuận Cơ khí" value={formatVnd(r.co_khi_profit, true)} />
-                  <MetricRow label="Lợi nhuận Dệt may" value={formatVnd(r.det_profit, true)} />
-                  <MetricRow label="Lợi nhuận Da giày" value={formatVnd(r.da_profit, true)} />
-                  <MetricRow label="Tổng lợi nhuận CN" value={formatVnd(r.total_industrial_profit, true)} accent={accent} big />
-                  <MetricRow label="Tỷ suất p′" value={`${(r.p_rate * 100).toFixed(1)}%`} />
+                  <MetricRow label="Σ c (tư bản bất biến)" value={formatVnd(r.total_c, true)} />
+                  <MetricRow label="Σ v (tư bản khả biến)" value={formatVnd(r.total_v, true)} accent="#06B6D4" />
+                  <MetricRow label="Σ m = v × m′" value={formatVnd(r.total_industrial_profit, true)} accent="var(--color-lab-yellow)" />
+                  <MetricRow label="Tỷ suất p′ = m/(c+v)" value={`${(r.p_rate * 100).toFixed(1)}%`} accent={accent} big />
                 </>
               )
             })()}

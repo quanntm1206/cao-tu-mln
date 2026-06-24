@@ -14,10 +14,42 @@ export const STARTING_M = 200_000_000_000
 /** Tỷ suất lợi nhuận bình quân mục tiêu (P bar) */
 export const P_BAR_TARGET = 0.20
 
+/**
+ * Mỗi ngành có cấu tạo hữu cơ c/v khác nhau (organicComposition).
+ * Với m' = 100% (tỷ suất bóc lột chuẩn theo giáo trình),
+ * tỷ suất lợi nhuận dẫn xuất: p' = m'/(c/v + 1)
+ *   Cơ khí  c/v = 4    → p' = 20%  (thâm dụng máy móc)
+ *   Dệt may c/v = 7/3  → p' = 30%  (cân bằng)
+ *   Da giày c/v = 3/2  → p' = 40%  (thâm dụng lao động)
+ */
 export const SECTOR_PROFILES = [
-  { id: 'co_khi', label: 'Cơ khí', profitRate: 0.20 },
-  { id: 'det', label: 'Dệt may', profitRate: 0.30 },
-  { id: 'da', label: 'Da giày', profitRate: 0.40 },
+  {
+    id: 'co_khi',
+    label: 'Cơ khí',
+    profitRate: 0.20,
+    organicComposition: 4,
+    surplusValueRate: 1.0,
+    archetype: 'Thâm dụng máy móc (c cao, v thấp)',
+    examples: 'VinFast, THACO',
+  },
+  {
+    id: 'det',
+    label: 'Dệt may',
+    profitRate: 0.30,
+    organicComposition: 7 / 3,
+    surplusValueRate: 1.0,
+    archetype: 'Cân bằng vốn–lao động',
+    examples: 'Vinatex, Việt Tiến',
+  },
+  {
+    id: 'da',
+    label: 'Da giày',
+    profitRate: 0.40,
+    organicComposition: 1.5,
+    surplusValueRate: 1.0,
+    archetype: 'Thâm dụng lao động (v cao, c thấp)',
+    examples: 'Biti\'s, gia công Nike',
+  },
 ] as const
 
 export type SectorId = (typeof SECTOR_PROFILES)[number]['id']

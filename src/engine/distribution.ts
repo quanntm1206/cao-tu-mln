@@ -39,12 +39,28 @@ export interface Phase4Decision {
   landChoice: LandChoice
 }
 
+export interface SectorBreakdown {
+  /** Tư bản bất biến (máy móc, nguyên liệu) */
+  c: number
+  /** Tư bản khả biến (tiền công lao động sống) */
+  v: number
+  /** Giá trị thặng dư tạo ra = v × m' */
+  m: number
+}
+
 export interface Phase1Result {
   phase: 1
   roundInPhase: number
+  breakdown: {
+    co_khi: SectorBreakdown
+    det: SectorBreakdown
+    da: SectorBreakdown
+  }
   co_khi_profit: number
   det_profit: number
   da_profit: number
+  total_c: number
+  total_v: number
   total_industrial_profit: number
   p_rate: number
   lesson: string
@@ -127,6 +143,17 @@ const PHASE1_LESSONS = [
   'Tích lũy tư bản công nghiệp là nền tảng của toàn bộ nền kinh tế tư bản.',
 ]
 
+/** Tách vốn ứng trước thành c + v và sinh m = v × m' theo cấu tạo hữu cơ của ngành. */
+function splitCVM(invested: number, sectorId: 'co_khi' | 'det' | 'da'): SectorBreakdown {
+  const profile = SECTOR_PROFILES.find((s) => s.id === sectorId)!
+  if (invested <= 0) return { c: 0, v: 0, m: 0 }
+  const cv = profile.organicComposition
+  const v = invested / (cv + 1)
+  const c = invested - v
+  const m = v * profile.surplusValueRate
+  return { c, v, m }
+}
+
 export function distributePhase1(
   m_pool: number,
   decision: Phase1Decision,
@@ -135,15 +162,17 @@ export function distributePhase1(
   const total_allocated = decision.co_khi + decision.det + decision.da
   const safe_total = total_allocated > 0 ? total_allocated : m_pool * 0.1
 
-  const rates = {
-    co_khi: SECTOR_PROFILES.find(s => s.id === 'co_khi')!.profitRate,
-    det: SECTOR_PROFILES.find(s => s.id === 'det')!.profitRate,
-    da: SECTOR_PROFILES.find(s => s.id === 'da')!.profitRate,
+  const breakdown = {
+    co_khi: splitCVM(decision.co_khi, 'co_khi'),
+    det: splitCVM(decision.det, 'det'),
+    da: splitCVM(decision.da, 'da'),
   }
 
-  const co_khi_profit = decision.co_khi * rates.co_khi
-  const det_profit = decision.det * rates.det
-  const da_profit = decision.da * rates.da
+  const co_khi_profit = breakdown.co_khi.m
+  const det_profit = breakdown.det.m
+  const da_profit = breakdown.da.m
+  const total_c = breakdown.co_khi.c + breakdown.det.c + breakdown.da.c
+  const total_v = breakdown.co_khi.v + breakdown.det.v + breakdown.da.v
   const total_industrial_profit = co_khi_profit + det_profit + da_profit
   const p_rate = calcProfitRate(total_industrial_profit, safe_total, 0)
 
@@ -151,9 +180,12 @@ export function distributePhase1(
   return {
     phase: 1,
     roundInPhase,
+    breakdown,
     co_khi_profit,
     det_profit,
     da_profit,
+    total_c,
+    total_v,
     total_industrial_profit,
     p_rate,
     lesson: PHASE1_LESSONS[idx],

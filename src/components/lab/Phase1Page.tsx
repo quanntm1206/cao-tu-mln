@@ -17,7 +17,15 @@ interface SectorState {
   da: number
 }
 
-const rate = (id: string) => SECTOR_PROFILES.find((s) => s.id === id)?.profitRate ?? 0.2
+const profile = (id: 'co_khi' | 'det' | 'da') => SECTOR_PROFILES.find((s) => s.id === id)!
+function splitCV(invested: number, id: 'co_khi' | 'det' | 'da') {
+  const p = profile(id)
+  if (invested <= 0) return { c: 0, v: 0, m: 0 }
+  const v = invested / (p.organicComposition + 1)
+  const c = invested - v
+  const m = v * p.surplusValueRate
+  return { c, v, m }
+}
 
 function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorState) => void; mPool: number; roundInPhase: number }) {
   const STEPS = 100
@@ -36,14 +44,26 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
     setDetSteps((prev) => Math.min(prev, Math.max(0, STEPS - steps)))
   }
 
-  const sectorsForChart = useMemo(
-    () => [
-      { id: 'co_khi', label: 'Cơ khí', invested: coKhi, rate: rate('co_khi'), color: ACCENT_HEX },
-      { id: 'det', label: 'Dệt may', invested: det, rate: rate('det'), color: '#22D3EE' },
-      { id: 'da', label: 'Da giày', invested: da, rate: rate('da'), color: '#FACC15' },
-    ],
-    [coKhi, det, da],
-  )
+  const sectorsForChart = useMemo(() => {
+    const sectors: Array<'co_khi' | 'det' | 'da'> = ['co_khi', 'det', 'da']
+    const invested: Record<string, number> = { co_khi: coKhi, det, da }
+    return sectors.map((id) => {
+      const p = profile(id)
+      const split = splitCV(invested[id], id)
+      const sectorColor = id === 'co_khi' ? ACCENT_HEX : id === 'det' ? '#22D3EE' : '#A78BFA'
+      return {
+        id,
+        label: p.label,
+        invested: invested[id],
+        rate: p.profitRate,
+        c: split.c,
+        v: split.v,
+        m: split.m,
+        color: sectorColor,
+        archetype: p.archetype,
+      }
+    })
+  }, [coKhi, det, da])
 
   const hints = [
     'Vòng 1: bắt đầu nhẹ — hãy thử chia đều rồi xem ngành nào sinh lời nhiều nhất.',
@@ -60,7 +80,9 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
         <>
           <p>{hints[roundInPhase - 1]}</p>
           <p className="text-[var(--color-lab-fg-dim)] text-sm mt-2">
-            Tỷ suất p′ cố định theo ngành: Cơ khí 20% · Dệt may 30% · Da giày 40%.
+            <span className="text-[var(--color-lab-fg-muted)]">Vì sao p′ khác nhau?</span> Mỗi ngành có
+            cấu tạo hữu cơ <span className="font-mono">c/v</span> khác nhau ⇒ cùng vốn ứng trước,
+            ngành thâm dụng lao động (da giày, v cao) sinh m nhiều hơn ngành thâm dụng máy móc (cơ khí, c cao).
           </p>
         </>
       }
@@ -147,14 +169,16 @@ export default function Phase1Page({ onNextPhase }: Props) {
         subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ M-pool. Phân bổ vào 3 ngành và quan sát giá trị thặng dư sinh ra như thế nào qua 4 vòng."
         formula={{
           l: "p'",
-          r: '= m / (c + v)',
+          r: "= m / (c + v)   ·   m = v × m'",
           title: 'Tỷ suất lợi nhuận',
-          purpose: 'Đo hiệu quả sinh lời của vốn — bao nhiêu m thu được trên mỗi đồng vốn ứng trước (c+v). Là cơ sở để so sánh các ngành.',
+          purpose: 'Mỗi đồng vốn (c+v) bạn ứng trước được tách thành c (máy móc) và v (tiền công). Chỉ v biến thành giá trị mới và sinh ra m. Trong mô phỏng, m\' = 100% và c/v khác nhau theo ngành ⇒ p\' khác nhau.',
           legend: [
-            { sym: "p'", meaning: 'Tỷ suất lợi nhuận (%)' },
-            { sym: 'm', meaning: 'Giá trị thặng dư — phần lợi nhuận do lao động sống tạo ra' },
-            { sym: 'c', meaning: 'Tư bản bất biến — máy móc, nguyên liệu (không tự sinh giá trị)' },
-            { sym: 'v', meaning: 'Tư bản khả biến — tiền công lao động (biến thành giá trị mới)' },
+            { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
+            { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m\', không phải từ c' },
+            { sym: 'c', meaning: 'Tư bản bất biến — máy móc/nguyên liệu, chuyển giá trị nhưng không tự sinh m' },
+            { sym: 'v', meaning: 'Tư bản khả biến — tiền công lao động sống, là nguồn duy nhất sinh m' },
+            { sym: "m'", meaning: 'Tỷ suất bóc lột = m/v. Mô phỏng cố định 100% (cùng cường độ bóc lột)' },
+            { sym: 'c/v', meaning: 'Cấu tạo hữu cơ — tỷ lệ máy/lao động của ngành. Cao = thâm dụng máy, thấp = thâm dụng lao động' },
           ],
         }}
         bigNumber={m_pool}
