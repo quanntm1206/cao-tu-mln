@@ -391,7 +391,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     } else {
       const r = result as Phase4Result
       rent_paid += r.rent_paid
-      land_assets += r.land_gain
+      if (r.land_purchase_price > 0) {
+        land_assets += r.land_purchase_price + r.land_gain
+      }
       m_pool += r.pool_delta
     }
 

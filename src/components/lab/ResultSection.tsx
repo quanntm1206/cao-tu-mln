@@ -69,8 +69,10 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase2Result
               return (
                 <>
-                  <MetricRow label="Lợi nhuận TN nhường" value={formatVnd(r.merchant_profit, true)} accent="var(--color-lab-yellow)" />
-                  <MetricRow label="Lợi nhuận CN giữ lại" value={formatVnd(r.industrial_profit_after, true)} accent={accent} big />
+                  <MetricRow label="m phân chia (vòng)" value={formatVnd(r.distributable_surplus, true)} />
+                  <MetricRow label="Lợi nhuận thương nghiệp" value={formatVnd(r.merchant_profit, true)} accent="var(--color-lab-yellow)" />
+                  <MetricRow label="p giữ lại (CN)" value={formatVnd(r.industrial_profit_after, true)} accent={accent} big />
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Không tạo m mới — chỉ chuyển phần m đã có.</p>
                 </>
               )
             })()}
@@ -78,8 +80,11 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase3Result
               return (
                 <>
+                  <MetricRow label="Vay thêm (T)" value={formatVnd(r.borrowed_principal, true)} />
+                  <MetricRow label="Cho vay khóa (T)" value={formatVnd(r.lent_principal_delta, true)} />
                   <MetricRow label="Lãi đã trả (Z)" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
-                  <MetricRow label="Lãi thu được" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
+                  <MetricRow label="Lãi thu được (Z)" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
+                  <MetricRow label="Δ V (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
                   <MetricRow label="Tài chính ròng" value={formatVnd(r.net_finance, true)} accent={accent} big />
                 </>
               )
@@ -88,9 +93,12 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase4Result
               return (
                 <>
+                  <MetricRow label="Giá mua đất" value={formatVnd(r.land_purchase_price, true)} />
                   <MetricRow label="Địa tô đã trả (R)" value={formatVnd(r.rent_paid, true)} accent="#EF4444" />
-                  <MetricRow label="Giá trị đất" value={formatVnd(r.land_value, true)} />
-                  <MetricRow label="Gain/Loss đất" value={formatVnd(r.land_gain, true)} accent={accent} big />
+                  <MetricRow label="Giá cả đất đai (R/Z′)" value={formatVnd(r.land_value, true)} />
+                  <MetricRow label="Tái định giá tài sản" value={formatVnd(r.land_gain, true)} />
+                  <MetricRow label="Δ V (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Lời/lỗ đất là biến động giá tài sản, không phải m mới.</p>
                 </>
               )
             })()}

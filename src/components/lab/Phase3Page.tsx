@@ -163,7 +163,7 @@ export default function Phase3Page({ onNextPhase }: Props) {
           l: 'Z',
           r: "= T × Z′  (Z′ = Z / T)",
           title: 'Lãi tức tư bản cho vay',
-          purpose: 'Z là phần m chuyển cho chủ tư bản cho vay — họ không sản xuất nhưng hưởng một phần giá trị thặng dư qua tỷ suất lãi tức Z′.',
+          purpose: 'Tư bản cho vay không trực tiếp tạo ra giá trị thặng dư; lợi tức Z là một phần lợi nhuận bình quân chuyển cho chủ tư bản cho vay (Z = T × Z′).',
           legend: [
             { sym: 'Z', meaning: 'Lãi tức (tiền lãi) — phần m mà người vay trả cho chủ vốn' },
             { sym: 'T', meaning: 'Vốn cho vay ban đầu' },

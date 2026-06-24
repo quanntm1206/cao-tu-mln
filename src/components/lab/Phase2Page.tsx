@@ -160,7 +160,7 @@ export default function Phase2Page({ onNextPhase }: Props) {
       <HeroSection
         phase={2}
         title="Thương nghiệp: lưu thông không sinh giá trị mới."
-        subtitle="Pha 2: bạn đã có lợi nhuận công nghiệp. Quyết định có nhường một phần cho thương nhân — và hiểu vì sao."
+        subtitle="Pha 2: Tư bản thương nghiệp không tạo ra giá trị thặng dư mới; lợi nhuận thương nghiệp là phần m do tư bản công nghiệp nhượng lại để lưu thông hàng hóa nhanh hơn."
         formula={{
           l: "T - H - T'",
           r: '',

@@ -240,7 +240,7 @@ export default function Phase4Page({ onComplete }: Props) {
       <HeroSection
         phase={4}
         title="Địa tô: phần m chảy về tay chủ đất."
-        subtitle="Pha cuối: bạn ra quyết định mua, thuê, hoặc đầu cơ đất — dữ liệu BĐS Việt Nam 2024."
+        subtitle="Pha 4: Đất không có giá trị theo nghĩa sản phẩm lao động; giá cả đất đai là địa tô được tư bản hóa (R/Z′). Mua đất trừ vốn khả dụng; thuê đất trả R."
         formula={{
           l: 'Giá cả đất đai',
           r: '= R / Z′',
