@@ -111,8 +111,8 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
             accent={ACCENT}
             options={[
               { value: 'none', label: 'Không vay, không cho vay', hint: 'Không phát sinh dòng Z' },
-              { value: 'borrow', label: 'Vay vốn (trả lãi Z)', hint: 'Mở rộng sản xuất bằng vốn ngoài' },
-              { value: 'lend', label: 'Cho vay (thu lãi Z × 75%)', hint: 'Lấy Z từ phần thặng dư của người khác' },
+              { value: 'borrow', label: 'Vay vốn (trả lãi Z)', hint: 'Tăng thanh khoản/đòn bẩy tài chính — bản thân vay không tạo m' },
+              { value: 'lend', label: 'Cho vay (thu lãi Z)', hint: 'Z = TBCV × Z′; lợi tức là phần m phân phối cho tư bản cho vay' },
             ]}
           />
           {action !== 'none' && (

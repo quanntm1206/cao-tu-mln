@@ -105,7 +105,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là hành trình phân tách tiền mặt, tài sản ròng và cách m phân chia, cách m phân chia, và kết cục được rút ra.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Game mô phỏng quá trình m được tạo ra trong sản xuất và được phân phối thành p, lợi nhuận thương nghiệp, Z, R — các hình thái này phân phối/thực hiện/chuyển hóa m, không tạo m mới.
           </p>
         </div>
       </motion.section>
@@ -232,23 +232,28 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
               const done = checked.includes(item)
               const Icon = done ? CheckSquare : Square
               return (
-                <button
+                <label
                   key={item}
-                  type="button"
-                  onClick={() => toggle(item)}
-                  className="w-full flex items-start gap-3 p-3 rounded-lg lab-card hover:border-[var(--color-lab-cyan)] transition-colors text-left"
+                  className="w-full flex items-start gap-3 p-3 rounded-lg lab-card hover:border-[var(--color-lab-cyan)] transition-colors cursor-pointer"
                 >
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={done}
+                    onChange={() => toggle(item)}
+                  />
                   <Icon
                     className="w-5 h-5 mt-0.5 shrink-0"
                     style={{ color: done ? 'var(--color-lab-cyan)' : 'var(--color-lab-fg-dim)' }}
                     strokeWidth={2}
+                    aria-hidden
                   />
                   <span
                     className={`text-sm leading-relaxed ${done ? 'text-[var(--color-lab-fg)] line-through opacity-70' : 'text-[var(--color-lab-fg)]'}`}
                   >
                     {item}
                   </span>
-                </button>
+                </label>
               )
             })}
           </div>

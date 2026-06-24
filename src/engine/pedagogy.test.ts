@@ -208,3 +208,20 @@ describe('Land rent pedagogy v0.7', () => {
     expect(r.pool_delta).toBe(-r.land_purchase_price)
   })
 })
+
+
+describe('Finance UI pedagogy v0.7.1', () => {
+  it('Phase3Page has no Z x 75% label', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../components/lab/Phase3Page.tsx'), 'utf-8')
+    expect(source).not.toContain('75%')
+    expect(source).not.toMatch(/mở rộng sản xuất/)
+  })
+
+  it('Phase2Page uses corrected T-H-T prime explanation', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../components/lab/Phase2Page.tsx'), 'utf-8')
+    expect(source).not.toMatch(/T' - T chính là m/)
+    expect(source).toContain('Lưu thông không tạo ra m mới')
+  })
+})

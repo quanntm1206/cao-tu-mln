@@ -24,7 +24,7 @@ const CONTENT: Record<number, { title: string; bullets: string[] }> = {
   3: {
     title: 'Đừng hiểu nhầm',
     bullets: [
-      'Tiền cho vay không tự đẻ ra tiền; lợi tức Z là phần lợi nhuận chuyển cho chủ tư bản cho vay.',
+      'Tư bản cho vay không trực tiếp tạo m; lợi tức Z là phần m/lợi nhuận được phân phối cho chủ tư bản cho vay.',
       'Z = TBCV × Z′ — lãi tức tỉ lệ với gốc cho vay và tỷ suất lợi tức.',
       'm mới do tài chính tạo ra = 0.',
     ],

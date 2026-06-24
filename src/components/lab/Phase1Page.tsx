@@ -99,7 +99,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
           accent={ACCENT_HEX}
         >
           <LabSlider
-            label="Cơ khí (p′ = 20%)"
+            label="Cơ khí — p′ cá biệt ban đầu ≈ 20%"
             value={coKhi}
             max={mPool}
             onChange={(v) => handleCo(Math.round((v / mPool) * STEPS))}
@@ -107,7 +107,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
             accent={ACCENT_HEX}
           />
           <LabSlider
-            label="Dệt may (p′ = 30%)"
+            label="Dệt may — p′ cá biệt ban đầu ≈ 30%"
             value={det}
             max={Math.max(0, mPool - coKhi)}
             disabled={maxDetSteps === 0}
@@ -116,7 +116,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
             accent="#22D3EE"
           />
           <ReadOnlyRow
-            label="Da giày (p′ = 40%) — tự động"
+            label="Da giày — p′ cá biệt ban đầu ≈ 40% — tự động"
             value={da}
             total={mPool}
             hint="= tổng vốn − cơ khí − dệt may"

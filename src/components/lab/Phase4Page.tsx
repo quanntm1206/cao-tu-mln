@@ -255,6 +255,19 @@ export default function Phase4Page({ onComplete }: Props) {
         color={ACCENT}
       />
 
+
+      <section className="py-6 border-b border-[var(--color-lab-border)]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lab-card p-5">
+          <p className="lab-cite mb-2" style={{ color: ACCENT }}>MINI BÀI — ĐỊA TÔ CHÊNH LỆCH & TUYỆT ĐỐI</p>
+          <ul className="space-y-2 text-sm text-[var(--color-lab-fg-muted)]">
+            <li><strong className="text-[var(--color-lab-fg)]">Địa tô chênh lệch:</strong> đất màu mỡ/vị trí thuận lợi giúp lợi nhuận siêu ngạch — phần đó chuyển thành địa tô chênh lệch cho chủ đất.</li>
+            <li><strong className="text-[var(--color-lab-fg)]">Địa tô tuyệt đối:</strong> do độc quyền sở hữu ruộng đất, chủ đất thu địa tô ngay cả trên loại đất kém nhất được đưa vào canh tác.</li>
+            <li>Địa tô là hình thức <em>phân phối</em> giá trị thặng dư — không phải m mới do đất tự sinh ra.</li>
+            <li>Giá đất có thể tách xa cơ sở địa tô do đầu cơ/tín dụng/quy hoạch; trong lý luận giáo trình, P = R/Z′ giải thích giá cả đất đai.</li>
+          </ul>
+        </div>
+      </section>
+
       <section className="py-8 border-b border-[var(--color-lab-border)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <DontMisunderstand phase={4} accent={ACCENT} />

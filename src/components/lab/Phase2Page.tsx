@@ -168,13 +168,13 @@ export default function Phase2Page({ onNextPhase }: Props) {
           l: "m phân phối",
           r: "= CN giữ + LN thương nghiệp",
           title: 'Phân phối m qua lưu thông',
-          purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m — khi qua thương nhân, một phần m chuyển thành lợi nhuận thương nghiệp.",
+          purpose: "Trong công thức T − H − T′, phần chênh T′ − T là hình thái biểu hiện bằng tiền của giá trị thặng dư m đã được tạo ra trong sản xuất. Lưu thông không tạo ra m mới; tư bản thương nghiệp chỉ giúp thực hiện hàng hóa và nhận một phần m do tư bản công nghiệp nhượng lại.",
           analogy:
-            'Giống bạn làm trà sữa xong rồi nhờ Shopee/TikTok bán hộ: đồ uống đã có lợi nhuận từ sản xuất (m), sàn chỉ giúp đưa tới khách và lấy một phần hoa hồng — sàn không pha thêm ly nào.',
+            'Giống quán trà sữa nhờ Shopee/TikTok bán hộ: m đã sinh ra khi pha chế (sản xuất); sàn chỉ thực hiện hàng hóa nhanh hơn và nhận phần lợi nhuận thương nghiệp — không tạo m mới.',
           legend: [
             { sym: 'T', meaning: 'Tiền vốn ứng trước ban đầu' },
             { sym: 'H', meaning: 'Hàng hóa — gồm sức lao động + tư liệu sản xuất' },
-            { sym: "T'", meaning: "Tiền thu về sau lưu thông (T' = T + Δ, với Δ = m)" },
+            { sym: "T′", meaning: "Tiền thu về sau lưu thông — biểu hiện tiền tệ của m đã tạo trong sản xuất, không phải m mới do lưu thông" },
             { sym: '—', meaning: 'Lợi nhuận thương nghiệp — phần m nhường cho thương nhân (không có ký hiệu riêng trong giáo trình)' },
           ],
         }}

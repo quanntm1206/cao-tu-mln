@@ -32,7 +32,7 @@ export const TEACHING_AIDS: TeachingAid[] = [
 ]
 
 export const GLOSSARY: GlossaryItem[] = [
-  { term: "T-H-T'", meaning: "Công thức chung của tư bản: ứng tiền ra mua hàng hóa để thu về số tiền lớn hơn." },
+  { term: "T-H-T'", meaning: "Công thức chung của tư bản: T − H − T′; phần chênh biểu hiện m đã tạo trong sản xuất, không phải m mới do mua bán." },
   { term: 'c', meaning: 'Tư bản bất biến: máy móc, nguyên liệu; chuyển giá trị vào sản phẩm, không tự tạo m.' },
   { term: 'v', meaning: 'Tư bản khả biến: tiền mua sức lao động; biến đổi vì lao động sống tạo giá trị mới.' },
   { term: 'm', meaning: 'Giá trị thặng dư: phần giá trị mới vượt quá v do lao động tạo ra.' },

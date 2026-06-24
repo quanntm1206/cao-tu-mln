@@ -101,7 +101,7 @@ export const THEORY_LESSONS: TheoryLesson[] = [
     concept: 'capital_formula',
     formula: "T - H - T'",
     symbolGuide: "T = tiền ban đầu; H = hàng hóa sản xuất; T' = tiền thu về lớn hơn. Dấu phảy trên T' nghĩa là tiền đã tăng thêm.",
-    explanation: "Tiền chỉ trở thành tư bản khi vận động theo công thức T-H-T', tức dùng tiền ra để thu về số tiền lớn hơn. Phần lớn hơn đó là giá trị thặng dư.",
+    explanation: "Tiền chỉ trở thành tư bản khi vận động theo công thức T-H-T', tức dùng tiền ra để thu về số tiền lớn hơn. Phần lớn hơn đó biểu hiện giá trị thặng dư m đã được tạo ra trong sản xuất, không phải do lưu thông tạo m.",
     marxSource: SOURCE,
   },
   {
@@ -190,7 +190,7 @@ export const THEORY_LESSONS: TheoryLesson[] = [
     title: 'Vốn hóa địa tô - Giá đất',
     concept: 'land_price',
     formula: 'Giá cả đất đai = R / Z′',
-    symbolGuide: 'Giá đất không phải giá trị của đất (đất không có giá trị) mà là vốn hóa dòng địa tô tương lai.',
+    symbolGuide: 'Giá cả đất đai P = R/Z′ là địa tô tư bản hóa; đất không có giá trị theo nghĩa hàng hóa thông thường.',
     explanation: 'Giá đất = dòng địa tô thường niên / lãi suất. Khi i giảm, giá đất tăng dù R không thay đổi. Bong bóng bất động sản phát sinh khi kỳ vọng làm tăng R kỳ vọng trong khi i thấp.',
     marxSource: SOURCE,
   },
