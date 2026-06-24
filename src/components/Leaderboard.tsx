@@ -1,5 +1,6 @@
 import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
+import { Trophy, X, Inbox } from 'lucide-react'
 
 interface Props {
   onClose: () => void
@@ -12,60 +13,60 @@ export default function Leaderboard({ onClose }: Props) {
   const entries = getLeaderboardFn()
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70">
-      <div className="glass-card rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl border border-amber-900/40">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-amber-300">🏆 Bảng xếp hạng</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center lab-modal-backdrop p-4">
+      <div className="lab-card-elevated w-full max-w-md flex flex-col max-h-[min(85dvh,720px)]">
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-[var(--color-lab-border)]">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-[var(--color-lab-yellow)]" strokeWidth={2} />
+            <h2 className="font-display text-xl font-bold">Bảng xếp hạng</h2>
+          </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 flex items-center justify-center text-stone-300 transition-colors"
+            className="w-9 h-9 rounded-lg lab-btn-ghost flex items-center justify-center"
+            aria-label="Đóng"
           >
-            ✕
+            <X className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
 
-        {entries.length === 0 ? (
-          <div className="text-center py-12 text-stone-500">
-            <p className="text-4xl mb-3">📭</p>
-            <p>Chưa có ai hoàn thành trò chơi.</p>
-            <p className="text-sm mt-1">Hãy là người đầu tiên!</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {entries.map((entry, i) => (
-              <div
-                key={`${entry.name}-${i}`}
-                className={`flex items-center gap-4 rounded-xl p-4 ${
-                  i === 0
-                    ? 'bg-amber-950/35 border border-amber-700/40'
-                    : i === 1
-                    ? 'bg-stone-800/40 border border-stone-600/30'
-                    : 'bg-stone-900/30'
-                }`}
-              >
-                <span className="text-2xl w-8 text-center">{MEDAL[i] ?? `${i + 1}.`}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-stone-50 truncate">{entry.name}</p>
-                  <p className="text-xs text-stone-400">{entry.date}</p>
+        <div className="flex-1 overflow-y-auto p-6">
+          {entries.length === 0 ? (
+            <div className="text-center py-10 text-[var(--color-lab-fg-muted)]">
+              <Inbox className="w-12 h-12 mx-auto mb-3 opacity-40" strokeWidth={1.5} />
+              <p className="text-sm">Chưa có ai hoàn thành học phần.</p>
+              <p className="text-xs mt-1 text-[var(--color-lab-fg-dim)]">Hãy là người đầu tiên!</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {entries.map((e, i) => (
+                <div
+                  key={`${e.name}-${i}`}
+                  className="flex items-center gap-3 lab-card p-3"
+                  style={i === 0 ? { borderColor: 'var(--color-lab-yellow)' } : {}}
+                >
+                  <span className="text-xl w-8 text-center shrink-0">
+                    {MEDAL[i] ?? <span className="font-mono text-sm text-[var(--color-lab-fg-dim)]">{i + 1}.</span>}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-[var(--color-lab-fg)] truncate">{e.name}</p>
+                    <p className="text-xs text-[var(--color-lab-fg-dim)] font-mono">{e.date}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="lab-display-num text-sm text-[var(--color-lab-cyan)]">{formatVnd(e.score, true)}</p>
+                    <p className="text-[10px] text-[var(--color-lab-fg-dim)] font-mono">{e.rounds} vòng</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-green-400">{formatVnd(entry.score)}</p>
-                  <p className="text-xs text-stone-500">{entry.rounds} vòng</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
 
-        <button
-          onClick={onClose}
-          className="w-full mt-6 py-3 rounded-xl font-semibold bg-stone-800 hover:bg-stone-700 text-stone-50 transition-colors"
-        >
-          Đóng
-        </button>
+        <div className="p-6 pt-3 border-t border-[var(--color-lab-border)]">
+          <button onClick={onClose} className="lab-btn-ghost w-full py-2.5 rounded-lg font-semibold">
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
   )
 }
-
-

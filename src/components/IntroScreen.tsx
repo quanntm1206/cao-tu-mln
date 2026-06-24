@@ -1,15 +1,25 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
+import { FlaskConical, Factory, Store, Banknote, Sprout, ArrowRight, Trophy } from 'lucide-react'
 
-const APP_VERSION = 'v0.2.3'
+const APP_VERSION = 'v0.3.0'
 
-interface Props { onShowLeaderboard: () => void }
+interface Props {
+  onShowLeaderboard: () => void
+}
 
 const PHASES = [
-  { n: 1, icon: '🏭', label: 'Sản xuất Công nghiệp', desc: "Phân bổ M-pool cho cơ khí, dệt may, da giày. Học p' và lý thuyết lợi nhuận." },
-  { n: 2, icon: '🏪', label: 'Thương nghiệp', desc: 'Quyết định dùng kênh thương nhân. Khám phá lợi nhuận TN từ GTTT.' },
-  { n: 3, icon: '🏦', label: 'Tư bản Tài chính', desc: 'Vay hoặc cho vay vốn. Hiểu lãi tức Z là phần phối từ m.' },
-  { n: 4, icon: '🏗️', label: 'Đất đai & Địa tô', desc: 'Mua / thuê / đầu cơ đất. Thấy giá đất = R / i trong thực tế VN.' },
+  { n: 1, Icon: Factory, label: 'Sản xuất', desc: 'Cơ khí · Dệt · Da giày', color: 'var(--color-phase-1)' },
+  { n: 2, Icon: Store, label: 'Thương nghiệp', desc: 'Phân phối lợi nhuận', color: 'var(--color-phase-2)' },
+  { n: 3, Icon: Banknote, label: 'Tài chính', desc: 'Lãi tức Z', color: 'var(--color-phase-3)' },
+  { n: 4, Icon: Sprout, label: 'Địa tô', desc: 'Giá đất = R/i', color: 'var(--color-phase-4)' },
+]
+
+const FORMULAS = [
+  { l: 'm', r: '= p + p_TN + Z + R', muted: false },
+  { l: "p'", r: '= m / (c + v)', muted: true },
+  { l: "T - H - T'", r: '', muted: true },
+  { l: 'Giá đất', r: '= R / i', muted: true },
 ]
 
 export default function IntroScreen({ onShowLeaderboard }: Props) {
@@ -17,83 +27,125 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
   const startGame = useGameStore((s) => s.startGame)
 
   const handleStart = () => {
-    if (!name.trim()) return
-    startGame(name.trim())
+    const n = name.trim()
+    if (n) startGame(n)
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[760px] h-[520px] bg-red-950/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-[420px] h-[420px] bg-amber-900/15 rounded-full blur-3xl" />
-      </div>
-
-      <p className="text-[10px] text-stone-500 mb-2 text-center relative z-10">{APP_VERSION} · Cập nhật 24/06/2026</p>
-      <div className="relative z-10 text-center mb-8">
-        <div className="chapter-badge mx-auto mb-4">📖 Chương 3 - Phân chia GTTT</div>
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="text-5xl drop-shadow-lg">⚙️</span>
-          <h1 className="text-5xl sm:text-6xl font-black dossier-title">
-            Phân chia <span className="text-amber-300">GTTT</span>
-          </h1>
+    <div className="min-h-screen flex flex-col">
+      {/* Top thin bar */}
+      <div className="px-4 sm:px-6 py-4 flex items-center justify-between max-w-6xl w-full mx-auto">
+        <div className="flex items-center gap-2">
+          <FlaskConical className="w-5 h-5 text-[var(--color-lab-cyan)]" strokeWidth={1.75} />
+          <span className="font-display font-bold text-base">
+            Surplus<span className="text-[var(--color-lab-cyan)]">.Lab</span>
+          </span>
         </div>
-        <p className="text-stone-300 text-lg max-w-2xl mx-auto leading-relaxed">
-          Mô phỏng phân chia giá trị thặng dư và tiền đẻ ra tiền: <br />
-          <span className="text-amber-300 font-semibold">m = p + LN thương nghiệp + Z + R</span>
+        <p className="text-[10px] font-mono text-[var(--color-lab-fg-dim)] uppercase tracking-widest">
+          {APP_VERSION} · KTCT Mác–Lênin Ch.3
         </p>
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {["T-H-T'", "p' = m/(c+v)", 'Z = lãi tức', 'R = địa tô', 'Giá đất = R/i'].map((f) => (
-            <span key={f} className="formula-chip">{f}</span>
-          ))}
-        </div>
       </div>
 
-      {/* 4 phases overview */}
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mb-8">
-        {PHASES.map((ph) => (
-          <div key={ph.n} className="glass-card rounded-xl p-3 text-center">
-            <p className="text-2xl mb-1">{ph.icon}</p>
-            <p className="text-xs font-bold text-amber-300">Pha {ph.n}</p>
-            <p className="text-xs font-semibold text-stone-200 mb-1">{ph.label}</p>
-            <p className="text-[10px] text-stone-500 leading-relaxed">{ph.desc}</p>
+      <div className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pb-16 pt-4 sm:pt-12">
+        <div className="grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-16 items-center">
+          {/* LEFT — Hero */}
+          <div>
+            <p className="lab-phase-chip mb-6" style={{ color: 'var(--color-lab-cyan)', background: 'var(--color-lab-cyan-soft)' }}>
+              Mô phỏng phân chia GTTT
+            </p>
+            <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl leading-[0.95] mb-6">
+              Tiền không tự<br />
+              đẻ ra <span className="text-[var(--color-lab-cyan)]">tiền</span>.
+            </h1>
+            <p className="text-[var(--color-lab-fg-muted)] text-lg leading-relaxed max-w-xl mb-8">
+              Một phòng-lab tương tác để thấy giá trị thặng dư
+              <em className="text-[var(--color-lab-fg)] not-italic font-semibold"> m </em>
+              được chia thành lợi nhuận công nghiệp, lợi nhuận thương nghiệp, lãi tức và địa tô —
+              như thế nào, và vì sao.
+            </p>
+
+            {/* Formula grid */}
+            <div className="grid sm:grid-cols-2 gap-2 mb-8 max-w-md">
+              {FORMULAS.map((f, i) => (
+                <div
+                  key={i}
+                  className={`flex items-baseline gap-2 font-mono text-sm px-3 py-2 rounded-md ${
+                    f.muted
+                      ? 'text-[var(--color-lab-fg-dim)] bg-[var(--color-lab-surface)]/40'
+                      : 'text-[var(--color-lab-fg)] bg-[var(--color-lab-cyan-soft)] border border-[var(--color-lab-cyan)]/30'
+                  }`}
+                >
+                  <span className="font-bold">{f.l}</span>
+                  <span className="opacity-70">{f.r}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* 4 phases preview */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {PHASES.map(({ n, Icon, label, desc, color }) => (
+                <div
+                  key={n}
+                  className="lab-card p-3 hover:-translate-y-0.5 transition-transform"
+                  style={{ borderColor: `${color}55` }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Icon className="w-3.5 h-3.5" style={{ color }} strokeWidth={2} />
+                    <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color }}>
+                      Pha {n}
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold text-[var(--color-lab-fg)] leading-tight">{label}</p>
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-0.5">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
 
-      <div className="relative z-10 theory-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
-        <div className="relative z-10">
-          <h2 className="text-xl font-bold text-stone-50 mb-5">Bắt đầu học phần</h2>
+          {/* RIGHT — Sign in card */}
+          <div className="lab-card-elevated p-7 sm:p-9">
+            <p className="lab-cite mb-1">START_SESSION</p>
+            <h2 className="font-display text-2xl font-bold mb-1">Bắt đầu nghiên cứu</h2>
+            <p className="text-sm text-[var(--color-lab-fg-muted)] mb-6">
+              16 vòng · 4 pha · ~15 phút
+            </p>
 
-          <div className="mb-4">
-            <label className="block text-sm text-stone-300 mb-1">Tên học viên</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-              placeholder="Nhập tên của bạn..."
-              className="w-full rounded-xl bg-stone-900/70 border border-amber-900/30 text-stone-100 px-4 py-3 focus:outline-none focus:border-amber-600/60"
-            />
+            <label className="block mb-4">
+              <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-lab-fg-dim)] mb-2 block">
+                Tên học viên
+              </span>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                placeholder="Nguyễn Văn A…"
+                className="lab-input w-full text-base"
+                autoFocus
+              />
+            </label>
+
+            <button
+              onClick={handleStart}
+              disabled={!name.trim()}
+              data-testid="start-game-btn"
+              className="lab-btn-primary w-full py-4 rounded-xl font-display text-base flex items-center justify-center gap-2"
+            >
+              Vào phòng-lab
+              <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+
+            <div className="mt-6 pt-5 border-t border-[var(--color-lab-border)] flex items-center justify-between">
+              <button
+                onClick={onShowLeaderboard}
+                className="text-sm text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-yellow)] transition-colors flex items-center gap-2"
+              >
+                <Trophy className="w-3.5 h-3.5" strokeWidth={2} />
+                Bảng xếp hạng
+              </button>
+              <p className="lab-cite">Giáo trình tr.70–78</p>
+            </div>
           </div>
-
-          <p className="text-xs text-stone-500 mb-5">
-            16 vòng, 4 pha x 4 vòng. Giáo trình KTCT Mác-Lênin, Chương 3, tr. 70-78.
-          </p>
-
-          <button
-            onClick={handleStart}
-            disabled={!name.trim()}
-            className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${name.trim() ? 'btn-action' : 'bg-stone-900 text-stone-500 cursor-not-allowed'}`}
-          >
-            Bắt đầu 4 pha học tập
-          </button>
-
-          <button
-            onClick={onShowLeaderboard}
-            className="w-full mt-3 py-2.5 rounded-xl font-semibold text-sm bg-stone-800/70 text-stone-300 hover:bg-stone-700 transition-colors"
-          >
-            🏆 Xem bảng xếp hạng
-          </button>
         </div>
       </div>
     </div>

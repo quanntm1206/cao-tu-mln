@@ -1,241 +1,106 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGameStore } from './store/gameStore'
-import { formatVnd } from './lib/currency'
-import { FINAL_CHECKLIST } from './data/teachingAids'
-import { deriveEnding, type EndingInput } from './data/endings'
 import IntroScreen from './components/IntroScreen'
-import Dashboard from './components/Dashboard'
-import RoundResultModal from './components/RoundResultModal'
-import QuickEventModal from './components/QuickEventModal'
+import LabShell from './components/LabShell'
+import Phase1Page from './components/lab/Phase1Page'
+import Phase2Page from './components/lab/Phase2Page'
+import Phase3Page from './components/lab/Phase3Page'
+import Phase4Page from './components/lab/Phase4Page'
+import FinalInfographic from './components/lab/FinalInfographic'
 import Leaderboard from './components/Leaderboard'
-import DistributionFlow from './components/DistributionFlow'
 
 export default function App() {
-  const { started, gameOver, pendingLesson, pendingQuickEvent } = useGameStore()
+  const { started, gameOver, phase, reset } = useGameStore()
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [completed, setCompleted] = useState(false)
+  // viewingPhase lags store.phase so we can show wrap-up + result of previous phase
+  const [viewingPhase, setViewingPhase] = useState<1 | 2 | 3 | 4>(1)
+
+  useEffect(() => {
+    if (!started) setViewingPhase(1)
+  }, [started])
 
   if (!started) {
-    return <IntroScreen onShowLeaderboard={() => setShowLeaderboard(true)} />
-  }
-
-  return (
-    <div className="min-h-screen">
-      {pendingLesson && <RoundResultModal />}
-      {pendingQuickEvent && <QuickEventModal />}
-      {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
-      {gameOver && !pendingLesson ? (
-        <FinalScreen onLeaderboard={() => setShowLeaderboard(true)} />
-      ) : !gameOver ? (
-        <Dashboard onLeaderboard={() => setShowLeaderboard(true)} />
-      ) : null}
-    </div>
-  )
-}
-
-function downloadText(filename: string, content: string, type: string) {
-  const blob = new Blob([content], { type })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
-const SOURCES = [
-  { label: 'Giáo trình KTCT Mác-Lênin (Bộ GD)', url: 'https://saomaidata.vn/library/803.Giao-Trinh-Kinh-Te-Chinh-Tri-Mac-Lenin.aspx' },
-  { label: 'Báo cáo BDS DKRA 2024', url: 'https://dkra.vn/bao-cao-thi-truong' },
-  { label: 'NHNN - Lãi suất 2022-2024', url: 'https://sbv.gov.vn/webcenter/portal/vi/menu/trangchu/tk/ldnh' },
-  { label: 'Sở TN&MT Bắc Ninh - Đất KCN', url: 'https://baodautu.vn/bat-dong-san' },
-  { label: 'Kinh tế chính trị Marx-Lenin (Wikipedia)', url: 'https://vi.wikipedia.org/wiki/Kinh_t%E1%BA%BF_ch%C3%ADnh_tr%E1%BB%8B_Marx%E2%80%93Lenin' },
-]
-
-const SURVEY_LABELS = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
-const CONCEPT_LABELS = [
-  'm = p + p_TN + Z + R',
-  'Giá đất = R / i',
-  "T - H - T'",
-]
-
-function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
-  const {
-    playerName, m_pool, startingM,
-    industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid,
-    history, eventLog, reset,
-  } = useGameStore()
-
-  const [checkedItems, setCheckedItems] = useState<string[]>([])
-  const [surveyDifficulty, setSurveyDifficulty] = useState<number | null>(null)
-  const [surveyConcept, setSurveyConcept] = useState<number | null>(null)
-  const [surveyComment, setSurveyComment] = useState('')
-
-  const endingInput: EndingInput = {
-    industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid, m_pool,
-  }
-  const ending = deriveEnding(endingInput)
-  const growth = startingM > 0 ? ((m_pool - startingM) / startingM * 100) : 0
-
-  const toggleChecklist = (item: string) =>
-    setCheckedItems((items) => items.includes(item) ? items.filter((i) => i !== item) : [...items, item])
-
-  const exportReport = () => {
-    const report = {
-      playerName,
-      completedAt: new Date().toLocaleString('vi-VN'),
-      schema: 'phan-chia-gttt-v2',
-      mPool: Math.round(m_pool),
-      startingM: Math.round(startingM),
-      distribution: {
-        industrial_profit: Math.round(industrial_profit),
-        merchant_profit: Math.round(merchant_profit),
-        interest_paid: Math.round(interest_paid),
-        interest_earned: Math.round(interest_earned),
-        rent_paid: Math.round(rent_paid),
-      },
-      ending: { id: ending.endingId, title: ending.title },
-      checklist: FINAL_CHECKLIST.map((item) => ({ item, done: checkedItems.includes(item) })),
-      survey: { difficulty: surveyDifficulty, conceptClarity: surveyConcept, comment: surveyComment },
-      events: eventLog.map((e) => ({ round: e.round, title: e.title, choice: e.choiceLabel })),
-      rounds: history.map((entry) => ({
-        round: entry.round,
-        phase: entry.result.phase,
-        lesson: entry.result.lesson.substring(0, 80),
-      })),
-    }
-    downloadText(
-      `phan-chia-gttt-${playerName || 'bao-cao'}.json`,
-      JSON.stringify(report, null, 2),
-      'application/json;charset=utf-8',
+    return (
+      <>
+        <IntroScreen onShowLeaderboard={() => setShowLeaderboard(true)} />
+        {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
+      </>
     )
   }
 
+  const advancePhase = (next: 1 | 2 | 3 | 4) => {
+    setViewingPhase(next)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleComplete = () => {
+    setCompleted(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleReset = () => {
+    reset()
+    setShowResetConfirm(false)
+    setCompleted(false)
+    setViewingPhase(1)
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-4 py-10">
-      <div className="text-center">
-        <div className="text-6xl mb-4">🎓</div>
-        <h1 className="text-4xl font-bold mb-2 text-amber-300">Hoàn thành học phần!</h1>
-        <p className="text-stone-300 text-lg">{playerName}</p>
-        <p className="text-stone-500 text-sm mt-2 max-w-md mx-auto">
-          Bạn đã hoàn thành 4 pha: sản xuất CN, thương nghiệp, tài chính, đất đai.
-          Chủ đề: <span className="text-amber-300">m = p + LN TN + Z + R</span>
-        </p>
-      </div>
+    <LabShell
+      onLeaderboard={() => setShowLeaderboard(true)}
+      onReset={() => setShowResetConfirm(true)}
+    >
+      {gameOver && completed ? (
+        <FinalInfographic onLeaderboard={() => setShowLeaderboard(true)} />
+      ) : (
+        <>
+          {viewingPhase === 1 && (
+            <Phase1Page onNextPhase={() => advancePhase(2)} />
+          )}
+          {viewingPhase === 2 && (
+            <Phase2Page onNextPhase={() => advancePhase(3)} />
+          )}
+          {viewingPhase === 3 && (
+            <Phase3Page onNextPhase={() => advancePhase(4)} />
+          )}
+          {viewingPhase === 4 && (
+            <Phase4Page onComplete={handleComplete} />
+          )}
+          {/* If user is on a phase page but the store has already moved forward (e.g. user dismissed wrap-up),
+             auto-sync viewingPhase to store.phase */}
+          <PhaseSync storePhase={phase} viewingPhase={viewingPhase} setViewingPhase={setViewingPhase} />
+        </>
+      )}
 
-      {/* M-pool summary */}
-      <div className="theory-card rounded-2xl p-6 w-full max-w-md text-center">
-        <div className="relative z-10">
-          <p className="text-stone-400 text-sm mb-2">M-pool cuối</p>
-          <p className={`text-4xl font-bold ${m_pool >= startingM ? 'text-green-400' : 'text-red-400'}`}>
-            {formatVnd(m_pool)}
-          </p>
-          <p className="text-sm text-stone-400 mt-2">
-            {growth >= 0 ? '+' : ''}{growth.toFixed(1)}% so với M ban đầu
-          </p>
-        </div>
-      </div>
+      {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
 
-      {/* DistributionFlow full width */}
-      <div className="w-full max-w-2xl">
-        <DistributionFlow />
-      </div>
-
-      {/* Ending */}
-      <div className="theory-card rounded-2xl p-5 w-full max-w-2xl">
-        <div className="relative z-10">
-          <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Kết cục mô phỏng</p>
-          <h2 className="text-2xl font-black text-stone-50 mb-2">{ending.title}</h2>
-          <p className="text-sm text-stone-300 leading-relaxed mb-4">{ending.summary}</p>
-          <div className="space-y-3 rounded-xl border border-amber-900/35 bg-stone-950/35 p-4">
-            <p className="text-sm text-stone-300 leading-relaxed">
-              <span className="font-bold text-amber-200">Vì sao kết cục này?</span> {ending.whyThisHappened}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 lab-modal-backdrop flex items-center justify-center p-4">
+          <div className="lab-card-elevated p-7 max-w-sm w-full">
+            <p className="lab-cite mb-2 text-[var(--color-lab-yellow)]">CONFIRM</p>
+            <h2 className="font-display text-xl font-bold mb-2">Bắt đầu lại?</h2>
+            <p className="text-sm text-[var(--color-lab-fg-muted)] mb-5 leading-relaxed">
+              Tiến trình hiện tại sẽ bị xóa. Bảng xếp hạng đã lưu vẫn còn.
             </p>
-            <p className="text-sm text-stone-300 leading-relaxed">
-              <span className="font-bold text-amber-200">Liên hệ giáo trình:</span> {ending.textbookConnection}
-            </p>
-            {ending.secondaryConsequences.length > 0 && (
-              <p className="text-sm text-stone-300">
-                <span className="font-bold text-amber-200">Khía cạnh khác:</span> {ending.secondaryConsequences.join('; ')}
-              </p>
-            )}
-          </div>
-          <div className="mt-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Câu hỏi thảo luận</p>
-            {ending.reflectionQuestions.map((q) => (
-              <p key={q} className="text-sm text-stone-300 mb-1">▸ {q}</p>
-            ))}
+            <div className="flex gap-2">
+              <button onClick={() => setShowResetConfirm(false)} className="lab-btn-ghost flex-1 py-2.5 rounded-lg">Hủy</button>
+              <button onClick={handleReset} className="lab-btn-primary flex-1 py-2.5 rounded-lg">Chơi lại</button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Checklist */}
-      <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Checklist cuối bài</p>
-        <div className="space-y-2">
-          {FINAL_CHECKLIST.map((item) => (
-            <label key={item} className="flex items-start gap-2 rounded-lg bg-stone-950/35 p-2 text-sm text-stone-300 cursor-pointer">
-              <input type="checkbox" checked={checkedItems.includes(item)}
-                onChange={() => toggleChecklist(item)} className="mt-1 accent-amber-500" />
-              <span>{item}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* MicroSurvey */}
-      <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-3">Khảo sát nhanh</p>
-        <div className="mb-4">
-          <p className="text-sm text-stone-300 mb-2">Độ khó của học phần:</p>
-          <div className="flex gap-2">
-            {SURVEY_LABELS.map((l, i) => (
-              <button key={l} onClick={() => setSurveyDifficulty(i)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${surveyDifficulty === i ? 'bg-amber-700 text-stone-50' : 'bg-stone-800 text-stone-400 hover:text-stone-200'}`}>
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="mb-4">
-          <p className="text-sm text-stone-300 mb-2">Khái niệm rõ nhất:</p>
-          <div className="flex gap-2">
-            {CONCEPT_LABELS.map((l, i) => (
-              <button key={l} onClick={() => setSurveyConcept(i)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${surveyConcept === i ? 'bg-amber-700 text-stone-50' : 'bg-stone-800 text-stone-400 hover:text-stone-200'}`}>
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-        <textarea value={surveyComment} onChange={(e) => setSurveyComment(e.target.value)}
-          rows={2} placeholder="Góp ý thêm (tùy chọn)..."
-          className="w-full rounded-lg bg-stone-900/70 border border-amber-900/30 text-stone-100 text-sm px-3 py-2 resize-none focus:outline-none" />
-      </div>
-
-      {/* Sources */}
-      <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Tài liệu tham khảo</p>
-        <div className="space-y-2">
-          {SOURCES.map((s) => (
-            <a key={s.url} href={s.url} target="_blank" rel="noreferrer"
-              className="flex items-center gap-2 text-sm text-stone-300 hover:text-amber-300 transition-colors">
-              <span className="text-stone-500">▸</span> {s.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
-        <button onClick={onLeaderboard} className="px-6 py-3 bg-amber-700 hover:bg-amber-600 rounded-xl font-semibold transition-colors text-stone-50">
-          🏆 Bảng xếp hạng
-        </button>
-        <button onClick={exportReport} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
-          📥 Xuất báo cáo JSON
-        </button>
-        <button onClick={reset} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
-          🔄 Chơi lại
-        </button>
-      </div>
-    </div>
+      )}
+    </LabShell>
   )
+}
+
+function PhaseSync({ storePhase, viewingPhase, setViewingPhase }: { storePhase: number; viewingPhase: number; setViewingPhase: (n: 1 | 2 | 3 | 4) => void }) {
+  // If store moves backwards (reset), reset viewing
+  useEffect(() => {
+    if (storePhase < viewingPhase) {
+      setViewingPhase(storePhase as 1 | 2 | 3 | 4)
+    }
+  }, [storePhase, viewingPhase, setViewingPhase])
+  return null
 }

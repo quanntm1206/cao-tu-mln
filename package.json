@@ -1,7 +1,7 @@
 {
   "name": "cao-tu-mln",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,15 @@
     "qa:production": "node scripts/qa-production.mjs"
   },
   "dependencies": {
+    "@types/d3-sankey": "^0.12.5",
+    "@visx/group": "^4.0.0",
+    "@visx/responsive": "^4.0.0",
+    "@visx/sankey": "^4.0.0",
+    "@visx/scale": "^4.0.0",
+    "@visx/shape": "^4.0.0",
+    "d3-sankey": "^0.12.3",
+    "framer-motion": "^12.41.0",
+    "lucide-react": "^1.21.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.15.3",

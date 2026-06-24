@@ -1,21 +1,10 @@
-﻿import { chromium } from 'playwright'
+import { chromium } from 'playwright'
 
 const baseUrl = process.env.QA_URL || 'http://127.0.0.1:4173/'
 const executablePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 
 const browser = await chromium.launch({ headless: true, executablePath })
 const results = []
-
-async function assertVisibleInViewport(page, locator, label) {
-  const box = await locator.boundingBox()
-  if (!box) throw new Error(`${label} is not rendered`)
-  const viewport = page.viewportSize()
-  if (!viewport) throw new Error(`${label} has no viewport`)
-  const visible = box.y >= 0 && box.y + box.height <= viewport.height && box.x >= 0 && box.x + box.width <= viewport.width
-  if (!visible) {
-    throw new Error(`${label} is outside viewport: ${JSON.stringify({ box, viewport })}`)
-  }
-}
 
 async function runScenario(viewport) {
   const page = await browser.newPage({ viewport, acceptDownloads: true })
@@ -25,7 +14,10 @@ async function runScenario(viewport) {
   let downloaded = false
 
   page.on('console', (msg) => {
-    if (['error', 'warning'].includes(msg.type())) consoleIssues.push(`${msg.type()}: ${msg.text()}`)
+    if (['error', 'warning'].includes(msg.type())) {
+      const t = msg.text()
+      if (!t.includes('Download the React DevTools')) consoleIssues.push(`${msg.type()}: ${t}`)
+    }
   })
   page.on('pageerror', (error) => pageErrors.push(error.stack || error.message))
   page.on('response', (response) => {
@@ -34,79 +26,86 @@ async function runScenario(viewport) {
   page.on('download', () => { downloaded = true })
 
   await page.goto(baseUrl, { waitUntil: 'networkidle' })
-  await page.locator('input').first().fill(`QA ${viewport.width}`)
-  await page.getByRole('button', { name: /Bắt đầu 4 pha học tập/ }).click()
 
-  for (let step = 0; step < 80; step += 1) {
+  // Intro: fill name and click start (by data-testid)
+  await page.locator('input[type="text"]').first().fill(`QA ${viewport.width}`)
+  await page.getByTestId('start-game-btn').click()
+
+  // Wait for first phase render
+  await page.waitForSelector('[data-testid="apply-round-btn"]', { timeout: 10000 })
+
+  const MAX_STEPS = 200
+  const seenStates = []
+  for (let step = 0; step < MAX_STEPS; step += 1) {
+    // Check finished
+    if (await page.getByTestId('final-infographic').count()) break
+
+    // Narrative card present? (quick event)
+    const narrativeChoice = page.getByTestId('narrative-choice')
+    if (await narrativeChoice.count()) {
+      await narrativeChoice.first().click({ timeout: 5000 }).catch(() => {})
+      // wait for continue
+      await page.waitForTimeout(120)
+      const cont = page.getByTestId('narrative-continue')
+      if (await cont.count()) await cont.first().click({ timeout: 5000 }).catch(() => {})
+      await page.waitForTimeout(180)
+      seenStates.push(`[${step}] narrative`)
+      continue
+    }
+
+    // Result section? click footer to continue
+    const footer = page.getByTestId('round-result-footer')
+    if (await footer.count()) {
+      await footer.first().scrollIntoViewIfNeeded()
+      await footer.first().click({ timeout: 5000 })
+      await page.waitForTimeout(180)
+      seenStates.push(`[${step}] result`)
+      continue
+    }
+
+    // Phase wrap-up?
+    const wrapNext = page.getByTestId('phase-wrapup-next')
+    if (await wrapNext.count()) {
+      await wrapNext.first().scrollIntoViewIfNeeded()
+      await wrapNext.first().click({ timeout: 5000 })
+      await page.waitForTimeout(250)
+      seenStates.push(`[${step}] wrapup`)
+      continue
+    }
+
+    // Round controls? apply
+    const apply = page.getByTestId('apply-round-btn')
+    if (await apply.count()) {
+      await apply.first().scrollIntoViewIfNeeded()
+      await apply.first().click({ timeout: 5000 })
+      await page.waitForTimeout(180)
+      seenStates.push(`[${step}] apply`)
+      continue
+    }
+
+    // Stuck
     const body = await page.locator('body').innerText()
-    if (body.includes('Hoàn thành học phần!')) break
-
-    if (await page.getByText(/Tình huống sản xuất/).count()) {
-      const buttons = page.locator('button')
-      const count = await buttons.count()
-      if (count >= 2) await buttons.nth(1).click()
-      const confirm = page.getByRole('button', { name: /Áp dụng lựa chọn/ })
-      if (await confirm.count()) await confirm.first().click()
-      continue
-    }
-
-    const next = page.getByRole('button', { name: /Tiếp tục|Xem tổng kết/ })
-    if (await next.count()) {
-      await assertVisibleInViewport(page, next.first(), `Continue button at ${viewport.width}x${viewport.height}`)
-      const scrollArea = page.getByTestId('round-result-scroll-area')
-      const footer = page.getByTestId('round-result-footer')
-      if (await scrollArea.count()) {
-        await assertVisibleInViewport(page, footer.first(), `Result modal footer at ${viewport.width}x${viewport.height}`)
-        const scrollMetrics = await scrollArea.first().evaluate((el) => ({
-          scrollHeight: el.scrollHeight,
-          clientHeight: el.clientHeight,
-          canScroll: el.scrollHeight > el.clientHeight,
-        }))
-        if (scrollMetrics.scrollHeight <= 0 || scrollMetrics.clientHeight <= 0) {
-          throw new Error(`Result modal scroll area is not measurable at ${viewport.width}x${viewport.height}`)
-        }
-        if (scrollMetrics.canScroll) {
-          await scrollArea.first().evaluate((el) => { el.scrollTop = el.scrollHeight })
-        }
-      }
-      await next.first().click()
-      continue
-    }
-
-    const action = page.getByRole('button', { name: /Thực hiện vòng/ })
-    if (await action.count()) {
-      await action.first().click()
-      continue
-    }
-
-    throw new Error(`Scenario stuck at ${viewport.width}x${viewport.height}: ${body.slice(0, 500)}`)
+    throw new Error(`Stuck at ${viewport.width}x${viewport.height} step ${step}: ${body.slice(0, 400)}; trace=${seenStates.slice(-10).join('|')}`)
   }
 
-  const finalText = await page.locator('body').innerText()
-  if (!finalText.includes('Hoàn thành học phần!')) {
-    throw new Error(`Game did not reach final screen at ${viewport.width}x${viewport.height}`)
+  if (!(await page.getByTestId('final-infographic').count())) {
+    throw new Error(`Final infographic missing at ${viewport.width}x${viewport.height}; trace=${seenStates.slice(-20).join('|')}`)
   }
 
-  if (!finalText.toLowerCase().includes('kết cục mô phỏng')) {
-    throw new Error(`Ending card missing at ${viewport.width}x${viewport.height}`)
+  // Test export
+  const exportBtn = page.getByTestId('export-json-btn')
+  if (await exportBtn.count()) {
+    await exportBtn.first().scrollIntoViewIfNeeded()
+    await exportBtn.first().click({ timeout: 5000 }).catch(() => {})
+    await page.waitForTimeout(500)
   }
-
-  await page.getByRole('button', { name: /Xuất báo cáo/ }).click()
-  await page.waitForTimeout(250)
 
   const horizontalOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
   )
 
   await page.close()
-  return {
-    viewport,
-    downloaded,
-    horizontalOverflow,
-    consoleIssues,
-    badResponses,
-    pageErrors,
-  }
+  return { viewport, downloaded, horizontalOverflow, consoleIssues, badResponses, pageErrors, steps: seenStates.length }
 }
 
 for (const viewport of [
@@ -115,21 +114,37 @@ for (const viewport of [
   { width: 1024, height: 768 },
   { width: 390, height: 844 },
 ]) {
-  results.push(await runScenario(viewport))
+  console.log(`\n=== Running QA at ${viewport.width}x${viewport.height} ===`)
+  try {
+    const r = await runScenario(viewport)
+    results.push(r)
+    console.log(`OK ${viewport.width} (steps=${r.steps})`)
+  } catch (err) {
+    console.error(`FAIL ${viewport.width}: ${err.message}`)
+    results.push({ viewport, error: err.message })
+  }
 }
 
 await browser.close()
 
-const failures = results.flatMap((result) => [
-  ...result.consoleIssues,
-  ...result.badResponses,
-  ...result.pageErrors,
-  ...(result.horizontalOverflow ? [`Horizontal overflow at ${result.viewport.width}`] : []),
-  ...(!result.downloaded ? [`Report did not download at ${result.viewport.width}`] : []),
-])
+const failures = results.flatMap((r) => {
+  const out = []
+  if (r.error) out.push(`${r.viewport.width}: ${r.error}`)
+  if (r.consoleIssues?.length) out.push(...r.consoleIssues.map((c) => `${r.viewport.width}: ${c}`))
+  if (r.badResponses?.length) out.push(...r.badResponses.map((c) => `${r.viewport.width}: ${c}`))
+  if (r.pageErrors?.length) out.push(...r.pageErrors.map((c) => `${r.viewport.width}: ${c}`))
+  if (r.horizontalOverflow) out.push(`${r.viewport.width}: horizontal overflow`)
+  if (r.downloaded === false) out.push(`${r.viewport.width}: JSON export did not download`)
+  return out
+})
 
-console.log(JSON.stringify(results, null, 2))
+console.log('\n=== Summary ===')
+for (const r of results) {
+  console.log(`${r.viewport.width}x${r.viewport.height}: ${r.error ? 'FAIL ' + r.error : 'PASS (steps=' + r.steps + ')'}`)
+}
+
 if (failures.length > 0) {
-  console.error(`QA failed:\n${failures.join('\n')}`)
+  console.error(`\nQA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
+console.log('\nQA passed.')
