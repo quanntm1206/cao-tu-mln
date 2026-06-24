@@ -81,7 +81,7 @@ export default function MPoolTrajectory() {
         </p>
       </div>
       <h3 className="font-display text-xl font-bold mb-6">
-        M-pool đi từ {formatVnd(startingM, true)} đến{' '}
+        V đi từ {formatVnd(startingM, true)} đến{' '}
         <span style={{ color: positive ? '#10B981' : '#EF4444' }}>{formatVnd(m_pool, true)}</span>
       </h3>
 

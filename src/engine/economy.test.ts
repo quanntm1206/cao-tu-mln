@@ -58,7 +58,7 @@ describe('distributeProfit', () => {
 })
 
 describe('calcLandPrice', () => {
-  it('capitalised rent = R / i', () => {
+  it('Giá cả đất đai = R / Z′', () => {
     expect(calcLandPrice(1000, 0.05)).toBeCloseTo(20000)
   })
   it('returns 0 for zero interest rate', () => {

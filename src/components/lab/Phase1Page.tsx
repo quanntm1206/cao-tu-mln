@@ -75,7 +75,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
   return (
     <RoundSection
       roundLabel={`VÒNG ${roundInPhase}/4 · PHÂN BỔ M-POOL`}
-      title="Đầu tư M-pool vào 3 ngành — đâu là vốn, đâu là lợi nhuận?"
+      title="Phân bổ V vào 3 ngành — đâu là c+v, đâu là m?"
       description={
         <>
           <p>{hints[roundInPhase - 1]}</p>
@@ -91,7 +91,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
       controls={
         <ControlsCard
           title={`Phân bổ vòng ${roundInPhase}`}
-          subtitle={`Tổng M-pool: ${mPool.toLocaleString('vi-VN')} ₫`}
+          subtitle={`Tổng V (vốn ứng trước): ${mPool.toLocaleString('vi-VN')} ₫`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ co_khi: coKhi, det, da })}
           accent={ACCENT_HEX}
@@ -101,7 +101,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
             value={coKhi}
             max={mPool}
             onChange={(v) => handleCo(Math.round((v / mPool) * STEPS))}
-            hint={`${coSteps}% M-pool`}
+            hint={`${coSteps}% V`}
             accent={ACCENT_HEX}
           />
           <LabSlider
@@ -110,14 +110,14 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
             max={Math.max(0, mPool - coKhi)}
             disabled={maxDetSteps === 0}
             onChange={(v) => setDetSteps(Math.round((v / mPool) * STEPS))}
-            hint={`${safeDetSteps}% M-pool`}
+            hint={`${safeDetSteps}% V`}
             accent="#22D3EE"
           />
           <ReadOnlyRow
             label="Da giày (p′ = 40%) — tự động"
             value={da}
             total={mPool}
-            hint="= M-pool − cơ khí − dệt may"
+            hint="= V − cơ khí − dệt may"
             accent="#FACC15"
           />
         </ControlsCard>
@@ -166,23 +166,24 @@ export default function Phase1Page({ onNextPhase }: Props) {
       <HeroSection
         phase={1}
         title="Sản xuất tạo ra giá trị — m từ đâu mà có?"
-        subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ M-pool. Phân bổ vào 3 ngành và quan sát giá trị thặng dư sinh ra như thế nào qua 4 vòng."
+        subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ V (vốn ứng trước). Phân bổ vào 3 ngành và quan sát m = v × m′ sinh ra như thế nào qua 4 vòng."
         formula={{
           l: "p'",
           r: "= m / (c + v)   ·   m = v × m'",
           title: 'Tỷ suất lợi nhuận',
-          purpose: 'Mỗi đồng vốn (c+v) bạn ứng trước được tách thành c (máy móc) và v (tiền công). Chỉ v biến thành giá trị mới và sinh ra m. Trong mô phỏng, m\' = 100% và c/v khác nhau theo ngành ⇒ p\' khác nhau.',
+          purpose: 'Mỗi đồng vốn k = c + v được tách thành c (tư bản bất biến) và v (tư bản khả biến). Chỉ v sinh ra m = v × m′. c/v khác nhau theo ngành ⇒ p′ khác nhau.',
           legend: [
             { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
             { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m\', không phải từ c' },
             { sym: 'c', meaning: 'Tư bản bất biến — máy móc/nguyên liệu, chuyển giá trị nhưng không tự sinh m' },
             { sym: 'v', meaning: 'Tư bản khả biến — tiền công lao động sống, là nguồn duy nhất sinh m' },
-            { sym: "m'", meaning: 'Tỷ suất bóc lột = m/v. Mô phỏng cố định 100% (cùng cường độ bóc lột)' },
-            { sym: 'c/v', meaning: 'Cấu tạo hữu cơ — tỷ lệ máy/lao động của ngành. Cao = thâm dụng máy, thấp = thâm dụng lao động' },
+            { sym: "m'", meaning: 'Tỷ suất giá trị thặng dư = m/v. Mô phỏng cố định 100%' },
+            { sym: 'k', meaning: 'Chi phí sản xuất = c + v — toàn bộ vốn ứng trước' },
+            { sym: 'c/v', meaning: 'Cấu tạo hữu cơ tư bản — tỷ lệ c/v của ngành' },
           ],
         }}
         bigNumber={m_pool}
-        bigNumberLabel="M-pool hiện có"
+        bigNumberLabel="V hiện có (vốn ứng trước)"
         quote={{
           text: 'Lưu thông không tạo ra giá trị mới. Giá trị thặng dư có nguồn gốc trong sản xuất.',
           cite: 'Mác, Tư bản, dẫn theo Giáo trình KTCT Mác–Lênin, Chương 3, tr.70',

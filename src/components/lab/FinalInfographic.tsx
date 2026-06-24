@@ -18,7 +18,7 @@ const SOURCES = [
 ]
 
 const DIFFICULTY = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
-const CONCEPT = ['m = p + p_TN + Z + R', 'Giá đất = R / i', "T - H - T'"]
+const CONCEPT = ['k = c + v', 'Giá cả đất đai = R / Z′', "T - H - T'"]
 
 interface Props { onLeaderboard: () => void }
 
@@ -112,7 +112,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình M-pool, cách m phân chia, và kết cục được rút ra.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình V, cách m phân chia, và kết cục được rút ra.
           </p>
         </div>
       </motion.section>
@@ -120,7 +120,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       {/* ============ HEADLINE NUMBERS ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-3 gap-6">
-          <Headline label="M-pool cuối" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
+          <Headline label="V cuối (vốn ứng trước)" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
           <Headline
             label="Tăng trưởng"
             value={`${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`}
@@ -147,7 +147,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">ĐÓNG GÓP THEO PHA</p>
-          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy M-pool, pha nào kéo xuống?</h2>
+          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy V, pha nào kéo xuống?</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
             {phaseStats.map((ps) => {
               const positive = ps.delta >= 0

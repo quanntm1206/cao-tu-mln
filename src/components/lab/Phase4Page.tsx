@@ -57,7 +57,7 @@ function LandPriceCurve({ choice, mPool, roundInPhase }: { choice: LandChoice; m
 
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
-      <p className="lab-cite mb-2" style={{ color: ACCENT }}>QUỸ ĐẤT · {(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool / vòng</p>
+      <p className="lab-cite mb-2" style={{ color: ACCENT }}>QUỸ ĐẤT · {(LAND_COMMIT_FRACTION * 100).toFixed(0)}% V / vòng</p>
       <h3 className="font-display text-xl font-bold mb-1">
         {formatVnd(commit, true)} cam kết vào đất mỗi vòng
       </h3>
@@ -171,7 +171,7 @@ function Phase4Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { landCh
       title="Địa tô R — phần m chảy về tay chủ đất"
       description={
         <div>
-          <p>Mỗi vòng bạn cam kết <span className="font-mono text-[var(--color-lab-yellow)]">{formatVnd(commit, true)}</span> ({(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool) vào đất.</p>
+          <p>Mỗi vòng bạn cam kết <span className="font-mono text-[var(--color-lab-yellow)]">{formatVnd(commit, true)}</span> ({(LAND_COMMIT_FRACTION * 100).toFixed(0)}% V) vào đất.</p>
           <p className="text-sm mt-1">Choice định hình lợi/lỗ trên cam kết đó — dữ liệu thực Việt Nam 2024.</p>
         </div>
       }
@@ -190,7 +190,7 @@ function Phase4Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { landCh
             onChange={setChoice}
             accent={ACCENT}
             options={[
-              { value: 'none', label: 'Không liên quan đất', hint: 'Giữ M-pool ngoài đất, không gain/loss' },
+              { value: 'none', label: 'Không liên quan đất', hint: 'Giữ V ngoài đất, không gain/loss' },
               { value: 'buy', label: 'Mua đất Hoài Đức', hint: `Tăng đều ~${(RATES.buy[0] * 100).toFixed(0)}%/vòng (sóng BĐS 2024)` },
               { value: 'rent', label: 'Thuê đất sản xuất', hint: `Trả R ổn định ~${Math.abs(RATES.rent[0] * 100).toFixed(0)}%/vòng (drag)` },
               { value: 'speculate', label: 'Đầu cơ Bắc Ninh', hint: 'Bong bóng +20%/vòng đầu rồi sụp −15% cuối' },
@@ -215,7 +215,7 @@ function Phase4Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { landCh
 
 const TAKEAWAYS = [
   'Địa tô R là phần giá trị thặng dư mà chủ đất chiếm — không từ lao động của họ, mà từ độc quyền sở hữu.',
-  'Công thức giá đất = R / i: đất không có giá trị, nhưng có giá cả vốn hóa từ địa tô tương lai.',
+  'Công thức Giá cả đất đai = R / Z′: đất không có giá trị, nhưng có giá cả vốn hóa từ địa tô tương lai.',
   'Bong bóng giá đất phản ánh kỳ vọng đầu cơ, không phải giá trị thực — đó là rủi ro của thị trường BĐS VN.',
 ]
 
@@ -242,18 +242,18 @@ export default function Phase4Page({ onComplete }: Props) {
         title="Địa tô: phần m chảy về tay chủ đất."
         subtitle="Pha cuối: bạn ra quyết định mua, thuê, hoặc đầu cơ đất — dữ liệu BĐS Việt Nam 2024."
         formula={{
-          l: 'Giá đất',
-          r: '= R / i',
+          l: 'Giá cả đất đai',
+          r: '= R / Z′',
           title: 'Tô bản hóa địa tô',
-          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — là số vốn cần gửi ngân hàng để thu lãi bằng R. Khi i giảm → giá đất tăng dù R không đổi.',
+          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — vốn hóa dòng địa tô tương lai theo Z′. Khi Z′ giảm → giá cả đất đai tăng dù R không đổi.',
           legend: [
             { sym: 'R', meaning: 'Địa tô — phần m mà chủ đất chiếm hàng năm (₫/m²/năm)' },
-            { sym: 'i', meaning: 'Lãi suất ngân hàng — dùng làm tỷ lệ tô bản hóa' },
-            { sym: 'Giá đất', meaning: 'Vốn hóa địa tô tương lai về hiện tại (₫/m²)' },
+            { sym: "Z'", meaning: 'Tỷ suất lợi tức ngân hàng — dùng làm tỷ lệ vốn hóa địa tô' },
+            { sym: 'Giá cả đất đai', meaning: 'Vốn hóa địa tô tương lai về hiện tại (₫/m²)' },
           ],
         }}
         bigNumber={m_pool * LAND_COMMIT_FRACTION}
-        bigNumberLabel={`${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool cam kết`}
+        bigNumberLabel={`${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% V cam kết`}
         quote={{ text: 'Đất không phải sản phẩm lao động, nhưng có giá cả — đó là tô bản hóa.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.77' }}
         color={ACCENT}
       />

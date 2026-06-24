@@ -75,7 +75,7 @@ export default function LabShell({ children, onLeaderboard, onReset }: Props) {
           </div>
 
           <div className="text-right shrink-0 mr-1">
-            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">M-pool</p>
+            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">V</p>
             <p className="lab-display-num text-sm text-[var(--color-lab-cyan)]">
               {formatVnd(m_pool, true)}
             </p>

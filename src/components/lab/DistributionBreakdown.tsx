@@ -14,7 +14,7 @@ export default function DistributionBreakdown() {
 
   const items = [
     { key: 'p', label: 'Lợi nhuận CN (giữ lại)', sym: 'p', color: '#3B82F6', value: p, hint: 'Phần m mà nhà tư bản CN giữ lại sau khi nhường TN' },
-    { key: 'pTN', label: 'Lợi nhuận TN (đã nhường)', sym: 'p_TN', color: '#10B981', value: pTN, hint: 'Phần m đã chuyển cho thương nhân' },
+    { key: 'pTN', label: 'Lợi nhuận thương nghiệp', sym: 'LN TN', color: '#10B981', value: pTN, hint: 'Phần m đã chuyển cho thương nhân' },
     { key: 'Z', label: 'Tài chính (net)', sym: 'Z', color: '#F59E0B', value: Z, hint: 'Lãi thu − lãi trả' },
     { key: 'R', label: 'Địa tô đã trả', sym: 'R', color: '#EC4899', value: -R_paid, hint: 'Tô phải trả nếu thuê đất' },
   ]
@@ -22,10 +22,10 @@ export default function DistributionBreakdown() {
 
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
-      <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">PHÂN CHIA M · m = p + p_TN + Z + R</p>
+      <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">PHÂN CHIA m · p + lợi nhuận thương nghiệp + Z + R</p>
       <h3 className="font-display text-xl font-bold mb-1">Bạn đã thấy m chia về 4 hướng</h3>
       <p className="text-sm text-[var(--color-lab-fg-muted)] mb-6">
-        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái vào delta M-pool.
+        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái vào Δ V (vốn ứng trước).
       </p>
 
       {/* Stacked horizontal bar */}
@@ -86,7 +86,7 @@ export default function DistributionBreakdown() {
 
       <div className="mt-6 pt-5 border-t border-[var(--color-lab-border)] flex items-baseline justify-between">
         <p className="text-xs text-[var(--color-lab-fg-muted)] font-mono uppercase tracking-widest">
-          Δ M-pool tổng
+          Δ V tổng
         </p>
         <p className="lab-display-num text-2xl" style={{ color: totalDelta >= 0 ? '#10B981' : '#EF4444' }}>
           {totalDelta >= 0 ? '+' : ''}{formatVnd(totalDelta, true)}

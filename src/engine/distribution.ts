@@ -257,12 +257,12 @@ export function distributePhase3(
 
 const PHASE4_LESSONS = [
   'Địa tô là phần giá trị thặng dư mà nhà tư bản phải nhượng cho chủ sở hữu đất.',
-  'Giá đất = địa tô / tỷ suất lợi tức, phản ánh sự vốn hóa địa tô.',
+  'Giá cả đất đai = R / Z′, phản ánh sự vốn hóa địa tô.',
   'Bong bóng giá đất không phản ánh giá trị thực, mà phản ánh kỳ vọng đầu cơ tương lai.',
   'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',
 ]
 
-/** Fraction of M-pool committed to land per Phase 4 round */
+/** Fraction of V committed to land per Phase 4 round */
 export const LAND_COMMIT_FRACTION = 0.25
 
 export function distributePhase4(
@@ -270,7 +270,7 @@ export function distributePhase4(
   decision: Phase4Decision,
   roundInPhase: number,
 ): Phase4Result {
-  // Player commits a meaningful slice of M-pool to land each round
+  // Player commits a meaningful slice of V to land each round
   const commit = Math.max(0, m_pool) * LAND_COMMIT_FRACTION
 
   let rent_paid = 0

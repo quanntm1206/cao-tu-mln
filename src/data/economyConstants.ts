@@ -16,7 +16,7 @@ export const P_BAR_TARGET = 0.20
 
 /**
  * Mỗi ngành có cấu tạo hữu cơ c/v khác nhau (organicComposition).
- * Với m' = 100% (tỷ suất bóc lột chuẩn theo giáo trình),
+ * Với m′ = 100% (tỷ suất giá trị thặng dư chuẩn theo giáo trình),
  * tỷ suất lợi nhuận dẫn xuất: p' = m'/(c/v + 1)
  *   Cơ khí  c/v = 4    → p' = 20%  (thâm dụng máy móc)
  *   Dệt may c/v = 7/3  → p' = 30%  (cân bằng)

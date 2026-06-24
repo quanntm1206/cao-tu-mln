@@ -31,7 +31,7 @@ export default function SankeyFlow({ industrial, merchant, finance, rent, starti
     const nodes: FlowNode[] = [
       { name: 'm (Tổng GTTT)', color: COLORS.m },
       { name: 'p (Lợi nhuận CN)', color: COLORS.p },
-      { name: 'p_TN (Thương nghiệp)', color: COLORS.pTN },
+      { name: 'Lợi nhuận thương nghiệp', color: COLORS.pTN },
       { name: 'Z (Lãi tức)', color: COLORS.Z },
       { name: 'R (Địa tô)', color: COLORS.R },
     ]
@@ -48,7 +48,7 @@ export default function SankeyFlow({ industrial, merchant, finance, rent, starti
 
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
-      <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">SANKEY · m → p / p_TN / Z / R</p>
+      <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">SANKEY · m → p / LN thương nghiệp / Z / R</p>
       <h3 className="font-display text-xl font-bold mb-6">
         Giá trị thặng dư <span className="text-[var(--color-lab-cyan)]">m</span> được chia thế nào?
       </h3>

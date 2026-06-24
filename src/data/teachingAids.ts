@@ -26,9 +26,9 @@ export const TEACHING_AIDS: TeachingAid[] = [
   { round: 13, objective: 'Đọc hệ quả tích lũy qua c/v, tích tụ và tập trung tư bản.', discussionQuestion: 'c/v tăng nói gì về cấu trúc tư bản?', focusMetric: 'Quan sát thành phần hữu cơ c/v.' },
   { round: 14, objective: 'Hiểu chi phí sản xuất k = c + v và lợi nhuận là hình thức biểu hiện của m.', discussionQuestion: 'Vì sao cùng một m có thể được nhìn thành p khi xét từ chi phí k?', focusMetric: 'Quan sát k, m và lợi nhuận ròng.' },
   { round: 15, objective: "Đọc p' và lợi nhuận bình quân P̄.", discussionQuestion: "Những nhân tố nào làm p' khác P̄?", focusMetric: "Quan sát biểu đồ p' so với P̄." },
-  { round: 16, objective: 'Hiểu lợi nhuận thương nghiệp là một phần m được phân chia.', discussionQuestion: 'Tư bản thương nghiệp có tạo nguồn m độc lập không?', focusMetric: 'Quan sát kênh thương nghiệp và p_tn trong dòng m.' },
-  { round: 17, objective: 'Hiểu lãi tức là phần lợi nhuận trả cho tư bản cho vay.', discussionQuestion: 'Vì sao lãi vay vẫn được quy về phân chia giá trị thặng dư?', focusMetric: 'Quan sát nợ, cho vay và z.' },
-  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức giá đất = R / i cho thấy quan hệ nào giữa địa tô và lãi tức?', focusMetric: 'Quan sát R, z và chi phí thuê đất.' },
+  { round: 16, objective: 'Hiểu lợi nhuận thương nghiệp là một phần m được phân chia.', discussionQuestion: 'Tư bản thương nghiệp có tạo nguồn m độc lập không?', focusMetric: 'Quan sát kênh thương nghiệp và lợi nhuận thương nghiệp trong dòng m.' },
+  { round: 17, objective: 'Hiểu lãi tức là phần lợi nhuận trả cho tư bản cho vay.', discussionQuestion: 'Vì sao lãi vay vẫn được quy về phân chia giá trị thặng dư?', focusMetric: 'Quan sát nợ, cho vay và Z.' },
+  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức Giá cả đất đai = R / Z′ cho thấy quan hệ nào giữa địa tô và lãi tức?', focusMetric: 'Quan sát R, Z và chi phí thuê đất.' },
 ]
 
 export const GLOSSARY: GlossaryItem[] = [
@@ -39,7 +39,8 @@ export const GLOSSARY: GlossaryItem[] = [
   { term: "m'", meaning: 'Tỷ suất giá trị thặng dư: m / v, đo mức độ bóc lột lao động thặng dư trong mô hình giáo trình.' },
   { term: "p'", meaning: 'Tỷ suất lợi nhuận: p / (c + v), nhìn m dưới hình thức lợi nhuận so với toàn bộ tư bản ứng trước.' },
   { term: 'P̄', meaning: 'Lợi nhuận bình quân / tỷ suất bình quân dùng để so sánh với p cá biệt.' },
-  { term: 'z', meaning: 'Lãi tức: phần lợi nhuận chuyển cho người sở hữu tư bản cho vay.' },
+  { term: 'Z', meaning: 'Lợi tức: phần m chuyển cho chủ tư bản cho vay.' },
+  { term: "Z'", meaning: 'Tỷ suất lợi tức = Z/T.' },
   { term: 'R', meaning: 'Địa tô: phần giá trị thặng dư chuyển cho chủ sở hữu đất.' },
   { term: 'ch', meaning: 'Thời gian chu chuyển/lưu thông trong mô hình.' },
   { term: 'n', meaning: 'Số vòng chu chuyển: n = CH / ch.' },
@@ -51,8 +52,8 @@ export function getTeachingAidForRound(round: number): TeachingAid {
 
 export const FINAL_CHECKLIST: string[] = [
   "Có thể trình bày công thức T-H-T' và giải thích tại sao m phát sinh trong sản xuất, không phải lưu thông.",
-  'Phân biệt được p (lợi nhuận CN), p_TN (TN), Z (lãi tức), R (địa tô) và mối quan hệ với m.',
-  'Sử dụng công thức giá đất = R/i để giải thích tại sao giá đất tăng khi lãi suất giảm.',
-  'Liên hệ được dữ liệu thực tế VN (lãi suất 2022-2024, đất Hoài Đức, Bắc Ninh) với lý thuyết.',
+  'Phân biệt được p (lợi nhuận CN), lợi nhuận thương nghiệp, Z (lãi tức), R (địa tô) và mối quan hệ với m.',
+  'Sử dụng công thức Giá cả đất đai = R/Z′ để giải thích tại sao giá đất tăng khi Z′ giảm.',
+  'Liên hệ được dữ liệu thực tế VN (Z′ theo NHNN 2022-2024, đất Hoài Đức, Bắc Ninh) với lý thuyết.',
   "Trả lời được: 'Tiền đẻ ra tiền' có nghĩa gì trong khuôn khổ giáo trình MLN Chương 3?",
 ]

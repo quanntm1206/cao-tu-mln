@@ -45,7 +45,7 @@ export function distributeProfit(
   return { z_interest, z_earned, rent_cost, p_merchant, available }
 }
 
-/** Land price = R / i  (capitalised rent) */
+/** Giá cả đất đai = R / Z′  (vốn hóa địa tô) */
 export function calcLandPrice(R: number, i: number): number {
   return i > 0 ? R / i : 0
 }

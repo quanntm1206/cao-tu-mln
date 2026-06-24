@@ -13,7 +13,7 @@ import { LabSlider, ControlsCard, LabRadioGroup } from './InlineDecision'
 const ACCENT = '#F59E0B'
 
 const Z_HISTORY: Array<{ year: string; rate: number; label: string }> = [
-  { year: '2022', rate: Z_RATE_TABLE_2022_2024.peak_2022, label: 'Đỉnh lãi suất' },
+  { year: '2022', rate: Z_RATE_TABLE_2022_2024.peak_2022, label: 'Đỉnh Z′' },
   { year: '2023', rate: Z_RATE_TABLE_2022_2024.mid_2024, label: 'Hạ nhiệt' },
   { year: 'Q1/2024', rate: Z_RATE_TABLE_2022_2024.low_2024, label: 'Đáy lãi' },
   { year: 'Q4/2024', rate: Z_RATE_TABLE_2022_2024.rebound_2024, label: 'Bật lại' },
@@ -99,7 +99,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
       controls={
         <ControlsCard
           title={`Quyết định vòng ${roundInPhase}`}
-          subtitle={`M-pool khả dụng: ${formatVnd(mPool, true)}`}
+          subtitle={`V khả dụng: ${formatVnd(mPool, true)}`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ action, amount: action === 'none' ? 0 : amount })}
           accent={ACCENT}
@@ -120,7 +120,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
               value={amount}
               max={maxAmount}
               onChange={setAmount}
-              hint={`Tối đa ${formatVnd(maxAmount, true)} (50% M-pool)`}
+              hint={`Tối đa ${formatVnd(maxAmount, true)} (50% V)`}
               accent={ACCENT}
             />
           )}
@@ -158,7 +158,7 @@ export default function Phase3Page({ onNextPhase }: Props) {
       <HeroSection
         phase={3}
         title="Tài chính: lãi tức Z là phần nào của m?"
-        subtitle="Pha 3: bạn quyết định vay hoặc cho vay với lãi suất NHNN 2022–2024 thực tế."
+        subtitle="Pha 3: bạn quyết định vay hoặc cho vay — tỷ suất lợi tức Z′ theo NHNN 2022–2024 thực tế."
         formula={{
           l: 'Z',
           r: "= T' − T  ·  Z′ = Z / T",
@@ -172,7 +172,7 @@ export default function Phase3Page({ onNextPhase }: Props) {
           ],
         }}
         bigNumber={m_pool}
-        bigNumberLabel="M-pool khả dụng"
+        bigNumberLabel="V khả dụng"
         quote={{ text: 'Tư bản sinh ra lợi tức trở thành tư bản trừu tượng nhất, tự tăng giá trị trong nhận thức.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.75' }}
         color={ACCENT}
       />

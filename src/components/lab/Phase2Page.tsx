@@ -63,7 +63,7 @@ function MerchantSplit({ industrial, useMerchant, share }: { industrial: number;
       <div className="mt-6 pt-5 border-t border-[var(--color-lab-border)] grid grid-cols-3 gap-3">
         <Stat label="Tổng p" value={formatVnd(industrial, true)} />
         <Stat label="Giữ lại" value={formatVnd(kept, true)} accent={ACCENT} />
-        <Stat label="p_TN" value={formatVnd(merchantProfit, true)} accent="var(--color-lab-yellow)" />
+        <Stat label="Lợi nhuận thương nghiệp" value={formatVnd(merchantProfit, true)} accent="var(--color-lab-yellow)" />
       </div>
     </div>
   )
@@ -165,12 +165,12 @@ export default function Phase2Page({ onNextPhase }: Props) {
           l: "T - H - T'",
           r: '',
           title: 'Công thức chung của tư bản',
-          purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m (hoặc p_TN khi qua thương nhân).",
+          purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m — khi qua thương nhân, một phần m chuyển thành lợi nhuận thương nghiệp.",
           legend: [
             { sym: 'T', meaning: 'Tiền vốn ứng trước ban đầu' },
             { sym: 'H', meaning: 'Hàng hóa — gồm sức lao động + tư liệu sản xuất' },
             { sym: "T'", meaning: "Tiền thu về sau lưu thông (T' = T + Δ, với Δ = m)" },
-            { sym: 'p_TN', meaning: 'Lợi nhuận thương nghiệp — phần m nhường cho TN' },
+            { sym: '—', meaning: 'Lợi nhuận thương nghiệp — phần m nhường cho thương nhân (không có ký hiệu riêng trong giáo trình)' },
           ],
         }}
         bigNumber={industrial_profit}
