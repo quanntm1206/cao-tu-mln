@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function LabShell({ children, viewingPhase, onLeaderboard, onReset }: Props) {
-  const { round, m_pool, debt_principal, lent_principal, land_assets, playerName } = useGameStore()
+  const { round, m_pool, debt_principal, lent_principal, land_assets, merchant_profit, industrial_profit, playerName, phase } = useGameStore()
   const active = PHASE_CONFIG[viewingPhase] ?? PHASE_CONFIG[1]
 
   return (
@@ -74,6 +74,12 @@ export default function LabShell({ children, viewingPhase, onLeaderboard, onRese
               )}
               {lent_principal > 0 && (
                 <span className="text-[9px] text-[var(--color-lab-fg-dim)]">Cho vay {formatVnd(lent_principal, true)}</span>
+              )}
+              {phase >= 2 && merchant_profit > 0 && (
+                <span className="text-[9px] text-[var(--color-lab-yellow)]">LN TN {formatVnd(merchant_profit, true)}</span>
+              )}
+              {phase >= 2 && (
+                <span className="text-[9px] text-[var(--color-lab-fg-dim)]">CN giữ {formatVnd(Math.max(0, industrial_profit), true)}</span>
               )}
               {debt_principal > 0 && (
                 <span className="text-[9px] text-[#EF4444]">Nợ {formatVnd(debt_principal, true)}</span>

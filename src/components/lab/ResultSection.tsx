@@ -63,15 +63,15 @@ export default function ResultSection({ result, accent, prevRound, onContinue, o
                   <MetricRow label="Σ v (tư bản khả biến)" value={formatVnd(r.total_v, true)} accent="#06B6D4" />
                   <MetricRow label="Σ m = v × m′" value={formatVnd(r.total_industrial_profit, true)} accent="var(--color-lab-yellow)" />
                   <MetricRow label="p′ vòng này = m/(c+v)" value={`${(r.p_rate * 100).toFixed(1)}%`} accent={accent} />
-                  <MetricRow label="p′ bình quân (trước hội tụ)" value={`${(r.average_profit_rate * 100).toFixed(1)}%`} />
+                  <MetricRow label="p′ bình quân (trước hội tụ)" value={`${(r.theoretical_average_profit_rate * 100).toFixed(1)}%`} />
                   <MetricRow
                     label="p′ ngành sau xu hướng hội tụ"
-                    value={`CK ${(r.sector_rates_after.co_khi * 100).toFixed(1)}% · DT ${(r.sector_rates_after.det * 100).toFixed(1)}% · DA ${(r.sector_rates_after.da * 100).toFixed(1)}%`}
+                    value={`CK ${(r.post_competition_display_rates.co_khi * 100).toFixed(1)}% · DT ${(r.post_competition_display_rates.det * 100).toFixed(1)}% · DA ${(r.post_competition_display_rates.da * 100).toFixed(1)}%`}
                     accent={accent}
                     big
                   />
                   <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">
-                    Cạnh tranh giữa ngành kéo p′ về bình quân — nguồn gốc m vẫn từ v, không từ c.
+                    Cạnh tranh giữa các ngành có xu hướng hình thành tỷ suất lợi nhuận bình quân; mô phỏng giản lược chỉ minh họa xu hướng — nguồn gốc m vẫn là v×m′.
                   </p>
                 </>
               )
@@ -112,7 +112,7 @@ export default function ResultSection({ result, accent, prevRound, onContinue, o
               const r = result as Phase4Result
               return (
                 <>
-                  <MetricRow label="m phân phối (trước địa tô)" value={formatVnd(r.profit_before_rent, true)} />
+                  <MetricRow label="m/lợi nhuận trước địa tô" value={formatVnd(r.profit_before_rent, true)} />
                   <MetricRow label="Địa tô R (phần m nhượng)" value={formatVnd(r.rent_paid_r, true)} accent="#EF4444" />
                   <MetricRow label="m giữ lại sau địa tô" value={formatVnd(r.profit_after_rent, true)} accent={accent} />
                   <MetricRow label="Giá mua đất (tiền mặt)" value={formatVnd(r.land_purchase_price, true)} />

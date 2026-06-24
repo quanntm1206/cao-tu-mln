@@ -62,7 +62,7 @@ export function deriveEnding(input: EndingInput): EndingResult {
       tone: 'growth',
       score: indShare >= 0.7 ? 5 : indShare >= 0.5 ? 3 : 1,
       summary: 'Phần lớn GTTT được giữ lại trong sản xuất công nghiệp. V tăng chủ yếu từ lợi nhuận sản xuất trực tiếp.',
-      whyThisHappened: 'Bạn tập trung phân bổ V cho cơ khí, dệt may, da giày và giữ hạn chế sự phụ thuộc vào thương nhân, ngân hàng, chủ đất.',
+      whyThisHappened: 'Bạn tập trung phân bổ vốn sản xuất K cho cơ khí, dệt may, da giày và giữ hạn chế sự phụ thuộc vào thương nhân, ngân hàng, chủ đất.',
       textbookConnection: "Lợi nhuận CN = hình thái biến đổi của m. p' = m/(c+v). Khi phân phối ít hơn cho các hình thái khác, nhà tư bản sản xuất giữ lại nhiều p hơn.",
       reflectionQuestions: [
         'Nếu dùng nhiều kênh thương nghiệp hơn, phần m nào sẽ chuyển sang lợi nhuận thương nghiệp?',

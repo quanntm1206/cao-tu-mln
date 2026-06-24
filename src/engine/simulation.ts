@@ -35,10 +35,16 @@ export function splitCVM(invested: number, sectorId: 'co_khi' | 'det' | 'da'): S
   return { c, v, m }
 }
 
+export function calcIndividualSectorPPrime(c: number, v: number, m: number): number {
+  const k = c + v
+  if (k <= 0) return 0
+  return m / k
+}
+
 export function splitCVMWithRate(
   invested: number,
   sectorId: 'co_khi' | 'det' | 'da',
-  _sectorRate: number,
+  _postCompetitionDisplayRate: number, // display-only; does NOT affect m creation
 ): SectorBreakdown {
   const profile = SECTOR_PROFILES.find((s) => s.id === sectorId)!
   if (invested <= 0) return { c: 0, v: 0, m: 0 }

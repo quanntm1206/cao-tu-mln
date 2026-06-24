@@ -30,6 +30,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
   const {
     playerName, m_pool, startingM,
     industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid,
+    debt_principal, lent_principal, land_assets, delivery_obligation,
     history, eventLog, reset,
   } = useGameStore()
 
@@ -39,8 +40,9 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
   const [comment, setComment] = useState('')
 
   const ending = deriveEnding({ industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid, m_pool })
-  const growth = startingM > 0 ? ((m_pool - startingM) / startingM) * 100 : 0
-  const positive = m_pool >= startingM
+  const netWorth = m_pool + land_assets + lent_principal - debt_principal
+  const growth = startingM > 0 ? ((netWorth - startingM) / startingM) * 100 : 0
+  const positive = netWorth >= startingM
   const totalEvents = eventLog.length
 
   // Per-phase contribution summary
@@ -103,15 +105,16 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình tài sản/vốn khả dụng, cách m phân chia, và kết cục được rút ra.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là hành trình phân tách tiền mặt, tài sản ròng và cách m phân chia, cách m phân chia, và kết cục được rút ra.
           </p>
         </div>
       </motion.section>
 
       {/* ============ HEADLINE NUMBERS ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-3 gap-6">
-          <Headline label="V cuối (vốn ứng trước)" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <Headline label="Tiền mặt khả dụng" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
+          <Headline label="Tài sản ròng" value={formatVnd(netWorth, true)} color="var(--color-lab-cyan)" sub="tiền mặt + đất + cho vay − nợ" />
           <Headline
             label="Tăng trưởng"
             value={`${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`}
@@ -127,6 +130,20 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
         </div>
       </section>
 
+
+      <section className="py-8 border-b border-[var(--color-lab-border)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <p className="lab-cite mb-3">PHÂN TÁCH TÀI SẢN (MÔ PHỎNG GIẢN LƯỢC)</p>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+            <AssetRow label="Lợi nhuận CN giữ lại" value={formatVnd(industrial_profit, true)} />
+            <AssetRow label="LN thương nghiệp đã nhượng" value={formatVnd(merchant_profit, true)} />
+            <AssetRow label="Nợ gốc" value={formatVnd(debt_principal, true)} />
+            <AssetRow label="Vốn cho vay" value={formatVnd(lent_principal, true)} />
+            <AssetRow label="Tài sản đất" value={formatVnd(land_assets, true)} />
+            <AssetRow label="Nghĩa vụ giao hàng (cọc)" value={formatVnd(delivery_obligation, true)} />
+          </div>
+        </div>
+      </section>
       {/* ============ M-POOL TRAJECTORY ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
@@ -327,6 +344,15 @@ function Headline({ label, value, color, sub, big }: { label: string; value: str
         {value}
       </p>
       {sub && <p className="text-xs text-[var(--color-lab-fg-muted)] mt-2 leading-relaxed">{sub}</p>}
+    </div>
+  )
+}
+
+function AssetRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="lab-card p-3 flex justify-between gap-2">
+      <span className="text-[var(--color-lab-fg-muted)]">{label}</span>
+      <span className="lab-display-num text-sm">{value}</span>
     </div>
   )
 }

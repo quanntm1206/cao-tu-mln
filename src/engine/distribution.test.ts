@@ -271,8 +271,8 @@ describe('distributePhase4', () => {
     const late = distributePhase4(profit, M, 1_000_000_000, 0.06, { landChoice: 'speculate' }, 4)
     expect(early.land_asset_revaluation).toBeGreaterThan(0)
     expect(late.land_asset_revaluation).toBeLessThan(0)
-    expect(early.land_purchase_price).toBe(0)
-    expect(early.pool_delta).toBe(0)
+    expect(early.land_purchase_price).toBeGreaterThan(0)
+    expect(early.pool_delta).toBe(-early.land_purchase_price)
   })
 
   it('no land choice yields zero values and zero pool_delta', () => {

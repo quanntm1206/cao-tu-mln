@@ -56,7 +56,8 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
         id,
         label: p.label,
         invested: invested[id],
-        rate: sectorRates[id],
+        rate: invested[id] > 0 ? split.m / invested[id] : 0,
+        postCompetitionRate: sectorRates[id],
         c: split.c,
         v: split.v,
         m: split.m,
@@ -69,7 +70,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
   const hints = [
     'Vòng 1: bắt đầu nhẹ — hãy thử chia đều rồi xem ngành nào sinh lời nhiều nhất.',
     'Vòng 2: cảm nhận rõ p′ khác nhau. Bạn có nên dồn vào ngành tỷ suất cao?',
-    'Vòng 3: cạnh tranh giữa ngành sẽ kéo p′ về trung bình — vẫn còn cơ hội.',
+    'Vòng 3: cạnh tranh giữa ngành có xu hướng hình thành p′ bình quân — mô phỏng giản lược minh họa xu hướng; nguồn m vẫn là v×m′.',
     'Vòng 4: vòng cuối của pha. Hãy chọn tổ hợp bạn cho là tối ưu nhất.',
   ]
 
@@ -92,7 +93,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit:
       controls={
         <ControlsCard
           title={`Phân bổ vòng ${roundInPhase}`}
-          subtitle={`Tài sản/vốn khả dụng: ${mPool.toLocaleString('vi-VN')} ₫`}
+          subtitle={`Tiền/vốn khả dụng (phân bổ K = c+v): ${mPool.toLocaleString('vi-VN')} ₫`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ co_khi: coKhi, det, da })}
           accent={ACCENT_HEX}

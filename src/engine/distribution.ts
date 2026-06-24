@@ -76,8 +76,11 @@ export interface Phase1Result {
   total_industrial_profit: number
   p_rate: number
   m_created: number
-  sector_rates_after: SectorRates
-  average_profit_rate: number
+  individual_p_prime: SectorRates
+  post_competition_display_rates: SectorRates
+  theoretical_average_profit_rate: number
+  /** @deprecated */ sector_rates_after: SectorRates
+  /** @deprecated */ average_profit_rate: number
   pool_delta: number
   lesson: string
 }
@@ -117,6 +120,8 @@ export interface Phase4Result {
   rent_paid_r: number
   profit_after_rent: number
   z_prime: number
+  theoretical_land_price: number
+  rent_simulation_note: string
   p_land: number
   land_asset_revaluation: number
   rent_type: RentType
@@ -213,8 +218,16 @@ export function distributePhase1(params: Phase1Params): Phase1Result {
   const m_created = total_industrial_profit
   const pool_delta = m_created
 
-  const average_profit_rate = (sectorRates.co_khi + sectorRates.det + sectorRates.da) / 3
-  const sector_rates_after = convergeSectorRates(sectorRates)
+  const theoretical_average_profit_rate = (sectorRates.co_khi + sectorRates.det + sectorRates.da) / 3
+  const post_competition_display_rates = convergeSectorRates(sectorRates)
+  const sector_rates_after = post_competition_display_rates
+  const average_profit_rate = theoretical_average_profit_rate
+
+  const individual_p_prime = {
+    co_khi: calcProfitRate(breakdown.co_khi.m, breakdown.co_khi.c, breakdown.co_khi.v),
+    det: calcProfitRate(breakdown.det.m, breakdown.det.c, breakdown.det.v),
+    da: calcProfitRate(breakdown.da.m, breakdown.da.c, breakdown.da.v),
+  }
 
   const p_rate = calcProfitRate(total_industrial_profit, total_c, total_v)
 
@@ -231,6 +244,9 @@ export function distributePhase1(params: Phase1Params): Phase1Result {
     total_industrial_profit,
     p_rate,
     m_created,
+    individual_p_prime,
+    post_competition_display_rates,
+    theoretical_average_profit_rate,
     sector_rates_after,
     average_profit_rate,
     pool_delta,
@@ -346,9 +362,12 @@ export function distributePhase4(
   const choice = decision.landChoice
   const profit_before_rent = Math.max(0, profitBeforeRent)
 
-  const rentReferenceR =
-    choice === 'speculate' ? R_CASE_BAC_NINH.rentPerSqmYear : R_CASE_HOAI_DUC.rentPerSqmYear
-  const p_land = calcLandPrice(rentReferenceR, z_prime)
+  // Mô phỏng giản lược: R = 25% phần m phân phối mỗi vòng (giả định game hóa)
+  const R_simulation = profit_before_rent * LAND_COMMIT_FRACTION
+  const rent_simulation_note =
+    'Trong mô phỏng giản lược, R = 25% phần m phân phối mỗi vòng để minh họa địa tô; đây là giả định game hóa.'
+  const theoretical_land_price = calcLandPrice(R_simulation, z_prime)
+  const p_land = theoretical_land_price
 
   let rent_paid_r = 0
   let profit_after_rent = profit_before_rent
@@ -357,15 +376,17 @@ export function distributePhase4(
   let pool_delta = 0
 
   if (choice === 'rent') {
-    rent_paid_r = profit_before_rent * LAND_COMMIT_FRACTION
+    rent_paid_r = R_simulation
     profit_after_rent = profit_before_rent - rent_paid_r
     pool_delta = -rent_paid_r
   } else if (choice === 'buy') {
-    land_purchase_price = commit
+    land_purchase_price = Math.min(Math.max(0, availableCash), theoretical_land_price)
     const growthPerRound = R_CASE_HOAI_DUC.priceGrowthPct / ROUNDS_PER_PHASE
     land_asset_revaluation = (landAssets + land_purchase_price) * growthPerRound
     pool_delta = -land_purchase_price
   } else if (choice === 'speculate') {
+    land_purchase_price = Math.min(commit, Math.max(0, availableCash))
+    pool_delta = -land_purchase_price
     let growthRate: number
     if (roundInPhase <= 2) {
       growthRate = R_CASE_BAC_NINH.bubbleGrowthPct / 2
@@ -374,8 +395,7 @@ export function distributePhase4(
     } else {
       growthRate = R_CASE_BAC_NINH.crashPct
     }
-    land_asset_revaluation = landAssets * growthRate
-    pool_delta = 0
+    land_asset_revaluation = (landAssets + land_purchase_price) * growthRate
   }
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
@@ -386,6 +406,8 @@ export function distributePhase4(
     rent_paid_r,
     profit_after_rent,
     z_prime,
+    theoretical_land_price,
+    rent_simulation_note,
     p_land,
     land_asset_revaluation,
     rent_type: choice,

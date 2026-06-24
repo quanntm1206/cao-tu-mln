@@ -33,6 +33,7 @@ export interface QuickEventEffect {
   debtDelta?: number
   lendingDelta?: number
   landUnitsDelta?: number
+  deliveryObligationDelta?: number
   hDelta?: number
   wageDelta?: number
   workersDelta?: number
@@ -139,14 +140,14 @@ export const QUICK_EVENTS: QuickEvent[] = [
     concept: 'profit',
     title: 'Đơn hàng xuất khẩu lớn bất ngờ',
     description: 'Đối tác nước ngoài đặt đơn hàng khẩn, trả trước 120 triệu đồng tiền đặt cọc ngay hôm nay.',
-    teachingPoint: 'Doanh thu từ thị trường xuất khẩu phản ánh quá trình thực hiện giá trị hàng hóa trên quy mô quốc tế.',
+    teachingPoint: 'Đặt cọc tăng thanh khoản tạm thời; m chỉ thực hiện khi hàng đã sản xuất và bán.',
     choices: [
       {
         id: 'accept-order',
         label: 'Nhận đơn, nhận cọc 120 triệu đồng',
-        resultText: 'Tiền mặt tăng nhờ đặt cọc xuất khẩu, sản xuất cần tăng tốc.',
-        teachingPoint: 'Khi hàng hóa được bán ra, giá trị thặng dư được thực hiện dưới dạng lợi nhuận tiền tệ.',
-        effect: { cashDelta: 120 * M },
+        resultText: 'Đặt cọc làm tăng tiền mặt tạm thời; giá trị thặng dư chỉ được thực hiện khi hàng hóa đã được sản xuất và bán.',
+        teachingPoint: 'Đặt cọc là tiền ứng trước, chưa phải lợi nhuận; còn nghĩa vụ giao hàng.',
+        effect: { cashDelta: 120 * M, deliveryObligationDelta: 120 * M },
       },
       {
         id: 'decline-focus',

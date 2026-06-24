@@ -97,6 +97,8 @@ export interface GameState {
   debt_principal: number
   lent_principal: number
   land_assets: number
+  speculative_land_position: number
+  delivery_obligation: number
   fixed_capital: number
   materials_stock: number
   reinvest_rate: number
@@ -162,6 +164,8 @@ const DEFAULT_STATE: Omit<
   debt_principal: 0,
   lent_principal: 0,
   land_assets: 0,
+  speculative_land_position: 0,
+  delivery_obligation: 0,
   fixed_capital: 0,
   materials_stock: 0,
   reinvest_rate: 0,
@@ -197,6 +201,9 @@ const DEFAULT_STATE: Omit<
 function applyEffectToState(state: GameState, effect: QuickEventEffect): Partial<GameState> {
   const updates: Partial<GameState> = {}
   updates.m_pool = Math.max(0, state.m_pool + (effect.cashDelta ?? 0))
+  if (effect.deliveryObligationDelta !== undefined) {
+    updates.delivery_obligation = Math.max(0, state.delivery_obligation + effect.deliveryObligationDelta)
+  }
   if (effect.machinesDelta !== undefined) {
     updates.fixed_capital = Math.max(0, state.fixed_capital + effect.machinesDelta)
   }
@@ -247,6 +254,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       debt_principal: 0,
       lent_principal: 0,
       land_assets: 0,
+      speculative_land_position: 0,
+      delivery_obligation: 0,
       fixed_capital: 0,
       materials_stock: 0,
       reinvest_rate: 0,
@@ -371,6 +380,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     let debt_principal = s.debt_principal
     let lent_principal = s.lent_principal
     let land_assets = s.land_assets
+    let speculative_land_position = s.speculative_land_position
     let sector_rates = s.sector_rates
     let phase2_surplus_per_round = s.phase2_surplus_per_round
     let phase4_profit_per_round = s.phase4_profit_per_round
@@ -404,6 +414,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         phase4_profit_per_round = s.industrial_profit / 4
       }
       if (r.land_purchase_price > 0) {
+        if (r.rent_type === 'speculate') {
+          speculative_land_position += r.land_purchase_price
+        }
         land_assets += r.land_purchase_price
       }
       land_assets += r.land_asset_revaluation
@@ -450,6 +463,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       debt_principal,
       lent_principal,
       land_assets,
+      speculative_land_position,
       sector_rates,
       phase2_surplus_per_round,
       phase4_profit_per_round,

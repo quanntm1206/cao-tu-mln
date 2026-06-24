@@ -18,6 +18,7 @@ const CONTENT: Record<number, { title: string; bullets: string[] }> = {
       'Thương nghiệp không tạo m mới; nó nhận một phần m để thực hiện hàng hóa.',
       'Tổng m xã hội không đổi; chỉ thay đổi phân phối giữa công nghiệp và thương nghiệp.',
       'm mới do lưu thông tạo ra = 0.',
+      'Đừng hiểu nhầm: mua rẻ bán đắt trong lưu thông không phải nguồn gốc cuối cùng của m; m đã được tạo ra trong sản xuất.',
     ],
   },
   3: {

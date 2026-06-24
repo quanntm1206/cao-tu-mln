@@ -79,7 +79,7 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   )
 }
 
-function Phase2Round({ onSubmit, industrial, roundInPhase }: { onSubmit: (d: { merchantShare: number; useMerchant: boolean }) => void; industrial: number; roundInPhase: number }) {
+function Phase2Round({ onSubmit, industrial, merchantProfit, roundInPhase }: { onSubmit: (d: { merchantShare: number; useMerchant: boolean }) => void; industrial: number; merchantProfit: number; roundInPhase: number }) {
   const [useMerchant, setUseMerchant] = useState(false)
   const [share, setShare] = useState(15)
 
@@ -100,7 +100,7 @@ function Phase2Round({ onSubmit, industrial, roundInPhase }: { onSubmit: (d: { m
       controls={
         <ControlsCard
           title={`Quyết định vòng ${roundInPhase}`}
-          subtitle={`Lợi nhuận CN tích lũy: ${formatVnd(industrial, true)}`}
+          subtitle={`m phân phối vòng: ${formatVnd(industrial, true)} · LN TN đã nhượng: ${formatVnd(merchantProfit, true)}`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ merchantShare: share / 100, useMerchant })}
           accent={ACCENT}
@@ -139,7 +139,7 @@ interface Props { onNextPhase: () => void }
 
 export default function Phase2Page({ onNextPhase }: Props) {
   const {
-    round, industrial_profit, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, phase,
+    round, industrial_profit, merchant_profit, phase2_surplus_per_round, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, phase,
   } = useGameStore()
   const resultRef = useRef<HTMLDivElement | null>(null)
   const eventRef = useRef<HTMLDivElement | null>(null)
@@ -179,7 +179,7 @@ export default function Phase2Page({ onNextPhase }: Props) {
           ],
         }}
         bigNumber={industrial_profit}
-        bigNumberLabel="Lợi nhuận CN tích lũy"
+        bigNumberLabel="Lợi nhuận CN giữ lại (sau thương nghiệp)"
         quote={{ text: 'Tư bản thương nghiệp không tạo ra giá trị thặng dư, mà chỉ chiếm một phần giá trị thặng dư từ sản xuất.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.73' }}
         color={ACCENT}
       />
@@ -198,7 +198,8 @@ export default function Phase2Page({ onNextPhase }: Props) {
         <Phase2Round
           key={`r${round}`}
           onSubmit={(d) => applyRound(d as unknown as Record<string, unknown>)}
-          industrial={industrial_profit}
+          industrial={phase2_surplus_per_round > 0 ? phase2_surplus_per_round : industrial_profit / 4}
+          merchantProfit={merchant_profit}
           roundInPhase={roundInPhase}
         />
       )}

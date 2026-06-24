@@ -153,7 +153,7 @@ describe('Pedagogy invariant: Phase 4 — land does not create m', () => {
 
   it('speculate does not change m_pool via revaluation', () => {
     const r = distributePhase4(5000000000, M, 500_000_000, 0.06, { landChoice: 'speculate' }, 2)
-    expect(r.pool_delta).toBe(0)
+    expect(r.pool_delta).toBe(-r.land_purchase_price)
     expect(r.land_asset_revaluation).not.toBe(0)
   })
 
@@ -179,5 +179,32 @@ describe('Profit-rate equalization display', () => {
     const after = result.sector_rates_after
     const afterAvg = (after.co_khi + after.det + after.da) / 3
     expect(Math.abs(after.co_khi - afterAvg)).toBeLessThan(Math.abs(initial.co_khi - initialAvg))
+  })
+})
+
+
+describe('Production formula invariants', () => {
+  it('v = K/(organicComposition+1) and m = v * mPrime', () => {
+    const K = 1_000_000
+    const result = distributePhase1({ ...basePhase1Params, allocations: { co_khi: K, det: 0, da: 0 } })
+    const b = result.breakdown.co_khi
+    const profile = SECTOR_PROFILES.find((s) => s.id === 'co_khi')!
+    const expectedV = K / (profile.organicComposition + 1)
+    expect(b.v).toBeCloseTo(expectedV, 0)
+    expect(b.m).toBeCloseTo(expectedV * profile.surplusValueRate, 0)
+    expect(result.individual_p_prime.co_khi).toBeCloseTo(b.m / K, 5)
+  })
+})
+
+describe('Land rent pedagogy v0.7', () => {
+  it('theoreticalLandPrice equals rentPaidR / zPrime', () => {
+    const profit = 4_000_000_000
+    const z = 0.06
+    const r = distributePhase4(profit, 2_000_000_000, 0, z, { landChoice: 'rent' }, 1)
+    expect(r.theoretical_land_price).toBeCloseTo(r.rent_paid_r / z, 0)
+  })
+  it('speculate locks cash', () => {
+    const r = distributePhase4(1_000_000_000, 2_000_000_000, 0, 0.06, { landChoice: 'speculate' }, 1)
+    expect(r.pool_delta).toBe(-r.land_purchase_price)
   })
 })

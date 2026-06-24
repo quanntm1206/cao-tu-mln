@@ -6,6 +6,7 @@ interface SectorBar {
   label: string
   invested: number
   rate: number
+  postCompetitionRate?: number
   c: number
   v: number
   m: number
@@ -57,6 +58,11 @@ export default function LiveBarChart({ sectors, mPool }: Props) {
                     c/v = {cvRatio.toFixed(2)} · p′ = {(s.rate * 100).toFixed(0)}%
                   </span>
                 </div>
+                {s.postCompetitionRate !== undefined && (
+                  <span className="font-mono text-[10px] text-[var(--color-lab-fg-dim)] block mt-0.5">
+                    p′ minh họa hội tụ = {(s.postCompetitionRate * 100).toFixed(1)}% (không dùng để tính m)
+                  </span>
+                )}
                 {s.archetype && (
                   <span className="text-[10px] text-[var(--color-lab-fg-dim)] italic">{s.archetype}</span>
                 )}
