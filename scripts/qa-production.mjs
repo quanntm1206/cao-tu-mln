@@ -52,6 +52,15 @@ async function runScenario(viewport) {
     const next = page.getByRole('button', { name: /Tiếp tục|Xem tổng kết/ })
     if (await next.count()) {
       await assertVisibleInViewport(page, next.first(), `Continue button at ${viewport.width}x${viewport.height}`)
+      const scrollArea = page.getByTestId('round-result-scroll-area')
+      const footer = page.getByTestId('round-result-footer')
+      if (await scrollArea.count()) {
+        await assertVisibleInViewport(page, footer.first(), `Result modal footer at ${viewport.width}x${viewport.height}`)
+        const canScrollResultPanel = await scrollArea.first().evaluate((el) => el.scrollHeight >= el.clientHeight)
+        if (!canScrollResultPanel) {
+          throw new Error(`Result modal scroll area is not measurable at ${viewport.width}x${viewport.height}`)
+        }
+      }
       await next.first().click()
       continue
     }
@@ -112,5 +121,7 @@ if (failures.length > 0) {
   console.error(`QA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
+
+
 
 

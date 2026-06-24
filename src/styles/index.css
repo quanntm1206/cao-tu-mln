@@ -171,3 +171,22 @@ input[type='range'] {
 .modal-backdrop {
   backdrop-filter: blur(4px);
 }
+
+[data-testid='round-result-scroll-area'] {
+  scrollbar-gutter: stable;
+}
+
+[data-testid='round-result-scroll-area']::-webkit-scrollbar {
+  width: 10px;
+}
+
+[data-testid='round-result-scroll-area']::-webkit-scrollbar-track {
+  background: rgba(18, 12, 9, 0.72);
+  border-radius: 999px;
+}
+
+[data-testid='round-result-scroll-area']::-webkit-scrollbar-thumb {
+  background: rgba(214, 163, 58, 0.62);
+  border: 2px solid rgba(18, 12, 9, 0.72);
+  border-radius: 999px;
+}

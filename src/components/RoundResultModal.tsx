@@ -29,9 +29,9 @@ export default function RoundResultModal() {
   const continueLabel = gameOver ? 'Xem tổng kết 18 vòng →' : `Tiếp tục vòng ${round} →`
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70 p-3 sm:p-4">
-      <div className="theory-card rounded-2xl w-full max-w-2xl mx-4 shadow-2xl max-h-[92vh] overflow-hidden flex flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 pb-4">
+    <div className="fixed inset-0 z-50 modal-backdrop bg-black/70 overflow-y-auto p-3 sm:p-4">
+      <div className="theory-card rounded-2xl w-full max-w-2xl mx-auto shadow-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] overflow-hidden flex flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 pb-4" data-testid="round-result-scroll-area">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
             <div>
               <p className="text-xs text-stone-400">Kết thúc vòng</p>
@@ -123,7 +123,7 @@ export default function RoundResultModal() {
           })()}
         </div>
 
-        <div className="shrink-0 border-t border-amber-900/35 bg-[#1a100c]/95 p-4 shadow-[0_-18px_35px_rgba(0,0,0,0.28)]">
+        <div className="shrink-0 border-t border-amber-900/35 bg-[#1a100c]/95 p-4 shadow-[0_-18px_35px_rgba(0,0,0,0.28)]" data-testid="round-result-footer">
           <button onClick={dismissLesson} className="w-full py-3 rounded-xl font-bold text-stone-50 transition-all btn-primary">
             {continueLabel}
           </button>
@@ -132,3 +132,4 @@ export default function RoundResultModal() {
     </div>
   )
 }
+
