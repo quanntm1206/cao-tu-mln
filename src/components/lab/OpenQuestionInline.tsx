@@ -7,7 +7,7 @@ const QUESTIONS: Record<GamePhase, string> = {
   1: 'Sau 4 vòng sản xuất: Lợi nhuận xuất phát từ đâu? Tại sao ngành dệt/da có tỷ suất cao hơn cơ khí?',
   2: 'Thương nhân không sản xuất nhưng vẫn hưởng lợi nhuận — điều này được giải thích thế nào theo giáo trình?',
   3: 'Lãi tức là gì? Nó khác lợi nhuận sản xuất thế nào và từ đâu mà có?',
-  4: 'Địa tô khác lãi tức và lợi nhuận thương nghiệp thế nào? Công thức Giá cả đất đai = R/Z′ cho thấy điều gì?',
+  4: 'Địa tô khác lãi tức và lợi nhuận thương nghiệp thế nào? Công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng cho thấy điều gì?',
 }
 
 interface Props { phase: GamePhase; accent: string }

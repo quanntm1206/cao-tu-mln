@@ -215,7 +215,7 @@ function Phase4Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { landCh
 
 const TAKEAWAYS = [
   'Địa tô R là phần giá trị thặng dư mà chủ đất chiếm — không từ lao động của họ, mà từ độc quyền sở hữu.',
-  'Công thức Giá cả đất đai = R / Z′: đất không có giá trị, nhưng có giá cả vốn hóa từ địa tô tương lai.',
+  'Công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng: đất không có giá trị, nhưng có giá cả vốn hóa từ địa tô tương lai.',
   'Bong bóng giá đất phản ánh kỳ vọng đầu cơ, không phải giá trị thực — đó là rủi ro của thị trường BĐS VN.',
 ]
 
@@ -240,15 +240,15 @@ export default function Phase4Page({ onComplete }: Props) {
       <HeroSection
         phase={4}
         title="Địa tô: phần m chảy về tay chủ đất."
-        subtitle="Pha 4: Đất không có giá trị theo nghĩa sản phẩm lao động; giá cả đất đai là địa tô được tư bản hóa (R/Z′). Mua đất trừ vốn khả dụng; thuê đất trả R."
-        formula={{
+        subtitle="Pha 4: Đất không có giá trị theo nghĩa sản phẩm lao động; Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng. Mua đất trừ vốn khả dụng; thuê đất trả địa tô."
+                formula={{
           l: 'Giá cả đất đai',
-          r: '= R / Z′',
+          r: '= Địa tô / Tỷ suất lợi tức ngân hàng',
           title: 'Tô bản hóa địa tô',
-          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — vốn hóa dòng địa tô tương lai theo Z′. Khi Z′ giảm → giá cả đất đai tăng dù R không đổi.',
+          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng vốn hóa dòng địa tô tương lai. Khi tỷ suất lợi tức ngân hàng giảm → giá cả đất đai tăng dù địa tô không đổi.',
           legend: [
-            { sym: 'R', meaning: 'Địa tô — phần m mà chủ đất chiếm hàng năm (₫/m²/năm)' },
-            { sym: "Z'", meaning: 'Tỷ suất lợi tức ngân hàng — dùng làm tỷ lệ vốn hóa địa tô' },
+            { sym: 'Địa tô', meaning: 'R — phần m mà chủ đất chiếm hàng năm (₫/m²/năm)' },
+            { sym: 'Tỷ suất lợi tức ngân hàng', meaning: 'Z′ — giá của tư bản tiền tệ, dùng làm mẫu số vốn hóa' },
             { sym: 'Giá cả đất đai', meaning: 'Vốn hóa địa tô tương lai về hiện tại (₫/m²)' },
           ],
         }}

@@ -28,7 +28,7 @@ export const TEACHING_AIDS: TeachingAid[] = [
   { round: 15, objective: "Đọc p' và lợi nhuận bình quân P̄.", discussionQuestion: "Những nhân tố nào làm p' khác P̄?", focusMetric: "Quan sát biểu đồ p' so với P̄." },
   { round: 16, objective: 'Hiểu lợi nhuận thương nghiệp là một phần m được phân chia.', discussionQuestion: 'Tư bản thương nghiệp có tạo nguồn m độc lập không?', focusMetric: 'Quan sát kênh thương nghiệp và lợi nhuận thương nghiệp trong dòng m.' },
   { round: 17, objective: 'Hiểu lãi tức là phần lợi nhuận trả cho tư bản cho vay.', discussionQuestion: 'Vì sao lãi vay vẫn được quy về phân chia giá trị thặng dư?', focusMetric: 'Quan sát nợ, cho vay và Z.' },
-  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức Giá cả đất đai = R / Z′ cho thấy quan hệ nào giữa địa tô và lãi tức?', focusMetric: 'Quan sát R, Z và chi phí thuê đất.' },
+  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng cho thấy quan hệ nào giữa địa tô và lãi tức?', focusMetric: 'Quan sát R, Z và chi phí thuê đất.' },
 ]
 
 export const GLOSSARY: GlossaryItem[] = [
@@ -53,7 +53,7 @@ export function getTeachingAidForRound(round: number): TeachingAid {
 export const FINAL_CHECKLIST: string[] = [
   "Có thể trình bày công thức T-H-T' và giải thích tại sao m phát sinh trong sản xuất, không phải lưu thông.",
   'Phân biệt được p (lợi nhuận CN), lợi nhuận thương nghiệp, Z (lãi tức), R (địa tô) và mối quan hệ với m.',
-  'Sử dụng công thức Giá cả đất đai = R/Z′ để giải thích tại sao giá đất tăng khi Z′ giảm.',
+  'Sử dụng công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng để giải thích tại sao giá đất tăng khi Z′ giảm.',
   'Liên hệ được dữ liệu thực tế VN (Z′ theo NHNN 2022-2024, đất Hoài Đức, Bắc Ninh) với lý thuyết.',
   "Trả lời được: 'Tiền đẻ ra tiền' có nghĩa gì trong khuôn khổ giáo trình MLN Chương 3?",
 ]

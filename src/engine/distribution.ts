@@ -304,7 +304,7 @@ export function distributePhase3(
 
 const PHASE4_LESSONS = [
   'Địa tô là phần giá trị thặng dư mà nhà tư bản phải nhượng cho chủ sở hữu đất.',
-  'Giá cả đất đai = R / Z′, phản ánh sự vốn hóa địa tô.',
+  'Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng, phản ánh sự vốn hóa địa tô.',
   'Bong bóng giá đất không phản ánh giá trị thực, mà phản ánh kỳ vọng đầu cơ tương lai.',
   'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',
 ]

@@ -108,7 +108,7 @@ export function deriveEnding(input: EndingInput): EndingResult {
       score: (rentShare >= 0.2 && rent_paid > 0) ? 4 : 0,
       summary: 'Đất đai chiếm phần đáng kể trong phân phối. Nếu chọn đầu cơ (Bắc Ninh), bong bóng đã gây tổn thất.',
       whyThisHappened: 'Bạn chọn đầu cơ đất Bắc Ninh trong Pha 4. Bong bóng tăng 40% nhưng sau đó sụp đổ -15%, minh họa rủi ro.',
-      textbookConnection: 'Giá cả đất đai = R/Z′. Đầu cơ làm giá đất tăng vọt khỏi GTTT thực. Khi bong bóng vỡ, giá đất quay về vốn hóa R thực.',
+      textbookConnection: 'Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng. Đầu cơ làm giá đất tăng vọt khỏi GTTT thực. Khi bong bóng vỡ, giá đất quay về vốn hóa R thực.',
       reflectionQuestions: [
         'Tại sao giá đất có thể tăng vượt xa "giá trị" của đất?',
         'Bong bóng bất động sản ảnh hưởng thế nào đến phân phối m trong xã hội?',
@@ -123,7 +123,7 @@ export function deriveEnding(input: EndingInput): EndingResult {
       score: (rent_paid > 0 && rentShare < 0.15) ? 3 : 0,
       summary: 'Bất động sản đóng góp vừa phải vào phân phối. Bạn quản lý R hiệu quả, tránh đầu cơ quá mức.',
       whyThisHappened: 'Bạn chọn mua đất Hoài Đức hoặc chỉ thuê với tỷ lệ hợp lý trong Pha 4.',
-      textbookConnection: 'Giá đất Hoài Đức tăng 81% (2022-2024) dù R ổn định - minh họa giá cả đất đai = R/Z′ khi Z′ giảm. Đây là vốn hóa địa tô.',
+      textbookConnection: 'Giá đất Hoài Đức tăng 81% (2022-2024) dù R ổn định - minh họa giá cả đất đai = địa tô / tỷ suất lợi tức ngân hàng khi Z′ giảm. Đây là vốn hóa địa tô.',
       reflectionQuestions: [
         'Sự tăng giá đất 81% có phản ánh tăng GTTT thực không? Giải thích qua công thức.',
         'Khi Z′ giảm 50%, giá cả đất đai thay đổi bao nhiêu % nếu R không đổi?',

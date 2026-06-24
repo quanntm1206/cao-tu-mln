@@ -10,7 +10,7 @@ import MPoolTrajectory from './MPoolTrajectory'
 import DistributionBreakdown from './DistributionBreakdown'
 
 const DIFFICULTY = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
-const CONCEPT = ['k = c + v', 'Giá cả đất đai = R / Z′', "T - H - T'"]
+const CONCEPT = ['k = c + v', 'Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng', "T - H - T'"]
 
 interface Props { onLeaderboard: () => void }
 
