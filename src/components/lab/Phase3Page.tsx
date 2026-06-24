@@ -111,8 +111,8 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
             accent={ACCENT}
             options={[
               { value: 'none', label: 'Không vay, không cho vay', hint: 'Không phát sinh dòng Z' },
-              { value: 'borrow', label: 'Vay vốn (trả lãi Z)', hint: 'Tăng thanh khoản/đòn bẩy tài chính — bản thân vay không tạo m' },
-              { value: 'lend', label: 'Cho vay (thu lãi Z)', hint: 'Z = TBCV × Z′; lợi tức là phần m phân phối cho tư bản cho vay' },
+              { value: 'borrow', label: 'Vay vốn (trả lợi tức Z)', hint: 'Tăng thanh khoản/đòn bẩy tài chính — bản thân vay không tạo m' },
+              { value: 'lend', label: 'Cho vay (thu lợi tức Z)', hint: 'Z = TBCV × Z′; lợi tức là phần m phân phối cho tư bản cho vay' },
             ]}
           />
           {action !== 'none' && (
@@ -132,9 +132,9 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
 }
 
 const TAKEAWAYS = [
-  'Lãi tức Z là giá của tư bản cho vay — phản ánh phần giá trị thặng dư chuyển từ sản xuất sang tư bản tiền tệ.',
-  'Tư bản cho vay không trực tiếp bóc lột lao động nhưng hưởng phần m từ quá trình sản xuất.',
-  'Tỷ suất lợi tức Z′ (NHNN 2022–2024) dao động 3,7% – 7,8% — tín dụng tăng thanh khoản nhưng không tự tạo m.',
+  'Lợi tức Z là giá cả của tư bản cho vay — phần lợi nhuận/giá trị thặng dư được phân phối cho chủ tư bản cho vay.',
+  'Tỷ suất lợi tức Z′ = Z/TBCV; khi Z′ tăng, lợi tức Z phải trả trên cùng TBCV cũng tăng.',
+  'Tư bản cho vay không trực tiếp bóc lột lao động nhưng hưởng một phần m thông qua lợi tức; tín dụng tăng thanh khoản, không tự tạo m.',
 ]
 
 interface Props { onNextPhase: () => void }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { FlaskConical, Factory, Store, Banknote, Sprout, ArrowRight, Trophy } from 'lucide-react'
 
-const APP_VERSION = 'v0.7.2'
+const APP_VERSION = 'v0.7.3'
 
 interface Props {
   onShowLeaderboard: () => void
@@ -17,9 +17,9 @@ const PHASES = [
 
 const FORMULAS = [
   { l: 'k', r: '= c + v', muted: false },
-  { l: "m'", r: '= m / v', muted: false },
-  { l: "p'", r: '= m / (c + v)', muted: false },
-  { l: "Z'", r: '= Z / TBCV', muted: false },
+  { l: "m′", r: '= m / v', muted: false },
+  { l: "p′", r: '= m / (c + v)', muted: false },
+  { l: "Z′", r: '= Z / TBCV', muted: false },
   { l: 'Giá cả đất đai', r: '= R / Z′', muted: true },
 ]
 
@@ -90,10 +90,10 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
                   { sym: 'm', meaning: 'Giá trị thặng dư' },
                   { sym: 'k', meaning: 'Chi phí sản xuất = c + v' },
                   { sym: 'p', meaning: 'Lợi nhuận — về bản chất chính là m' },
-                  { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v)' },
-                  { sym: "m'", meaning: 'Tỷ suất giá trị thặng dư = m/v' },
+                  { sym: "p′", meaning: 'Tỷ suất lợi nhuận = m/(c+v)' },
+                  { sym: "m′", meaning: 'Tỷ suất giá trị thặng dư = m/v' },
                   { sym: 'Z', meaning: 'Lợi tức — phần m trả cho chủ tư bản cho vay' },
-                  { sym: "Z'", meaning: 'Tỷ suất lợi tức = Z/TBCV' },
+                  { sym: "Z′", meaning: 'Tỷ suất lợi tức = Z/TBCV' },
                   { sym: 'R', meaning: 'Địa tô — phần m chiếm bởi địa chủ' },
                   { sym: 'k₫', meaning: 'Tài sản/vốn khả dụng — tiền mặt người chơi (không phải m)' },
                   { sym: '—', meaning: 'Lợi nhuận thương nghiệp — một phần của m chuyển cho thương nhân (không có ký hiệu riêng)' },

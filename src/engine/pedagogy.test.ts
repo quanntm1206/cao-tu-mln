@@ -253,3 +253,37 @@ describe('Accounting & symbols pedagogy v0.7.2', () => {
     expect(source).not.toMatch(/score: Math\.max\(0, Math\.round\(m_pool\)\)/)
   })
 })
+
+
+describe('Symbol & Z pedagogy v0.7.3', () => {
+  it('UI sources avoid Lãi suất là giá and p prime straight quote', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const files = [
+      '../data/quickEvents.ts',
+      '../engine/distribution.ts',
+      '../components/lab/Phase3Page.tsx',
+      '../components/IntroScreen.tsx',
+    ]
+    for (const rel of files) {
+      const source = readFileSync(join(dir, rel), 'utf-8')
+      expect(source).not.toMatch(/Lãi suất là giá/i)
+      expect(source).not.toMatch(/chi phí tư bản cho vay Z/i)
+      expect(source).not.toMatch(/không tạo ra Z/i)
+      expect(source).not.toMatch(/\bp'\b/)
+    }
+  })
+
+  it('FinalInfographic warns phase 3 cash flow is not m', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../components/lab/FinalInfographic.tsx'), 'utf-8')
+    expect(source).toContain('Số dương ở pha tài chính')
+    expect(source).toContain('growthPct')
+    expect(source).toMatch(/netWorth - startingM/)
+  })
+
+  it('Phase4 rent hint marks R=25% as non-textbook', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../components/lab/Phase4Page.tsx'), 'utf-8')
+    expect(source).toContain('không phải công thức giáo trình')
+  })
+})

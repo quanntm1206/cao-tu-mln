@@ -159,7 +159,7 @@ function Phase4Round({
               {
                 value: 'rent',
                 label: 'Thuê đất sản xuất',
-                hint: `R = ${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% phần m / vòng — giả định mô phỏng, trừ khỏi lợi nhuận giữ lại`,
+                hint: `R = ${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% phần m / vòng — giả định mô phỏng để minh họa dòng phân phối địa tô, không phải công thức giáo trình — trừ khỏi lợi nhuận giữ lại`,
               },
               {
                 value: 'buy',

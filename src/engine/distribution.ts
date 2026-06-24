@@ -284,9 +284,9 @@ export function distributePhase2(
 }
 
 const PHASE3_LESSONS = [
-  'Lãi suất là giá của tư bản cho vay, phản ánh phần giá trị thặng dư chuyển cho tư bản tiền tệ.',
+  'Lợi tức Z là giá cả của tư bản cho vay, phản ánh phần giá trị thặng dư/lợi nhuận chuyển cho chủ tư bản tiền tệ. Tỷ suất lợi tức Z′ biểu hiện tỷ lệ Z/TBCV.',
   'Tư bản cho vay không trực tiếp bóc lột lao động nhưng hưởng phần m từ quá trình sản xuất.',
-  'Lãi suất có xu hướng biến động theo chu kỳ kinh tế và chính sách tiền tệ.',
+  'Tỷ suất lợi tức Z′ có xu hướng biến động theo chu kỳ kinh tế và chính sách tiền tệ.',
   'Tín dụng là đòn bẩy của tư bản nhưng cũng là nguồn gốc của khủng hoảng tài chính.',
 ]
 
@@ -365,7 +365,7 @@ export function distributePhase4(
   // Mô phỏng giản lược: R = 25% phần m phân phối mỗi vòng (giả định game hóa)
   const R_simulation = profit_before_rent * LAND_COMMIT_FRACTION
   const rent_simulation_note =
-    'Trong mô phỏng giản lược, R = 25% phần m phân phối mỗi vòng để minh họa địa tô; đây là giả định game hóa.'
+    'Trong mô phỏng giản lược, R = 25% phần m/vòng để minh họa dòng phân phối địa tô — giả định mô phỏng, không phải công thức trong giáo trình. Giáo trình không quy định địa tô bằng tỷ lệ cố định của m; R là phần m/lợi nhuận siêu ngạch chuyển cho chủ đất.'
   const theoretical_land_price = calcLandPrice(R_simulation, z_prime)
   const p_land = theoretical_land_price
 

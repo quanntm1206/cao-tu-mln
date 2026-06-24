@@ -127,7 +127,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     phase: 3,
     source: 'NHNN / Vietstock / VnEconomy',
     verifiedDate: '2024-12-01',
-    relatedFormula: "Z' = Z / TBCV x 100% (T-T')",
+    relatedFormula: "Z′ = Z / TBCV x 100% (T-T')",
     summary:
       'Lãi suất 12 tháng: 7,8% (2022) -> 3,7% (8/2024) -> tăng lại cuối 2024. ' +
       'Z là phần P bình quân của người vay trả lãi - bác bỏ ảo tưởng tiền tự sinh lãi.',

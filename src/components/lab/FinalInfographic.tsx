@@ -29,7 +29,7 @@ const PHASE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899']
 const PHASE_NOTES = [
   'Tạo m trong sản xuất',
   'Phân phối/thực hiện m',
-  'Dòng tiền tín dụng/lợi tức Z — không tạo m',
+  'Dòng tiền/thanh khoản pha (có thể do vay) — không phải m, không đồng nghĩa tăng tài sản ròng',
   'Địa tô/tái định giá tài sản đất — không tạo m',
 ]
 
@@ -170,7 +170,8 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">ĐÓNG GÓP THEO PHA</p>
-          <h2 className="font-display text-2xl font-bold mb-6">Đóng góp theo pha (dòng tiền / phân phối m)</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Đóng góp theo pha (dòng tiền / phân phối m)</h2>
+          <p className="text-sm text-[var(--color-lab-fg-muted)] mb-6 leading-relaxed">Số dương ở pha tài chính có thể là dòng tiền vay/thanh khoản, không phải giá trị thặng dư m và không đồng nghĩa với tăng tài sản ròng.</p>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
             {phaseStats.map((ps) => {
               const positive = ps.delta >= 0

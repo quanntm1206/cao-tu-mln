@@ -175,18 +175,18 @@ export default function Phase1Page({ onNextPhase }: Props) {
         title="Sản xuất giá trị thặng dư"
         subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ tài sản/vốn khả dụng. Phân bổ vào 3 ngành và quan sát m = v × m′ sinh ra như thế nào qua 4 vòng."
         formula={{
-          l: "p'",
-          r: "= m / (c + v)   ·   m = v × m'",
+          l: "p′",
+          r: "= m / (c + v)   ·   m = v × m′",
           title: 'Tỷ suất lợi nhuận',
           purpose: 'Mỗi đồng vốn k = c + v được tách thành c (tư bản bất biến) và v (tư bản khả biến). Chỉ v sinh ra m = v × m′. c/v khác nhau theo ngành ⇒ p′ khác nhau.',
           analogy:
             'Lao động sống của người làm thuê tạo giá trị mới; phần vượt quá tiền công được biểu hiện thành m. Máy xay + nguyên liệu (c) chỉ tạo điều kiện sản xuất; quán nhiều máy móc hơn nhân sự thì mỗi đồng bỏ ra thu về ít hơn (p′ thấp hơn).',
           legend: [
-            { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
-            { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m\', không phải từ c' },
+            { sym: "p′", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
+            { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m′, không phải từ c' },
             { sym: 'c', meaning: 'Tư bản bất biến — máy móc/nguyên liệu, chuyển giá trị nhưng không tự sinh m' },
             { sym: 'v', meaning: 'Tư bản khả biến — tiền công lao động sống, là nguồn duy nhất sinh m' },
-            { sym: "m'", meaning: 'Tỷ suất giá trị thặng dư = m/v. Mô phỏng cố định 100%' },
+            { sym: "m′", meaning: 'Tỷ suất giá trị thặng dư = m/v. Mô phỏng cố định 100%' },
             { sym: 'k', meaning: 'Chi phí sản xuất = c + v — toàn bộ vốn ứng trước' },
             { sym: 'c/v', meaning: 'Cấu tạo hữu cơ tư bản — tỷ lệ c/v của ngành' },
           ],
