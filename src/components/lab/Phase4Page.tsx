@@ -245,7 +245,7 @@ export default function Phase4Page({ onComplete }: Props) {
           l: 'Giá cả đất đai',
           r: '= Địa tô / Tỷ suất lợi tức ngân hàng',
           title: 'Tô bản hóa địa tô',
-          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng vốn hóa dòng địa tô tương lai. Khi tỷ suất lợi tức ngân hàng giảm → giá cả đất đai tăng dù địa tô không đổi.',
+          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng — vốn hóa dòng địa tô tương lai. Khi tỷ suất lợi tức ngân hàng giảm → giá cả đất đai tăng dù địa tô không đổi.',
           legend: [
             { sym: 'Địa tô', meaning: 'R — phần m mà chủ đất chiếm hàng năm (₫/m²/năm)' },
             { sym: 'Tỷ suất lợi tức ngân hàng', meaning: 'Z′ — giá của tư bản tiền tệ, dùng làm mẫu số vốn hóa' },
