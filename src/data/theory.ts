@@ -68,7 +68,7 @@ export const THEORY_SECTIONS: TheorySection[] = [
     id: 'interest',
     title: 'Lãi tức (Z) - Phần chia GTTT cho tư bản cho vay',
     pages: 'tr. 74-76',
-    formula: "Z = T' − T; Z′ = Z / T",
+    formula: "Z' = Z / TBCV",
     symbolGuide: 'Z = lãi tức (interest), Z′ = tỷ suất lợi tức. Tư bản cho vay nhận Z mà không tham gia sản xuất.',
     explanation: 'Lãi tức là phần lợi nhuận mà nhà tư bản sản xuất nhượng cho chủ sở hữu tư bản cho vay. Z′ = Z/T phản ánh giá cả của tư bản tiền tệ. Z′ biến động theo chu kỳ kinh tế và chính sách tiền tệ.',
     keyPoints: [
@@ -249,7 +249,7 @@ export const TOOLTIP_FORMULAS: Record<string, string> = {
   p_rate: "p' = m / (c + v) - tỷ suất lợi nhuận",
   m_rate: "m' = m / v - tỷ suất giá trị thặng dư",
   organic: 'c/v - cấu tạo hữu cơ của tư bản',
-  z: "Z = T' − T; Z′ = Z / T",
+  z: "Z' = Z / TBCV",
   r: 'Giá cả đất đai = R / Z′ - vốn hóa địa tô',
   m_pool: 'M-pool = vốn ban đầu + m giữ lại',
   industrial_profit: 'p = m của nhà tư bản CN giữ lại',

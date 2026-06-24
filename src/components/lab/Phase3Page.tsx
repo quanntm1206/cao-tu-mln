@@ -159,16 +159,15 @@ export default function Phase3Page({ onNextPhase }: Props) {
         phase={3}
         title="Tài chính: lãi tức Z là phần nào của m?"
         subtitle="Pha 3: bạn quyết định vay hoặc cho vay — tỷ suất lợi tức Z′ theo NHNN 2022–2024 thực tế."
-        formula={{
-          l: 'Z',
-          r: "= T × Z′  (Z′ = Z / T)",
-          title: 'Lãi tức tư bản cho vay',
-          purpose: 'Tư bản cho vay không trực tiếp tạo ra giá trị thặng dư; lợi tức Z là một phần lợi nhuận bình quân chuyển cho chủ tư bản cho vay (Z = T × Z′).',
+                formula={{
+          l: "Z'",
+          r: '= Z / TBCV',
+          title: 'Tỷ suất lãi tức tư bản cho vay',
+          purpose: 'Tư bản cho vay (TBCV) không trực tiếp tạo ra giá trị thặng dư. Lợi tức Z là phần lợi nhuận chuyển cho chủ TBCV; Z′ = Z/TBCV là giá của tư bản tiền tệ.',
           legend: [
-            { sym: 'Z', meaning: 'Lãi tức (tiền lãi) — phần m mà người vay trả cho chủ vốn' },
-            { sym: 'T', meaning: 'Vốn cho vay ban đầu' },
-            { sym: "T'", meaning: 'Vốn + lãi sau kỳ vay' },
-            { sym: "Z'", meaning: 'Tỷ suất lãi tức = Z/T (%/năm) — giá của tư bản tiền tệ' },
+            { sym: 'Z', meaning: 'Lợi tức — phần m (lợi nhuận) người vay trả cho chủ tư bản cho vay' },
+            { sym: 'TBCV', meaning: 'Tư bản cho vay — vốn tiền tệ ứng trước' },
+            { sym: "Z'", meaning: 'Tỷ suất lãi tức = Z/TBCV (%/năm)' },
           ],
         }}
         bigNumber={m_pool}

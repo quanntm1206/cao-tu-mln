@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { FlaskConical, Factory, Store, Banknote, Sprout, ArrowRight, Trophy } from 'lucide-react'
 
-const APP_VERSION = 'v0.4.1'
+const APP_VERSION = 'v0.4.2'
 
 interface Props {
   onShowLeaderboard: () => void
@@ -19,8 +19,7 @@ const FORMULAS = [
   { l: 'k', r: '= c + v', muted: false },
   { l: "m'", r: '= m / v', muted: false },
   { l: "p'", r: '= m / (c + v)', muted: false },
-  { l: 'Z', r: "= T' âˆ’ T", muted: false },
-  { l: "Z'", r: '= Z / T', muted: false },
+  { l: "Z'", r: '= Z / TBCV', muted: false },
   { l: 'GiÃ¡ cáº£ Ä‘áº¥t Ä‘ai', r: '= R / Zâ€²', muted: true },
 ]
 
