@@ -4,18 +4,10 @@ import { useGameStore } from '../../store/gameStore'
 import { formatVnd } from '../../lib/currency'
 import { deriveEnding } from '../../data/endings'
 import { FINAL_CHECKLIST } from '../../data/teachingAids'
-import { Download, Trophy, RotateCcw, Award, ExternalLink, CheckSquare, Square } from 'lucide-react'
+import { Download, Trophy, RotateCcw, Award, CheckSquare, Square } from 'lucide-react'
 import SankeyFlow from './SankeyFlow'
 import MPoolTrajectory from './MPoolTrajectory'
 import DistributionBreakdown from './DistributionBreakdown'
-
-const SOURCES = [
-  { label: 'Giáo trình KTCT Mác–Lênin (BGD)', url: 'https://saomaidata.vn/library/803.Giao-Trinh-Kinh-Te-Chinh-Tri-Mac-Lenin.aspx' },
-  { label: 'Báo cáo BĐS DKRA 2024', url: 'https://dkra.vn/bao-cao-thi-truong' },
-  { label: 'NHNN — Lãi suất 2022–2024', url: 'https://sbv.gov.vn/webcenter/portal/vi/menu/trangchu/tk/ldnh' },
-  { label: 'Sở TN&MT Bắc Ninh — Đất KCN', url: 'https://baodautu.vn/bat-dong-san' },
-  { label: 'Kinh tế chính trị Marx–Lenin (Wikipedia)', url: 'https://vi.wikipedia.org/wiki/Kinh_t%E1%BA%BF_ch%C3%ADnh_tr%E1%BB%8B_Marx%E2%80%93Lenin' },
-]
 
 const DIFFICULTY = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
 const CONCEPT = ['k = c + v', 'Giá cả đất đai = R / Z′', "T - H - T'"]
@@ -310,27 +302,6 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             placeholder="Góp ý thêm (tùy chọn)…"
             className="lab-input w-full text-sm resize-none"
           />
-        </div>
-      </section>
-
-      {/* ============ SOURCES ============ */}
-      <section className="py-12 border-b border-[var(--color-lab-border)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <p className="lab-cite mb-3">TÀI LIỆU THAM KHẢO</p>
-          <div className="space-y-2">
-            {SOURCES.map((s) => (
-              <a
-                key={s.url}
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-sm text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-cyan)] transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5" strokeWidth={2} />
-                {s.label}
-              </a>
-            ))}
-          </div>
         </div>
       </section>
 
