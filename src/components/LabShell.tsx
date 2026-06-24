@@ -1,10 +1,10 @@
-﻿import { type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
 import { FlaskConical, Trophy, RotateCcw } from 'lucide-react'
 
 const PHASE_CONFIG: Record<number, { name: string; color: string; soft: string }> = {
-  1: { name: 'Sản xuất', color: 'var(--color-phase-1)', soft: 'var(--color-phase-1-soft)' },
+  1: { name: 'Sản xuất GTD', color: 'var(--color-phase-1)', soft: 'var(--color-phase-1-soft)' },
   2: { name: 'Thương nghiệp', color: 'var(--color-phase-2)', soft: 'var(--color-phase-2-soft)' },
   3: { name: 'Tài chính', color: 'var(--color-phase-3)', soft: 'var(--color-phase-3-soft)' },
   4: { name: 'Địa tô', color: 'var(--color-phase-4)', soft: 'var(--color-phase-4-soft)' },
@@ -12,13 +12,14 @@ const PHASE_CONFIG: Record<number, { name: string; color: string; soft: string }
 
 interface Props {
   children: ReactNode
+  viewingPhase: 1 | 2 | 3 | 4
   onLeaderboard: () => void
   onReset: () => void
 }
 
-export default function LabShell({ children, onLeaderboard, onReset }: Props) {
-  const { phase, round, m_pool, playerName } = useGameStore()
-  const active = PHASE_CONFIG[phase] ?? PHASE_CONFIG[1]
+export default function LabShell({ children, viewingPhase, onLeaderboard, onReset }: Props) {
+  const { round, m_pool, debt_principal, lent_principal, land_assets, playerName } = useGameStore()
+  const active = PHASE_CONFIG[viewingPhase] ?? PHASE_CONFIG[1]
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -31,18 +32,13 @@ export default function LabShell({ children, onLeaderboard, onReset }: Props) {
             </span>
           </div>
 
-          {/* Phase dots */}
           <nav aria-label="Tiến độ học phần" className="flex items-center gap-1.5 sm:gap-2 ml-1">
             {[1, 2, 3, 4].map((n) => {
-              const isActive = n === phase
-              const isDone = n < phase
+              const isActive = n === viewingPhase
+              const isDone = n < viewingPhase
               const cfg = PHASE_CONFIG[n]
               return (
-                <div
-                  key={n}
-                  className="flex items-center gap-1.5"
-                  aria-current={isActive ? 'step' : undefined}
-                >
+                <div key={n} className="flex items-center gap-1.5" aria-current={isActive ? 'step' : undefined}>
                   <div
                     className="relative h-2 w-2 rounded-full transition-all"
                     style={{
@@ -63,58 +59,43 @@ export default function LabShell({ children, onLeaderboard, onReset }: Props) {
           </nav>
 
           <div className="flex-1 min-w-0 hidden sm:flex items-baseline gap-2 px-3">
-            <span
-              className="lab-phase-chip"
-              style={{ color: active.color, background: active.soft }}
-            >
-              Pha {phase}/4 · {active.name}
+            <span className="lab-phase-chip" style={{ color: active.color, background: active.soft }}>
+              Pha {viewingPhase}/4 · {active.name}
             </span>
-            <span className="text-xs text-[var(--color-lab-fg-dim)] font-mono">
-              v{round}/16
-            </span>
+            <span className="text-xs text-[var(--color-lab-fg-dim)] font-mono">v{round}/16</span>
           </div>
 
-          <div className="text-right shrink-0 mr-1">
-            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">Tài sản/vốn khả dụng</p>
-            <p className="lab-display-num text-sm text-[var(--color-lab-cyan)]">
-              {formatVnd(m_pool, true)}
-            </p>
+          <div className="text-right shrink-0 mr-1" data-testid="lab-header-assets">
+            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">Tiền/vốn khả dụng</p>
+            <p className="lab-display-num text-sm text-[var(--color-lab-cyan)]">{formatVnd(m_pool, true)}</p>
+            <div className="flex flex-wrap justify-end gap-x-2 gap-y-0.5 mt-0.5">
+              {land_assets > 0 && (
+                <span className="text-[9px] text-[var(--color-lab-fg-dim)]">Đất {formatVnd(land_assets, true)}</span>
+              )}
+              {lent_principal > 0 && (
+                <span className="text-[9px] text-[var(--color-lab-fg-dim)]">Cho vay {formatVnd(lent_principal, true)}</span>
+              )}
+              {debt_principal > 0 && (
+                <span className="text-[9px] text-[#EF4444]">Nợ {formatVnd(debt_principal, true)}</span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={onLeaderboard}
-              className="p-2 rounded-lg text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-yellow)] hover:bg-[var(--color-lab-surface)] transition-colors"
-              aria-label="Bảng xếp hạng"
-              title="Bảng xếp hạng"
-            >
+            <button onClick={onLeaderboard} className="p-2 rounded-lg text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-yellow)] hover:bg-[var(--color-lab-surface)] transition-colors" aria-label="Bảng xếp hạng" title="Bảng xếp hạng">
               <Trophy className="w-4 h-4" strokeWidth={1.75} />
             </button>
-            <button
-              onClick={onReset}
-              className="p-2 rounded-lg text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-fg)] hover:bg-[var(--color-lab-surface)] transition-colors"
-              aria-label="Bắt đầu lại"
-              title="Bắt đầu lại"
-            >
+            <button onClick={onReset} className="p-2 rounded-lg text-[var(--color-lab-fg-muted)] hover:text-[var(--color-lab-fg)] hover:bg-[var(--color-lab-surface)] transition-colors" aria-label="Bắt đầu lại" title="Bắt đầu lại">
               <RotateCcw className="w-4 h-4" strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
-        {/* Thin progress bar */}
         <div className="h-px bg-[var(--color-lab-border)]">
-          <div
-            className="h-full transition-all duration-500"
-            style={{
-              width: `${((round - 1) / 16) * 100}%`,
-              background: `linear-gradient(90deg, var(--color-phase-1), var(--color-phase-2), var(--color-phase-3), var(--color-phase-4))`,
-            }}
-          />
+          <div className="h-full transition-all duration-500" style={{ width: `${((round - 1) / 16) * 100}%`, background: 'linear-gradient(90deg, var(--color-phase-1), var(--color-phase-2), var(--color-phase-3), var(--color-phase-4))' }} />
         </div>
 
-        {playerName && (
-          <p className="sr-only">Học viên: {playerName}</p>
-        )}
+        {playerName && <p className="sr-only">Học viên: {playerName}</p>}
       </header>
 
       <main className="flex-1">{children}</main>

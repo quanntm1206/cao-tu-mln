@@ -147,6 +147,8 @@ export default function Phase2Page({ onNextPhase }: Props) {
   const roundInPhase = ((round - 1) % 4) + 1
   const showResult = pendingLesson && lastResult?.phase === 2
   const showEvent = !!pendingQuickEvent
+  const isPhaseEndRound = (round - 1) % 4 === 0 && round > 1
+  const handlePhaseAdvance = () => { dismissLesson(); if (isPhaseEndRound) onNextPhase() }
   const phaseDone = phase > 2
 
   useEffect(() => {
@@ -160,12 +162,12 @@ export default function Phase2Page({ onNextPhase }: Props) {
     <div className="lab-scroll-snap">
       <HeroSection
         phase={2}
-        title="Thương nghiệp: lưu thông không sinh giá trị mới."
+        title="Lợi nhuận thương nghiệp"
         subtitle="Pha 2: Tư bản thương nghiệp không tạo ra giá trị thặng dư mới; lợi nhuận thương nghiệp là phần m do tư bản công nghiệp nhượng lại để lưu thông hàng hóa nhanh hơn."
         formula={{
-          l: "T - H - T'",
-          r: '',
-          title: 'Công thức chung của tư bản',
+          l: "m phân phối",
+          r: "= CN giữ + LN thương nghiệp",
+          title: 'Phân phối m qua lưu thông',
           purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m — khi qua thương nhân, một phần m chuyển thành lợi nhuận thương nghiệp.",
           analogy:
             'Giống bạn làm trà sữa xong rồi nhờ Shopee/TikTok bán hộ: đồ uống đã có lợi nhuận từ sản xuất (m), sàn chỉ giúp đưa tới khách và lấy một phần hoa hồng — sàn không pha thêm ly nào.',
@@ -209,6 +211,7 @@ export default function Phase2Page({ onNextPhase }: Props) {
             prevRound={round - 1}
             isLastInPhase={(round - 1) % 4 === 0 && round > 1}
             onContinue={dismissLesson}
+            onPhaseAdvance={handlePhaseAdvance}
             continueLabel={`Tiếp tục vòng ${round}`}
           />
         </div>

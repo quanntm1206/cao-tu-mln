@@ -38,8 +38,8 @@ describe('distributeProfit', () => {
   })
   it('lending earns interest', () => {
     const d = distributeProfit(1000, 0, 0.05, 2000, 0, 0, false, false, 0)
-    expect(d.z_earned).toBeCloseTo(75)
-    expect(d.available).toBeCloseTo(1075)
+    expect(d.z_earned).toBeCloseTo(100)
+    expect(d.available).toBeCloseTo(1100)
   })
   it('rent_mode deducts rent', () => {
     const d = distributeProfit(1000, 0, 0, 0, 3, 100, true, false, 0)

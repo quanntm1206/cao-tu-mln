@@ -9,6 +9,7 @@ import ResultSection from './ResultSection'
 import NarrativeCard from './NarrativeCard'
 import PhaseWrapup from './PhaseWrapup'
 import { LabSlider, ControlsCard, LabRadioGroup } from './InlineDecision'
+import DontMisunderstand from './DontMisunderstand'
 
 const ACCENT = '#F59E0B'
 
@@ -22,7 +23,7 @@ const Z_HISTORY: Array<{ year: string; rate: number; label: string }> = [
 function InterestChart({ action, amount, roundInPhase }: { action: 'borrow' | 'lend' | 'none'; amount: number; roundInPhase: number }) {
   const currentZ = Z_HISTORY[roundInPhase - 1]?.rate ?? Z_HISTORY[1].rate
   const interestPaid = action === 'borrow' ? amount * currentZ : 0
-  const interestEarned = action === 'lend' ? amount * currentZ * 0.75 : 0
+  const interestEarned = action === 'lend' ? amount * currentZ : 0
   const netFinance = interestEarned - interestPaid
 
   const maxRate = Math.max(...Z_HISTORY.map((h) => h.rate))
@@ -148,6 +149,8 @@ export default function Phase3Page({ onNextPhase }: Props) {
   const roundInPhase = ((round - 1) % 4) + 1
   const showResult = pendingLesson && lastResult?.phase === 3
   const showEvent = !!pendingQuickEvent
+  const isPhaseEndRound = (round - 1) % 4 === 0 && round > 1
+  const handlePhaseAdvance = () => { dismissLesson(); if (isPhaseEndRound) onNextPhase() }
   const phaseDone = phase > 3
 
   useEffect(() => { if (showEvent && eventRef.current) eventRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, [showEvent])
@@ -160,8 +163,8 @@ export default function Phase3Page({ onNextPhase }: Props) {
         title="Tài chính: lãi tức Z là phần nào của m?"
         subtitle="Pha 3: bạn quyết định vay hoặc cho vay — tỷ suất lợi tức Z′ theo NHNN 2022–2024 thực tế."
                 formula={{
-          l: "Z'",
-          r: '= Z / TBCV',
+          l: "Z",
+          r: "= TBCV × Z′",
           title: 'Tỷ suất lãi tức tư bản cho vay',
           purpose: 'Tư bản cho vay (TBCV) không trực tiếp tạo ra giá trị thặng dư. Lợi tức Z là phần lợi nhuận chuyển cho chủ TBCV; Z′ = Z/TBCV là giá của tư bản tiền tệ.',
           analogy:
@@ -177,6 +180,8 @@ export default function Phase3Page({ onNextPhase }: Props) {
         quote={{ text: 'Tư bản sinh ra lợi tức trở thành tư bản trừu tượng nhất, tự tăng giá trị trong nhận thức.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.75' }}
         color={ACCENT}
       />
+
+      <DontMisunderstand phase={3} accent={ACCENT} />
 
       {showEvent && (
         <section ref={eventRef} className="py-12 border-b border-[var(--color-lab-border)]">
@@ -203,6 +208,7 @@ export default function Phase3Page({ onNextPhase }: Props) {
             prevRound={round - 1}
             isLastInPhase={(round - 1) % 4 === 0 && round > 1}
             onContinue={dismissLesson}
+            onPhaseAdvance={handlePhaseAdvance}
             continueLabel={`Tiếp tục vòng ${round}`}
           />
         </div>

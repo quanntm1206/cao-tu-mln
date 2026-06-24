@@ -49,6 +49,7 @@ export default function App() {
 
   return (
     <LabShell
+      viewingPhase={viewingPhase}
       onLeaderboard={() => setShowLeaderboard(true)}
       onReset={() => setShowResetConfirm(true)}
     >

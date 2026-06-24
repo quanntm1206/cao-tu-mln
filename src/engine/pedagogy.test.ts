@@ -122,6 +122,19 @@ describe('Pedagogy invariant: Phase 3 — finance does not create m', () => {
   })
 })
 
+
+  it('interest_earned equals lentPrincipal * z_rate without spread factor', () => {
+    const lent = 300_000_000
+    const r = distributePhase3(M, 0, lent, { action: 'none', amount: 0 }, 1)
+    expect(r.interest_earned).toBeCloseTo(lent * r.z_prime, 0)
+  })
+
+  it('borrow increases debt_after without creating m', () => {
+    const r = distributePhase3(M, 100_000_000, 0, { action: 'borrow', amount: 50_000_000 }, 1)
+    expect(r.debt_after).toBe(150_000_000)
+    expect(r.m_new_from_finance).toBe(0)
+  })
+
 describe('Pedagogy invariant: Phase 4 — land does not create m', () => {
   it('m_new_from_land is always 0', () => {
     const r1 = distributePhase4(5000000000, M, 0, 0.06, { landChoice: 'buy' }, 1)
@@ -151,5 +164,20 @@ describe('UI pedagogy: Phase1Page asset labels', () => {
     const source = readFileSync(join(dir, '../components/lab/Phase1Page.tsx'), 'utf-8')
     expect(source).not.toContain('V hi?n c�')
     expect(source).not.toContain('T?ng V (v?n ?ng tru?c)')
+  })
+})
+
+describe('Profit-rate equalization display', () => {
+  it('sector_rates_after moves toward average after distributePhase1', () => {
+    const initial = getInitialSectorRates()
+    const initialAvg = (initial.co_khi + initial.det + initial.da) / 3
+    const result = distributePhase1({
+      ...basePhase1Params,
+      sectorRates: initial,
+      allocations: { co_khi: 2_000_000, det: 2_000_000, da: 2_000_000 },
+    })
+    const after = result.sector_rates_after
+    const afterAvg = (after.co_khi + after.det + after.da) / 3
+    expect(Math.abs(after.co_khi - afterAvg)).toBeLessThan(Math.abs(initial.co_khi - initialAvg))
   })
 })

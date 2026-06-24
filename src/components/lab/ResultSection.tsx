@@ -14,6 +14,7 @@ interface Props {
   prevRound: number
   isLastInPhase: boolean
   onContinue: () => void
+  onPhaseAdvance?: () => void
   continueLabel: string
 }
 
@@ -31,7 +32,7 @@ function MetricRow({ label, value, accent, big }: { label: string; value: string
   )
 }
 
-export default function ResultSection({ result, accent, prevRound, isLastInPhase, onContinue, continueLabel }: Props) {
+export default function ResultSection({ result, accent, prevRound, onContinue, onPhaseAdvance, continueLabel }: Props) {
   const lastEvent = useGameStore((s) => s.lastEvent)
   const isPhaseEnd = PHASE_END_ROUNDS.includes(prevRound)
 
@@ -61,7 +62,17 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
                   <MetricRow label="Σ c (tư bản bất biến)" value={formatVnd(r.total_c, true)} />
                   <MetricRow label="Σ v (tư bản khả biến)" value={formatVnd(r.total_v, true)} accent="#06B6D4" />
                   <MetricRow label="Σ m = v × m′" value={formatVnd(r.total_industrial_profit, true)} accent="var(--color-lab-yellow)" />
-                  <MetricRow label="Tỷ suất p′ = m/(c+v)" value={`${(r.p_rate * 100).toFixed(1)}%`} accent={accent} big />
+                  <MetricRow label="p′ vòng này = m/(c+v)" value={`${(r.p_rate * 100).toFixed(1)}%`} accent={accent} />
+                  <MetricRow label="p′ bình quân (trước hội tụ)" value={`${(r.average_profit_rate * 100).toFixed(1)}%`} />
+                  <MetricRow
+                    label="p′ ngành sau xu hướng hội tụ"
+                    value={`CK ${(r.sector_rates_after.co_khi * 100).toFixed(1)}% · DT ${(r.sector_rates_after.det * 100).toFixed(1)}% · DA ${(r.sector_rates_after.da * 100).toFixed(1)}%`}
+                    accent={accent}
+                    big
+                  />
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">
+                    Cạnh tranh giữa ngành kéo p′ về bình quân — nguồn gốc m vẫn từ v, không từ c.
+                  </p>
                 </>
               )
             })()}
@@ -69,9 +80,9 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase2Result
               return (
                 <>
-                  <MetricRow label="m phân chia (vòng)" value={formatVnd(r.distributable_surplus, true)} />
+                  <MetricRow label="m đã tạo trong sản xuất (vòng)" value={formatVnd(r.distributable_surplus, true)} />
+                  <MetricRow label="Lợi nhuận CN giữ lại" value={formatVnd(r.industrial_profit_after, true)} accent={accent} />
                   <MetricRow label="Lợi nhuận thương nghiệp" value={formatVnd(r.merchant_profit, true)} accent="var(--color-lab-yellow)" />
-                  <MetricRow label="Lợi nhuận CN sau chia" value={formatVnd(r.industrial_profit_after, true)} accent={accent} big />
                   <MetricRow label="m mới do lưu thông tạo ra" value="= 0" />
                   <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Không tạo m mới — chỉ chuyển phần m đã có.</p>
                 </>
@@ -81,12 +92,16 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase3Result
               return (
                 <>
-                  <MetricRow label="Vay thêm (T)" value={formatVnd(r.borrowed_principal, true)} />
+                  <MetricRow label="Nợ gốc sau vòng" value={formatVnd(r.debt_after, true)} />
+                  <MetricRow label="Vốn đang cho vay" value={formatVnd(r.lent_after, true)} />
+                  <MetricRow label="Vay thêm (TBCV)" value={formatVnd(r.borrowed_principal, true)} />
                   <MetricRow label="Cho vay khóa (T)" value={formatVnd(r.lent_principal_delta, true)} />
-                  <MetricRow label="Gốc cho vay (T_cho_vay)" value={formatVnd(r.t_cho_vay, true)} />
+                  <MetricRow label="Gốc cho vay (TBCV)" value={formatVnd(r.t_cho_vay, true)} />
                   <MetricRow label="Lãi đã trả (Z)" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
                   <MetricRow label="Lãi thu được (Z)" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
-                  <MetricRow label={`Z = T_cho_vay × Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.t_cho_vay * r.z_prime, true)} accent={accent} />
+                  <MetricRow label={`Z = TBCV × Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.t_cho_vay * r.z_prime, true)} accent={accent} />
+                  <MetricRow label="Z phải trả" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
+                  <MetricRow label="Z nhận được" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
                   <MetricRow label="m mới do tài chính tạo ra" value="= 0" />
                   <MetricRow label="Δ tiền mặt" value={formatVnd(r.pool_delta, true)} accent={accent} big />
                   <MetricRow label="Tài chính ròng" value={formatVnd(r.net_finance, true)} accent={accent} big />
@@ -122,22 +137,28 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
           </div>
         )}
 
-        {isPhaseEnd && (
+        {isPhaseEnd && onPhaseAdvance && (
           <div className="mb-6">
-            <OpenQuestionInline phase={result.phase as GamePhase} accent={accent} onSkip={onContinue} />
+            <OpenQuestionInline
+              phase={result.phase as GamePhase}
+              accent={accent}
+              onPhaseAdvance={onPhaseAdvance}
+            />
           </div>
         )}
 
-        <div className="flex justify-center">
-          <button
-            onClick={onContinue}
-            className="lab-btn-primary px-8 py-3.5 rounded-xl font-display flex items-center gap-2"
-            data-testid="round-result-footer"
-          >
-            {isLastInPhase && !continueLabel.includes('tổng kết') ? 'Sang pha kế tiếp' : continueLabel}
-            <ArrowDown className="w-4 h-4" strokeWidth={2.5} />
-          </button>
-        </div>
+        {!isPhaseEnd && (
+          <div className="flex justify-center">
+            <button
+              onClick={onContinue}
+              className="lab-btn-primary px-8 py-3.5 rounded-xl font-display flex items-center gap-2"
+              data-testid="round-result-footer"
+            >
+              {continueLabel}
+              <ArrowDown className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
       </div>
     </motion.section>
   )

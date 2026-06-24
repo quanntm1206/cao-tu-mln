@@ -286,7 +286,7 @@ export function distributePhase3(
   let t_cho_vay = lentPrincipal
 
   const interest_paid = debtPrincipal * z_rate
-  const interest_earned = lentPrincipal * z_rate * 0.75
+  const interest_earned = lentPrincipal * z_rate
   const net_finance = interest_earned - interest_paid
 
   let borrowed_principal = 0

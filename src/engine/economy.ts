@@ -38,7 +38,7 @@ export function distributeProfit(
   merchant_rate: number,
 ): Distribution {
   const z_interest = debt * bank_interest_rate
-  const z_earned = lending * bank_interest_rate * 0.75
+  const z_earned = lending * bank_interest_rate
   const rent_cost = rent_mode ? land_units * rent_per_unit : 0
   const p_merchant = use_merchant ? total_profit * merchant_rate : 0
   const available = total_profit - z_interest + z_earned - rent_cost - p_merchant

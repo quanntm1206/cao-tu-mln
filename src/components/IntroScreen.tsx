@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { FlaskConical, Factory, Store, Banknote, Sprout, ArrowRight, Trophy } from 'lucide-react'
 
-const APP_VERSION = 'v0.5.2'
+const APP_VERSION = 'v0.6.0'
 
 interface Props {
   onShowLeaderboard: () => void

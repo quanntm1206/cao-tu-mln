@@ -8,6 +8,7 @@ import ResultSection from './ResultSection'
 import NarrativeCard from './NarrativeCard'
 import PhaseWrapup from './PhaseWrapup'
 import { LabSlider, ReadOnlyRow, ControlsCard } from './InlineDecision'
+import DontMisunderstand from './DontMisunderstand'
 
 const ACCENT_HEX = '#3B82F6'
 
@@ -27,7 +28,7 @@ function splitCV(invested: number, id: 'co_khi' | 'det' | 'da') {
   return { c, v, m }
 }
 
-function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorState) => void; mPool: number; roundInPhase: number }) {
+function Phase1Round({ onSubmit, mPool, roundInPhase, sectorRates }: { onSubmit: (s: SectorState) => void; mPool: number; roundInPhase: number; sectorRates: { co_khi: number; det: number; da: number } }) {
   const STEPS = 100
   const [coSteps, setCoSteps] = useState(33)
   const [detSteps, setDetSteps] = useState(33)
@@ -55,7 +56,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
         id,
         label: p.label,
         invested: invested[id],
-        rate: p.profitRate,
+        rate: sectorRates[id],
         c: split.c,
         v: split.v,
         m: split.m,
@@ -63,7 +64,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
         archetype: p.archetype,
       }
     })
-  }, [coKhi, det, da])
+  }, [coKhi, det, da, sectorRates])
 
   const hints = [
     'Vòng 1: bắt đầu nhẹ — hãy thử chia đều rồi xem ngành nào sinh lời nhiều nhất.',
@@ -101,7 +102,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
             value={coKhi}
             max={mPool}
             onChange={(v) => handleCo(Math.round((v / mPool) * STEPS))}
-            hint={`${coSteps}% V`}
+            hint={`${coSteps}% vốn phân bổ`}
             accent={ACCENT_HEX}
           />
           <LabSlider
@@ -110,7 +111,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
             max={Math.max(0, mPool - coKhi)}
             disabled={maxDetSteps === 0}
             onChange={(v) => setDetSteps(Math.round((v / mPool) * STEPS))}
-            hint={`${safeDetSteps}% V`}
+            hint={`${safeDetSteps}% vốn phân bổ`}
             accent="#22D3EE"
           />
           <ReadOnlyRow
@@ -137,7 +138,7 @@ interface Props { onNextPhase: () => void }
 
 export default function Phase1Page({ onNextPhase }: Props) {
   const {
-    round, m_pool, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, phase,
+    round, m_pool, sector_rates, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, phase,
   } = useGameStore()
   const resultRef = useRef<HTMLDivElement | null>(null)
   const eventRef = useRef<HTMLDivElement | null>(null)
@@ -159,13 +160,18 @@ export default function Phase1Page({ onNextPhase }: Props) {
     }
   }, [showResult, round])
 
+  const isPhaseEndRound = (round - 1) % 4 === 0 && round > 1
+  const handlePhaseAdvance = () => {
+    dismissLesson()
+    if (isPhaseEndRound) onNextPhase()
+  }
   const continueLabel = round > 16 ? 'Xem tổng kết' : phase > 1 ? 'Sang Pha 2 · Thương nghiệp' : `Tiếp tục vòng ${round}`
 
   return (
     <div className="lab-scroll-snap">
       <HeroSection
         phase={1}
-        title="Sản xuất tạo ra giá trị — m từ đâu mà có?"
+        title="Sản xuất giá trị thặng dư"
         subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ tài sản/vốn khả dụng. Phân bổ vào 3 ngành và quan sát m = v × m′ sinh ra như thế nào qua 4 vòng."
         formula={{
           l: "p'",
@@ -173,7 +179,7 @@ export default function Phase1Page({ onNextPhase }: Props) {
           title: 'Tỷ suất lợi nhuận',
           purpose: 'Mỗi đồng vốn k = c + v được tách thành c (tư bản bất biến) và v (tư bản khả biến). Chỉ v sinh ra m = v × m′. c/v khác nhau theo ngành ⇒ p′ khác nhau.',
           analogy:
-            'Giống mở quán trà sữa: tiền máy xay + nguyên liệu (c) và tiền lương nhân viên (v). Chỉ giờ làm việc của nhân viên mới tạo thêm lợi nhuận (m); quán nhiều máy móc hơn nhân sự thì mỗi đồng bỏ ra thu về ít hơn (p′ thấp hơn).',
+            'Lao động sống của người làm thuê tạo giá trị mới; phần vượt quá tiền công được biểu hiện thành m. Máy xay + nguyên liệu (c) chỉ tạo điều kiện sản xuất; quán nhiều máy móc hơn nhân sự thì mỗi đồng bỏ ra thu về ít hơn (p′ thấp hơn).',
           legend: [
             { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
             { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m\', không phải từ c' },
@@ -185,13 +191,15 @@ export default function Phase1Page({ onNextPhase }: Props) {
           ],
         }}
         bigNumber={m_pool}
-        bigNumberLabel="Tài sản/vốn khả dụng"
+        bigNumberLabel="Tiền/vốn khả dụng"
         quote={{
           text: 'Lưu thông không tạo ra giá trị mới. Giá trị thặng dư có nguồn gốc trong sản xuất.',
           cite: 'Mác, Tư bản, dẫn theo Giáo trình KTCT Mác–Lênin, Chương 3, tr.70',
         }}
         color={ACCENT_HEX}
       />
+
+      <DontMisunderstand phase={1} accent={ACCENT_HEX} />
 
       {showEvent && (
         <section ref={eventRef} className="py-12 border-b border-[var(--color-lab-border)]">
@@ -207,6 +215,7 @@ export default function Phase1Page({ onNextPhase }: Props) {
           onSubmit={(s) => applyRound(s as unknown as Record<string, unknown>)}
           mPool={m_pool}
           roundInPhase={roundInPhase}
+          sectorRates={sector_rates}
         />
       )}
 
@@ -218,6 +227,7 @@ export default function Phase1Page({ onNextPhase }: Props) {
             prevRound={round - 1}
             isLastInPhase={(round - 1) % 4 === 0 && round > 1}
             onContinue={dismissLesson}
+            onPhaseAdvance={handlePhaseAdvance}
             continueLabel={continueLabel}
           />
         </div>

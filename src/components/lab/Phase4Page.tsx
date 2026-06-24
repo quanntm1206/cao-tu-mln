@@ -207,6 +207,11 @@ export default function Phase4Page({ onComplete }: Props) {
   const resultRef = useRef<HTMLDivElement | null>(null)
   const eventRef = useRef<HTMLDivElement | null>(null)
 
+  const isPhaseEndRound = (round - 1) % 4 === 0 && round > 1
+  const handlePhaseAdvance = () => {
+    dismissLesson()
+    if (isPhaseEndRound) onComplete()
+  }
   const roundInPhase = ((round - 1) % 4) + 1
   const profitPerRound = phase4_profit_per_round > 0 ? phase4_profit_per_round : industrial_profit / 4
   const zPrime = getZRateForRound(round)
@@ -284,6 +289,7 @@ export default function Phase4Page({ onComplete }: Props) {
             prevRound={round - 1}
             isLastInPhase={false}
             onContinue={dismissLesson}
+            onPhaseAdvance={handlePhaseAdvance}
             continueLabel={gameOver ? 'Xem tổng kết' : `Tiếp tục vòng ${round}`}
           />
         </div>
