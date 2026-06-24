@@ -46,8 +46,9 @@ export default function QuickEventModal() {
   if (!event) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70">
-      <div className="theory-card rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70 p-4 overscroll-contain">
+      <div className="theory-card rounded-2xl w-full max-w-lg mx-4 shadow-2xl flex flex-col max-h-[min(90dvh,90vh)]">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0" data-testid="quick-event-scroll-area">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-3xl">🧾</span>
           <div>
@@ -84,6 +85,7 @@ export default function QuickEventModal() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 
-const APP_VERSION = 'v0.2.1'
+const APP_VERSION = 'v0.2.2'
 
 interface Props { onShowLeaderboard: () => void }
 

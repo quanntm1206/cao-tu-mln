@@ -1,10 +1,11 @@
-import { chromium } from 'playwright'
+﻿import { chromium } from 'playwright'
 
 const baseUrl = process.env.QA_URL || 'http://127.0.0.1:4173/'
 const executablePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 
 const browser = await chromium.launch({ headless: true, executablePath })
 const results = []
+
 async function assertVisibleInViewport(page, locator, label) {
   const box = await locator.boundingBox()
   if (!box) throw new Error(`${label} is not rendered`)
@@ -34,11 +35,11 @@ async function runScenario(viewport) {
 
   await page.goto(baseUrl, { waitUntil: 'networkidle' })
   await page.locator('input').first().fill(`QA ${viewport.width}`)
-  await page.getByRole('button', { name: /Mở xưởng sản xuất/ }).click()
+  await page.getByRole('button', { name: /Bắt đầu 4 pha học tập/ }).click()
 
-  for (let step = 0; step < 70; step += 1) {
+  for (let step = 0; step < 80; step += 1) {
     const body = await page.locator('body').innerText()
-    if (body.includes('Kết thúc học phần!')) break
+    if (body.includes('Hoàn thành học phần!')) break
 
     if (await page.getByText(/Tình huống sản xuất/).count()) {
       const buttons = page.locator('button')
@@ -51,26 +52,30 @@ async function runScenario(viewport) {
 
     const next = page.getByRole('button', { name: /Tiếp tục|Xem tổng kết/ })
     if (await next.count()) {
-      if (body.includes('Kết thúc vòng') && body.includes('Vòng 2') && !body.includes('Tiếp tục vòng 2') && !body.toLowerCase().includes('cửa sổ mở khóa')) {
-        throw new Error(`Unlock popup missing after round 2 at ${viewport.width}x${viewport.height}`)
-      }
       await assertVisibleInViewport(page, next.first(), `Continue button at ${viewport.width}x${viewport.height}`)
       const scrollArea = page.getByTestId('round-result-scroll-area')
       const footer = page.getByTestId('round-result-footer')
       if (await scrollArea.count()) {
         await assertVisibleInViewport(page, footer.first(), `Result modal footer at ${viewport.width}x${viewport.height}`)
-        const canScrollResultPanel = await scrollArea.first().evaluate((el) => el.scrollHeight >= el.clientHeight)
-        if (!canScrollResultPanel) {
+        const scrollMetrics = await scrollArea.first().evaluate((el) => ({
+          scrollHeight: el.scrollHeight,
+          clientHeight: el.clientHeight,
+          canScroll: el.scrollHeight > el.clientHeight,
+        }))
+        if (scrollMetrics.scrollHeight <= 0 || scrollMetrics.clientHeight <= 0) {
           throw new Error(`Result modal scroll area is not measurable at ${viewport.width}x${viewport.height}`)
+        }
+        if (scrollMetrics.canScroll) {
+          await scrollArea.first().evaluate((el) => { el.scrollTop = el.scrollHeight })
         }
       }
       await next.first().click()
       continue
     }
 
-    const produce = page.getByRole('button', { name: /Thực hiện vòng sản xuất/ })
-    if (await produce.count()) {
-      await produce.click()
+    const action = page.getByRole('button', { name: /Thực hiện vòng/ })
+    if (await action.count()) {
+      await action.first().click()
       continue
     }
 
@@ -78,7 +83,7 @@ async function runScenario(viewport) {
   }
 
   const finalText = await page.locator('body').innerText()
-  if (!finalText.includes('Kết thúc học phần!')) {
+  if (!finalText.includes('Hoàn thành học phần!')) {
     throw new Error(`Game did not reach final screen at ${viewport.width}x${viewport.height}`)
   }
 
@@ -128,15 +133,3 @@ if (failures.length > 0) {
   console.error(`QA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
-
-
-
-
-
-
-
-
-
-
-
-

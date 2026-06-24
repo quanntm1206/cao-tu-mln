@@ -4,25 +4,59 @@ import { formatVnd } from '../lib/currency'
 import type { FinanceAction, LandChoice } from '../engine/distribution'
 import CaseStudyPanel from './CaseStudyPanel'
 
+function snapToStep(value: number, min: number, max: number, step: number): number {
+  if (max <= min) return min
+  const snapped = Math.round(value / step) * step
+  return Math.min(max, Math.max(min, snapped))
+}
+
+function allocationStep(pool: number): number {
+  return Math.max(1, Math.round(pool / 200))
+}
+
 function Slider({ label, value, min, max, step = 1, onChange, format = (v: number) => v.toString() }: {
   label: string; value: number; min: number; max: number; step?: number
   onChange: (v: number) => void; format?: (v: number) => string
 }) {
-  const pct = max > min ? ((value - min) / (max - min)) * 100 : 0
+  const safeValue = snapToStep(value, min, max, step)
+  const pct = max > min ? ((safeValue - min) / (max - min)) * 100 : 0
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm text-stone-300">{label}</span>
-        <span className="text-sm font-bold text-stone-50 bg-stone-900 px-2 py-0.5 rounded-lg">{format(value)}</span>
+        <span className="text-sm font-bold text-stone-50 bg-stone-900 px-2 py-0.5 rounded-lg">{format(safeValue)}</span>
       </div>
-      <input type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={safeValue}
+        onChange={(e) => onChange(snapToStep(Number(e.target.value), min, max, step))}
         className="w-full h-2 rounded-full appearance-none cursor-pointer"
         style={{ background: `linear-gradient(to right, #3b82f6 ${pct}%, #374151 ${pct}%)` }}
       />
       <div className="flex justify-between text-xs text-stone-600 mt-0.5">
         <span>{format(min)}</span><span>{format(max)}</span>
       </div>
+    </div>
+  )
+}
+
+function ReadOnlyAllocation({ label, value, total, format }: {
+  label: string; value: number; total: number; format: (v: number) => string
+}) {
+  const pct = total > 0 ? (value / total) * 100 : 0
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm text-stone-300">{label}</span>
+        <span className="text-sm font-bold text-amber-200 bg-stone-900 px-2 py-0.5 rounded-lg">{format(value)}</span>
+      </div>
+      <div className="w-full h-2 rounded-full bg-stone-700 overflow-hidden" aria-hidden>
+        <div className="h-full rounded-full bg-amber-600/80 transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="text-xs text-stone-600 mt-0.5">{pct.toFixed(1)}% M-pool</p>
     </div>
   )
 }
@@ -38,35 +72,39 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Phase1Panel({ mPool }: { mPool: number }) {
   const { sector_allocation, applyRound } = useGameStore()
-  const [coKhi, setCoKhi] = useState(sector_allocation.co_khi)
-  const [det, setDet] = useState(sector_allocation.det)
-  const [da, setDa] = useState(sector_allocation.da)
+  const step = allocationStep(mPool)
+  const [coKhi, setCoKhi] = useState(snapToStep(sector_allocation.co_khi, 0, mPool, step))
+  const [det, setDet] = useState(snapToStep(sector_allocation.det, 0, mPool, step))
 
+  const da = Math.max(0, mPool - coKhi - det)
   const total = coKhi + det + da
-  const remaining = mPool - total
-  const balanced = Math.abs(remaining) < 1
 
   const handleCoKhi = (v: number) => {
-    const newDet = Math.max(0, Math.floor((mPool - v) / 2))
-    const newDa = Math.max(0, mPool - v - newDet)
-    setCoKhi(v); setDet(newDet); setDa(newDa)
+    const nextCoKhi = snapToStep(v, 0, mPool, step)
+    const maxDet = mPool - nextCoKhi
+    const nextDet = snapToStep(Math.min(det, maxDet), 0, maxDet, step)
+    setCoKhi(nextCoKhi)
+    setDet(nextDet)
+  }
+
+  const handleDet = (v: number) => {
+    const maxDet = mPool - coKhi
+    setDet(snapToStep(v, 0, maxDet, step))
   }
 
   return (
     <div>
       <p className="text-xs text-stone-500 mb-3">
         Phân bổ M-pool ({formatVnd(mPool, true)}) cho 3 ngành sản xuất. Tổng: {formatVnd(total, true)}
-        {!balanced && <span className="text-red-400 ml-2">Còn lại: {formatVnd(remaining, true)}</span>}
       </p>
-      <Slider label="Cơ khí (tỷ suất 20%)" value={coKhi} min={0} max={mPool} step={Math.round(mPool / 100)}
+      <Slider label="Cơ khí (tỷ suất 20%)" value={coKhi} min={0} max={mPool} step={step}
         onChange={handleCoKhi} format={(v) => formatVnd(v, true)} />
-      <Slider label="Dệt may (tỷ suất 30%)" value={det} min={0} max={mPool - coKhi} step={Math.round(mPool / 100)}
-        onChange={(v) => { setDet(v); setDa(Math.max(0, mPool - coKhi - v)) }}
+      <Slider label="Dệt may (tỷ suất 30%)" value={det} min={0} max={Math.max(0, mPool - coKhi)} step={step}
+        onChange={handleDet} format={(v) => formatVnd(v, true)} />
+      <ReadOnlyAllocation label="Da giày (tỷ suất 40%) — tự động" value={da} total={mPool}
         format={(v) => formatVnd(v, true)} />
-      <Slider label="Da giày (tỷ suất 40%)" value={da} min={0} max={mPool} step={1}
-        onChange={() => {}} format={(v) => formatVnd(v, true)} />
-      <p className="text-xs text-stone-600 mt-1 mb-3 italic">Da giày = M-pool - cơ khí - dệt</p>
-      <button onClick={() => applyRound({ co_khi: coKhi, det, da: Math.max(0, mPool - coKhi - det) })}
+      <p className="text-xs text-stone-600 -mt-2 mb-3 italic">Da giày = M-pool − cơ khí − dệt may</p>
+      <button onClick={() => applyRound({ co_khi: coKhi, det, da })}
         className="w-full py-3 rounded-xl font-bold text-base btn-action">
         Thực hiện vòng sản xuất
       </button>

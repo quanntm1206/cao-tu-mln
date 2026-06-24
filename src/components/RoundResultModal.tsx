@@ -19,9 +19,12 @@ export default function RoundResultModal() {
   const continueLabel = gameOver ? 'Xem tổng kết' : `Tiếp tục vòng ${round}`
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70 p-4">
-      <div className="theory-card rounded-2xl p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
-        <div className="relative z-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70 p-4 overscroll-contain">
+      <div className="theory-card rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[min(90dvh,90vh)]">
+        <div
+          className="flex-1 overflow-y-auto p-6 min-h-0 relative z-10"
+          data-testid="round-result-scroll-area"
+        >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-2xl">
               {lastResult.phase === 1 ? '🏭' : lastResult.phase === 2 ? '🏪' : lastResult.phase === 3 ? '🏦' : '🏗️'}
@@ -100,9 +103,11 @@ export default function RoundResultModal() {
           {isPhaseEnd && (
             <OpenQuestionCard phase={lastResult.phase as GamePhase} />
           )}
+        </div>
 
+        <div className="shrink-0 p-4 pt-3 border-t border-amber-900/30 bg-stone-950/50 relative z-10" data-testid="round-result-footer">
           <button onClick={dismissLesson}
-            className="w-full mt-4 py-3 rounded-xl font-bold text-base btn-action">
+            className="w-full py-3 rounded-xl font-bold text-base btn-action">
             {continueLabel}
           </button>
         </div>
