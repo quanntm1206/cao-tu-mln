@@ -8,7 +8,9 @@ import {
   distributePhase2,
   distributePhase3,
   distributePhase4,
+  getInitialSectorRates,
 } from './distribution'
+import { convergeSectorRates } from './simulation'
 import { STARTING_M } from '../data/economyConstants'
 
 const M = STARTING_M
@@ -64,8 +66,20 @@ describe('getZRateForRound', () => {
 })
 
 describe('distributePhase1', () => {
-  it('computes profit for each sector', () => {
-    const result = distributePhase1(M, { co_khi: 1_000_000, det: 1_000_000, da: 1_000_000 }, 1)
+  const baseParams = {
+    availableCash: M,
+    sectorRates: getInitialSectorRates(),
+    roundInPhase: 1,
+    fixedCapital: 0,
+    materialsStock: 0,
+    baseCapital: M,
+  }
+
+  it('computes profit for each sector using dynamic rates', () => {
+    const result = distributePhase1({
+      ...baseParams,
+      allocations: { co_khi: 1_000_000, det: 1_000_000, da: 1_000_000 },
+    })
     expect(result.phase).toBe(1)
     expect(result.co_khi_profit).toBeCloseTo(200_000)
     expect(result.det_profit).toBeCloseTo(300_000)
@@ -74,20 +88,66 @@ describe('distributePhase1', () => {
   })
 
   it('higher allocation gives higher profit', () => {
-    const low = distributePhase1(M, { co_khi: 1_000_000, det: 0, da: 0 }, 1)
-    const high = distributePhase1(M, { co_khi: 5_000_000, det: 0, da: 0 }, 1)
+    const low = distributePhase1({ ...baseParams, allocations: { co_khi: 1_000_000, det: 0, da: 0 } })
+    const high = distributePhase1({ ...baseParams, allocations: { co_khi: 5_000_000, det: 0, da: 0 } })
     expect(high.total_industrial_profit).toBeGreaterThan(low.total_industrial_profit)
   })
 
-  it('zero allocation defaults to m_pool fraction', () => {
-    const result = distributePhase1(M, { co_khi: 0, det: 0, da: 0 }, 1)
+  it('zero allocation yields zero profit', () => {
+    const result = distributePhase1({ ...baseParams, allocations: { co_khi: 0, det: 0, da: 0 } })
     expect(result.phase).toBe(1)
     expect(result.total_industrial_profit).toBe(0)
   })
 
   it('returns lesson text', () => {
-    const result = distributePhase1(M, { co_khi: 1_000_000, det: 0, da: 0 }, 2)
+    const result = distributePhase1({ ...baseParams, roundInPhase: 2, allocations: { co_khi: 1_000_000, det: 0, da: 0 } })
     expect(result.lesson.length).toBeGreaterThan(10)
+  })
+
+  it('returns m_created equal to total_industrial_profit', () => {
+    const result = distributePhase1({ ...baseParams, allocations: { co_khi: 2_000_000, det: 1_000_000, da: 0 } })
+    expect(result.m_created).toBeCloseTo(result.total_industrial_profit)
+  })
+
+  it('pool_delta equals m_created', () => {
+    const result = distributePhase1({ ...baseParams, allocations: { co_khi: 2_000_000, det: 1_000_000, da: 0 } })
+    expect(result.pool_delta).toBeCloseTo(result.m_created)
+  })
+
+  it('sector_rates_after converges toward average', () => {
+    const result = distributePhase1({ ...baseParams, allocations: { co_khi: 1_000_000, det: 0, da: 0 } })
+    const avg = (result.sector_rates_after.co_khi + result.sector_rates_after.det + result.sector_rates_after.da) / 3
+    const initial = getInitialSectorRates()
+    const initialAvg = (initial.co_khi + initial.det + initial.da) / 3
+    // Average is preserved under convergence
+    expect(avg).toBeCloseTo(initialAvg, 5)
+    // Rates have moved toward average
+    expect(Math.abs(result.sector_rates_after.co_khi - avg)).toBeLessThan(Math.abs(initial.co_khi - initialAvg))
+  })
+
+  it('allocations are capped to availableCash', () => {
+    const small = distributePhase1({
+      ...baseParams,
+      availableCash: 1_000_000,
+      allocations: { co_khi: 5_000_000, det: 5_000_000, da: 5_000_000 },
+    })
+    const full = distributePhase1({
+      ...baseParams,
+      availableCash: M,
+      allocations: { co_khi: 5_000_000, det: 5_000_000, da: 5_000_000 },
+    })
+    expect(small.total_industrial_profit).toBeLessThan(full.total_industrial_profit)
+  })
+
+  it('production multiplier boosts profit when fixedCapital > 0', () => {
+    const base = distributePhase1({ ...baseParams, allocations: { co_khi: 1_000_000, det: 0, da: 0 } })
+    const boosted = distributePhase1({
+      ...baseParams,
+      allocations: { co_khi: 1_000_000, det: 0, da: 0 },
+      fixedCapital: M * 0.5,
+      materialsStock: M * 0.5,
+    })
+    expect(boosted.total_industrial_profit).toBeGreaterThan(base.total_industrial_profit)
   })
 })
 
@@ -110,69 +170,148 @@ describe('distributePhase2', () => {
     expect(result.merchant_profit).toBeCloseTo(10_000_000)
     expect(result.industrial_profit_after).toBeCloseTo(0)
   })
+
+  it('pool_delta is always 0 — merchant does not change m_pool', () => {
+    const r1 = distributePhase2(10_000_000, { merchantShare: 0.2, useMerchant: true }, 1)
+    const r2 = distributePhase2(10_000_000, { merchantShare: 0.2, useMerchant: false }, 2)
+    expect(r1.pool_delta).toBe(0)
+    expect(r2.pool_delta).toBe(0)
+  })
+
+  it('distributable_surplus is passed through', () => {
+    const result = distributePhase2(5_000_000, { merchantShare: 0.1, useMerchant: true }, 1)
+    expect(result.distributable_surplus).toBe(5_000_000)
+  })
+
+  it('merchant does not increase total surplus — invariant', () => {
+    const surplus = 20_000_000
+    const result = distributePhase2(surplus, { merchantShare: 0.15, useMerchant: true }, 1)
+    expect(result.merchant_profit + result.industrial_profit_after).toBeCloseTo(surplus)
+  })
 })
 
 describe('distributePhase3', () => {
-  it('borrowing incurs interest cost', () => {
-    const result = distributePhase3(M, { action: 'borrow', amount: 1_000_000_000 }, 1)
-    expect(result.phase).toBe(3)
+  it('interest paid on existing debt principal', () => {
+    const result = distributePhase3(M, 1_000_000_000, 0, { action: 'none', amount: 0 }, 1)
     expect(result.interest_paid).toBeGreaterThan(0)
     expect(result.net_finance).toBeLessThan(0)
   })
 
-  it('lending earns interest', () => {
-    const result = distributePhase3(M, { action: 'lend', amount: 1_000_000_000 }, 2)
+  it('interest earned on existing lent principal', () => {
+    const result = distributePhase3(M, 0, 1_000_000_000, { action: 'none', amount: 0 }, 2)
     expect(result.interest_earned).toBeGreaterThan(0)
     expect(result.net_finance).toBeGreaterThan(0)
   })
 
-  it('no action yields zero interest', () => {
-    const result = distributePhase3(M, { action: 'none', amount: 0 }, 1)
+  it('borrow action adds to debt_after and pool_delta', () => {
+    const result = distributePhase3(M, 0, 0, { action: 'borrow', amount: 1_000_000_000 }, 1)
+    expect(result.borrowed_principal).toBe(1_000_000_000)
+    expect(result.debt_after).toBe(1_000_000_000)
+    expect(result.pool_delta).toBeCloseTo(1_000_000_000)
+  })
+
+  it('lend action adds to lent_after and reduces pool', () => {
+    const result = distributePhase3(M, 0, 0, { action: 'lend', amount: 500_000_000 }, 2)
+    expect(result.lent_after).toBe(500_000_000)
+    expect(result.pool_delta).toBeCloseTo(-500_000_000)
+  })
+
+  it('no action yields zero borrowed_principal and lent_principal_delta', () => {
+    const result = distributePhase3(M, 0, 0, { action: 'none', amount: 0 }, 1)
+    expect(result.borrowed_principal).toBe(0)
+    expect(result.lent_principal_delta).toBe(0)
     expect(result.interest_paid).toBe(0)
     expect(result.interest_earned).toBe(0)
-    expect(result.net_finance).toBe(0)
+  })
+
+  it('debt_after and lent_after correctly track cumulative principals', () => {
+    const r1 = distributePhase3(M, 500_000_000, 200_000_000, { action: 'borrow', amount: 300_000_000 }, 1)
+    expect(r1.debt_after).toBe(800_000_000)
+    expect(r1.lent_after).toBe(200_000_000)
   })
 })
 
 describe('distributePhase4', () => {
-  it('buying land yields positive land gain', () => {
-    const result = distributePhase4(M, { landChoice: 'buy' }, 1)
+  it('buying land costs pool_delta < 0 and yields land_gain > 0', () => {
+    const result = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
     expect(result.phase).toBe(4)
-    expect(result.land_value).toBeGreaterThan(0)
+    expect(result.pool_delta).toBeLessThan(0)
     expect(result.land_gain).toBeGreaterThan(0)
+    expect(result.land_purchase_price).toBeGreaterThan(0)
   })
 
-  it('renting incurs rent cost', () => {
-    const result = distributePhase4(M, { landChoice: 'rent' }, 1)
+  it('land_value reflects calcLandPrice reference', () => {
+    const result = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
+    expect(result.land_value).toBeGreaterThan(0)
+  })
+
+  it('renting incurs rent cost and negative pool_delta', () => {
+    const result = distributePhase4(M, 0, 0.06, { landChoice: 'rent' }, 1)
     expect(result.rent_paid).toBeGreaterThan(0)
-    expect(result.land_gain).toBeLessThan(0)
+    expect(result.pool_delta).toBeLessThan(0)
   })
 
   it('speculation yields gain in early rounds and loss in late rounds', () => {
-    const early = distributePhase4(M, { landChoice: 'speculate' }, 1)
-    const late = distributePhase4(M, { landChoice: 'speculate' }, 4)
+    const early = distributePhase4(M, 0, 0.06, { landChoice: 'speculate' }, 1)
+    const late = distributePhase4(M, 0, 0.06, { landChoice: 'speculate' }, 4)
     expect(early.land_gain).toBeGreaterThan(0)
     expect(late.land_gain).toBeLessThan(0)
   })
 
-  it('no land choice yields zero values', () => {
-    const result = distributePhase4(M, { landChoice: 'none' }, 1)
+  it('no land choice yields zero values and zero pool_delta', () => {
+    const result = distributePhase4(M, 0, 0.06, { landChoice: 'none' }, 1)
     expect(result.rent_paid).toBe(0)
     expect(result.land_gain).toBe(0)
+    expect(result.pool_delta).toBe(0)
+  })
+
+  it('existing land_assets amplify land_gain for buy', () => {
+    const noAssets = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
+    const withAssets = distributePhase4(M, 1_000_000_000, 0.06, { landChoice: 'buy' }, 1)
+    expect(withAssets.land_gain).toBeGreaterThan(noAssets.land_gain)
   })
 })
 
 describe('calcDistributionTotals', () => {
   it('aggregates all phase results correctly', () => {
-    const r1 = distributePhase1(M, { co_khi: 1_000_000, det: 0, da: 0 }, 1)
+    const r1 = distributePhase1({
+      availableCash: M,
+      sectorRates: getInitialSectorRates(),
+      allocations: { co_khi: 1_000_000, det: 0, da: 0 },
+      roundInPhase: 1,
+      fixedCapital: 0,
+      materialsStock: 0,
+      baseCapital: M,
+    })
     const r2 = distributePhase2(r1.total_industrial_profit, { merchantShare: 0.1, useMerchant: true }, 1)
-    const r3 = distributePhase3(M, { action: 'lend', amount: 500_000_000 }, 1)
-    const r4 = distributePhase4(M, { landChoice: 'buy' }, 1)
+    const r3 = distributePhase3(M, 0, 500_000_000, { action: 'lend', amount: 0 }, 1)
+    const r4 = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
 
     const totals = calcDistributionTotals([r1, r2, r3, r4])
     expect(totals.total_industrial).toBeCloseTo(r1.total_industrial_profit)
     expect(totals.total_merchant).toBeCloseTo(r2.merchant_profit)
-    expect(totals.total_finance).toBeCloseTo(r3.net_finance)
+    expect(totals.total_finance).toBeCloseTo(Math.max(0, r3.net_finance))
     expect(totals.total_rent).toBeCloseTo(r4.land_gain)
+  })
+})
+
+describe('convergeSectorRates', () => {
+  it('moves rates toward average', () => {
+    const rates = { co_khi: 0.10, det: 0.30, da: 0.50 }
+    const after = convergeSectorRates(rates)
+    const avg = (rates.co_khi + rates.det + rates.da) / 3
+    expect(after.co_khi).toBeGreaterThan(rates.co_khi)
+    expect(after.da).toBeLessThan(rates.da)
+    expect(after.det).toBeCloseTo(rates.det)
+    // Average is preserved
+    expect((after.co_khi + after.det + after.da) / 3).toBeCloseTo(avg, 5)
+  })
+
+  it('already equal rates remain unchanged', () => {
+    const rates = { co_khi: 0.25, det: 0.25, da: 0.25 }
+    const after = convergeSectorRates(rates)
+    expect(after.co_khi).toBeCloseTo(0.25)
+    expect(after.det).toBeCloseTo(0.25)
+    expect(after.da).toBeCloseTo(0.25)
   })
 })

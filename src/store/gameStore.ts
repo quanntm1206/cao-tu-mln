@@ -1,12 +1,14 @@
-﻿import { create } from 'zustand'
+import { create } from 'zustand'
 import { STARTING_M, TOTAL_ROUNDS, P_BAR_TARGET } from '../data/economyConstants'
 import {
   getPhaseForRound,
   getRoundInPhase,
+  getZRateForRound,
   distributePhase1,
   distributePhase2,
   distributePhase3,
   distributePhase4,
+  getInitialSectorRates,
   type GamePhase,
   type PhaseResult,
   type Phase1Result,
@@ -15,6 +17,7 @@ import {
   type Phase4Result,
   type LandChoice,
   type FinanceAction,
+  type SectorRates,
 } from '../engine/distribution'
 import {
   getQuickEventChoice,
@@ -38,7 +41,6 @@ export type Feature =
   | 'rent'
   | 'surplus_reveal'
 
-/** Legacy-compatible decision bag; new code uses Phase*Decision from distribution.ts */
 export interface RoundDecisions {
   [key: string]: unknown
 }
@@ -90,6 +92,17 @@ export interface GameState {
   interest_paid: number
   interest_earned: number
   rent_paid: number
+
+  // New economic state
+  debt_principal: number
+  lent_principal: number
+  land_assets: number
+  fixed_capital: number
+  materials_stock: number
+  reinvest_rate: number
+  sector_rates: SectorRates
+  phase2_surplus_per_round: number
+  m_created_total: number
 
   p_bar_rate: number
   sector_allocation: { co_khi: number; det: number; da: number }
@@ -145,6 +158,16 @@ const DEFAULT_STATE: Omit<
   interest_earned: 0,
   rent_paid: 0,
 
+  debt_principal: 0,
+  lent_principal: 0,
+  land_assets: 0,
+  fixed_capital: 0,
+  materials_stock: 0,
+  reinvest_rate: 0,
+  sector_rates: getInitialSectorRates(),
+  phase2_surplus_per_round: 0,
+  m_created_total: 0,
+
   p_bar_rate: P_BAR_TARGET,
   sector_allocation: DEFAULT_SECTOR,
   merchant_share: 0.15,
@@ -170,9 +193,32 @@ const DEFAULT_STATE: Omit<
 }
 
 function applyEffectToState(state: GameState, effect: QuickEventEffect): Partial<GameState> {
-  return {
-    m_pool: Math.max(0, state.m_pool + (effect.cashDelta ?? 0)),
+  const updates: Partial<GameState> = {}
+  updates.m_pool = Math.max(0, state.m_pool + (effect.cashDelta ?? 0))
+  if (effect.machinesDelta !== undefined) {
+    updates.fixed_capital = Math.max(0, state.fixed_capital + effect.machinesDelta)
   }
+  if (effect.materialsDelta !== undefined) {
+    updates.materials_stock = Math.max(0, state.materials_stock + effect.materialsDelta)
+  }
+  if (effect.alphaDelta !== undefined) {
+    updates.reinvest_rate = Math.max(0, state.reinvest_rate + effect.alphaDelta)
+  }
+  if (effect.debtDelta !== undefined) {
+    updates.debt_principal = Math.max(0, state.debt_principal + effect.debtDelta)
+    // borrowing adds cash
+    if (effect.debtDelta > 0) {
+      updates.m_pool = Math.max(0, (updates.m_pool ?? state.m_pool) + effect.debtDelta)
+    }
+  }
+  if (effect.lendingDelta !== undefined) {
+    updates.lent_principal = Math.max(0, state.lent_principal + effect.lendingDelta)
+    // lending removes cash
+    if (effect.lendingDelta > 0) {
+      updates.m_pool = Math.max(0, (updates.m_pool ?? state.m_pool) - effect.lendingDelta)
+    }
+  }
+  return updates
 }
 
 function applyEffectToDecision(decision: RoundDecisions, effect: QuickEventEffect): RoundDecisions {
@@ -196,6 +242,15 @@ export const useGameStore = create<GameState>((set, get) => ({
       interest_paid: 0,
       interest_earned: 0,
       rent_paid: 0,
+      debt_principal: 0,
+      lent_principal: 0,
+      land_assets: 0,
+      fixed_capital: 0,
+      materials_stock: 0,
+      reinvest_rate: 0,
+      sector_rates: getInitialSectorRates(),
+      phase2_surplus_per_round: 0,
+      m_created_total: 0,
       history: [],
       eventLog: [],
       openAnswers: {},
@@ -239,21 +294,30 @@ export const useGameStore = create<GameState>((set, get) => ({
     switch (phase) {
       case 1: {
         const d = decision as { co_khi?: number; det?: number; da?: number }
-        result = distributePhase1(
-          s.m_pool,
-          {
+        result = distributePhase1({
+          availableCash: s.m_pool,
+          sectorRates: s.sector_rates,
+          allocations: {
             co_khi: Number(d.co_khi ?? s.sector_allocation.co_khi),
             det: Number(d.det ?? s.sector_allocation.det),
             da: Number(d.da ?? s.sector_allocation.da),
           },
           roundInPhase,
-        )
+          fixedCapital: s.fixed_capital,
+          materialsStock: s.materials_stock,
+          baseCapital: s.startingM,
+        })
         break
       }
       case 2: {
         const d = decision as { merchantShare?: number; useMerchant?: boolean }
+        // On first round of phase 2, set the per-round surplus
+        const surplusPerRound =
+          roundInPhase === 1 && s.phase2_surplus_per_round === 0
+            ? s.industrial_profit / 4
+            : s.phase2_surplus_per_round
         result = distributePhase2(
-          s.industrial_profit,
+          surplusPerRound,
           {
             merchantShare: Number(d.merchantShare ?? s.merchant_share),
             useMerchant: Boolean(d.useMerchant),
@@ -266,6 +330,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         const d = decision as { action?: FinanceAction; amount?: number }
         result = distributePhase3(
           s.m_pool,
+          s.debt_principal,
+          s.lent_principal,
           {
             action: (d.action as FinanceAction) ?? s.finance_action,
             amount: Number(d.amount ?? 0),
@@ -276,8 +342,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
       default: {
         const d = decision as { landChoice?: LandChoice }
+        const z_rate = getZRateForRound(s.round)
         result = distributePhase4(
           s.m_pool,
+          s.land_assets,
+          z_rate,
           { landChoice: (d.landChoice as LandChoice) ?? s.land_choice },
           roundInPhase,
         )
@@ -291,23 +360,39 @@ export const useGameStore = create<GameState>((set, get) => ({
     let interest_paid = s.interest_paid
     let interest_earned = s.interest_earned
     let rent_paid = s.rent_paid
+    let debt_principal = s.debt_principal
+    let lent_principal = s.lent_principal
+    let land_assets = s.land_assets
+    let sector_rates = s.sector_rates
+    let phase2_surplus_per_round = s.phase2_surplus_per_round
+    let m_created_total = s.m_created_total
 
     if (result.phase === 1) {
       const r = result as Phase1Result
       industrial_profit += r.total_industrial_profit
-      m_pool += r.total_industrial_profit
+      m_pool += r.pool_delta
+      m_created_total += r.m_created
+      sector_rates = r.sector_rates_after
     } else if (result.phase === 2) {
       const r = result as Phase2Result
       merchant_profit += r.merchant_profit
+      industrial_profit -= r.merchant_profit
+      // pool_delta = 0 for phase 2
+      if (roundInPhase === 1 && phase2_surplus_per_round === 0) {
+        phase2_surplus_per_round = s.industrial_profit / 4
+      }
     } else if (result.phase === 3) {
       const r = result as Phase3Result
       interest_paid += r.interest_paid
       interest_earned += r.interest_earned
-      m_pool += r.net_finance
+      m_pool += r.pool_delta
+      debt_principal = r.debt_after
+      lent_principal = r.lent_after
     } else {
       const r = result as Phase4Result
       rent_paid += r.rent_paid
-      m_pool += r.land_gain
+      land_assets += r.land_gain
+      m_pool += r.pool_delta
     }
 
     m_pool = Math.max(0, m_pool)
@@ -347,6 +432,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       interest_paid,
       interest_earned,
       rent_paid,
+      debt_principal,
+      lent_principal,
+      land_assets,
+      sector_rates,
+      phase2_surplus_per_round,
+      m_created_total,
       round: newRound,
       phase: getPhaseForRound(Math.min(newRound, TOTAL_ROUNDS)),
       history: [...s.history, entry],
@@ -411,4 +502,3 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
   saveOpenAnswer: (phase: GamePhase, answer: string) => set((s) => ({ openAnswers: { ...s.openAnswers, [phase]: answer } })),
 }))
-

@@ -1,11 +1,21 @@
 import {
-  SECTOR_PROFILES,
   Z_RATE_TABLE_2022_2024,
   R_CASE_HOAI_DUC,
   R_CASE_BAC_NINH,
   ROUNDS_PER_PHASE,
 } from '../data/economyConstants'
-import { calcProfitRate } from './economy'
+import { calcProfitRate, calcLandPrice } from './economy'
+import {
+  type SectorRates,
+  type SectorBreakdown,
+  splitCVMWithRate,
+  convergeSectorRates,
+  productionMultiplier,
+  getInitialSectorRates,
+} from './simulation'
+
+export type { SectorRates, SectorBreakdown }
+export { getInitialSectorRates }
 
 export type GamePhase = 1 | 2 | 3 | 4
 
@@ -39,13 +49,14 @@ export interface Phase4Decision {
   landChoice: LandChoice
 }
 
-export interface SectorBreakdown {
-  /** Tư bản bất biến (máy móc, nguyên liệu) */
-  c: number
-  /** Tư bản khả biến (tiền công lao động sống) */
-  v: number
-  /** Giá trị thặng dư tạo ra = v × m' */
-  m: number
+export interface Phase1Params {
+  availableCash: number
+  sectorRates: SectorRates
+  allocations: { co_khi: number; det: number; da: number }
+  roundInPhase: number
+  fixedCapital: number
+  materialsStock: number
+  baseCapital: number
 }
 
 export interface Phase1Result {
@@ -63,6 +74,10 @@ export interface Phase1Result {
   total_v: number
   total_industrial_profit: number
   p_rate: number
+  m_created: number
+  sector_rates_after: SectorRates
+  average_profit_rate: number
+  pool_delta: number
   lesson: string
 }
 
@@ -71,6 +86,8 @@ export interface Phase2Result {
   roundInPhase: number
   merchant_profit: number
   industrial_profit_after: number
+  distributable_surplus: number
+  pool_delta: number
   lesson: string
 }
 
@@ -80,6 +97,11 @@ export interface Phase3Result {
   interest_paid: number
   interest_earned: number
   net_finance: number
+  borrowed_principal: number
+  lent_principal_delta: number
+  debt_after: number
+  lent_after: number
+  pool_delta: number
   lesson: string
 }
 
@@ -89,6 +111,8 @@ export interface Phase4Result {
   rent_paid: number
   land_value: number
   land_gain: number
+  land_purchase_price: number
+  pool_delta: number
   lesson: string
 }
 
@@ -136,45 +160,47 @@ export function calcDistributionTotals(results: PhaseResult[]): {
   return { total_industrial, total_merchant, total_finance, total_rent }
 }
 
-const PHASE1_LESSONS = [
+const PHASE1_LESSONS_VI = [
   'Lợi nhuận công nghiệp xuất phát từ giá trị thặng dư trong sản xuất.',
   'Tỷ suất lợi nhuận khác nhau giữa các ngành do cấu tạo hữu cơ của tư bản.',
   'Cạnh tranh giữa các ngành tạo xu hướng bình quân hóa tỷ suất lợi nhuận.',
   'Tích lũy tư bản công nghiệp là nền tảng của toàn bộ nền kinh tế tư bản.',
 ]
 
-/** Tách vốn ứng trước thành c + v và sinh m = v × m' theo cấu tạo hữu cơ của ngành. */
-function splitCVM(invested: number, sectorId: 'co_khi' | 'det' | 'da'): SectorBreakdown {
-  const profile = SECTOR_PROFILES.find((s) => s.id === sectorId)!
-  if (invested <= 0) return { c: 0, v: 0, m: 0 }
-  const cv = profile.organicComposition
-  const v = invested / (cv + 1)
-  const c = invested - v
-  const m = v * profile.surplusValueRate
-  return { c, v, m }
-}
+export function distributePhase1(params: Phase1Params): Phase1Result {
+  const { availableCash, sectorRates, allocations, roundInPhase, fixedCapital, materialsStock, baseCapital } = params
 
-export function distributePhase1(
-  m_pool: number,
-  decision: Phase1Decision,
-  roundInPhase: number,
-): Phase1Result {
-  const total_allocated = decision.co_khi + decision.det + decision.da
-  const safe_total = total_allocated > 0 ? total_allocated : m_pool * 0.1
+  const rawTotal = allocations.co_khi + allocations.det + allocations.da
+  const cappedTotal = Math.min(rawTotal, Math.max(0, availableCash))
+  const scale = rawTotal > 0 ? cappedTotal / rawTotal : 0
 
-  const breakdown = {
-    co_khi: splitCVM(decision.co_khi, 'co_khi'),
-    det: splitCVM(decision.det, 'det'),
-    da: splitCVM(decision.da, 'da'),
+  const capped = {
+    co_khi: allocations.co_khi * scale,
+    det: allocations.det * scale,
+    da: allocations.da * scale,
   }
 
-  const co_khi_profit = breakdown.co_khi.m
-  const det_profit = breakdown.det.m
-  const da_profit = breakdown.da.m
+  const multiplier = productionMultiplier(fixedCapital, materialsStock, baseCapital)
+
+  const breakdown = {
+    co_khi: splitCVMWithRate(capped.co_khi, 'co_khi', sectorRates.co_khi),
+    det: splitCVMWithRate(capped.det, 'det', sectorRates.det),
+    da: splitCVMWithRate(capped.da, 'da', sectorRates.da),
+  }
+
+  const co_khi_profit = breakdown.co_khi.m * multiplier
+  const det_profit = breakdown.det.m * multiplier
+  const da_profit = breakdown.da.m * multiplier
   const total_c = breakdown.co_khi.c + breakdown.det.c + breakdown.da.c
   const total_v = breakdown.co_khi.v + breakdown.det.v + breakdown.da.v
   const total_industrial_profit = co_khi_profit + det_profit + da_profit
-  const p_rate = calcProfitRate(total_industrial_profit, safe_total, 0)
+  const m_created = total_industrial_profit
+  const pool_delta = m_created
+
+  const average_profit_rate = (sectorRates.co_khi + sectorRates.det + sectorRates.da) / 3
+  const sector_rates_after = convergeSectorRates(sectorRates)
+
+  const p_rate = calcProfitRate(total_industrial_profit, total_c, total_v)
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
   return {
@@ -188,7 +214,11 @@ export function distributePhase1(
     total_v,
     total_industrial_profit,
     p_rate,
-    lesson: PHASE1_LESSONS[idx],
+    m_created,
+    sector_rates_after,
+    average_profit_rate,
+    pool_delta,
+    lesson: PHASE1_LESSONS_VI[idx],
   }
 }
 
@@ -200,13 +230,13 @@ const PHASE2_LESSONS = [
 ]
 
 export function distributePhase2(
-  industrial_profit: number,
+  distributableSurplus: number,
   decision: Phase2Decision,
   roundInPhase: number,
 ): Phase2Result {
   const share = Math.max(0, Math.min(1, decision.merchantShare))
-  const merchant_profit = decision.useMerchant ? industrial_profit * share : 0
-  const industrial_profit_after = industrial_profit - merchant_profit
+  const merchant_profit = decision.useMerchant ? distributableSurplus * share : 0
+  const industrial_profit_after = distributableSurplus - merchant_profit
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
   return {
@@ -214,6 +244,8 @@ export function distributePhase2(
     roundInPhase,
     merchant_profit,
     industrial_profit_after,
+    distributable_surplus: distributableSurplus,
+    pool_delta: 0,
     lesson: PHASE2_LESSONS[idx],
   }
 }
@@ -226,23 +258,33 @@ const PHASE3_LESSONS = [
 ]
 
 export function distributePhase3(
-  m_pool: number,
+  availableCash: number,
+  debtPrincipal: number,
+  lentPrincipal: number,
   decision: Phase3Decision,
   roundInPhase: number,
 ): Phase3Result {
   const z_rate = getZRateForRound(8 + roundInPhase)
-  const safe_amount = Math.min(Math.max(0, decision.amount), m_pool)
 
-  let interest_paid = 0
-  let interest_earned = 0
+  const interest_paid = debtPrincipal * z_rate
+  const interest_earned = lentPrincipal * z_rate * 0.75
+  const net_finance = interest_earned - interest_paid
+
+  let borrowed_principal = 0
+  let lent_principal_delta = 0
+  let debt_after = debtPrincipal
+  let lent_after = lentPrincipal
 
   if (decision.action === 'borrow') {
-    interest_paid = safe_amount * z_rate
+    borrowed_principal = Math.max(0, decision.amount)
+    debt_after = debtPrincipal + borrowed_principal
   } else if (decision.action === 'lend') {
-    interest_earned = safe_amount * z_rate * 0.75
+    const safe_lend = Math.min(Math.max(0, decision.amount), Math.max(0, availableCash))
+    lent_principal_delta = safe_lend
+    lent_after = lentPrincipal + safe_lend
   }
 
-  const net_finance = interest_earned - interest_paid
+  const pool_delta = net_finance + borrowed_principal - lent_principal_delta
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
   return {
@@ -251,6 +293,11 @@ export function distributePhase3(
     interest_paid,
     interest_earned,
     net_finance,
+    borrowed_principal,
+    lent_principal_delta,
+    debt_after,
+    lent_after,
+    pool_delta,
     lesson: PHASE3_LESSONS[idx],
   }
 }
@@ -262,40 +309,49 @@ const PHASE4_LESSONS = [
   'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',
 ]
 
-/** Fraction of V committed to land per Phase 4 round */
 export const LAND_COMMIT_FRACTION = 0.25
 
 export function distributePhase4(
-  m_pool: number,
+  availableCash: number,
+  landAssets: number,
+  z_rate: number,
   decision: Phase4Decision,
   roundInPhase: number,
 ): Phase4Result {
-  // Player commits a meaningful slice of V to land each round
-  const commit = Math.max(0, m_pool) * LAND_COMMIT_FRACTION
+  const commit = Math.max(0, availableCash) * LAND_COMMIT_FRACTION
 
   let rent_paid = 0
   let land_value = 0
   let land_gain = 0
+  let land_purchase_price = 0
+  let pool_delta = 0
 
   if (decision.landChoice === 'buy') {
-    // Steady appreciation: Hoài Đức 2022-2024 +81% over the period
-    land_value = commit
+    land_purchase_price = commit
+    const totalLand = landAssets + commit
     const growthPerRound = R_CASE_HOAI_DUC.priceGrowthPct / ROUNDS_PER_PHASE
-    land_gain = commit * growthPerRound
-  } else if (decision.landChoice === 'rent') {
-    // Pay R each round, no upside (no production model coupled)
-    rent_paid = commit * 0.05 // ~5% of committed = drag
-    land_gain = -rent_paid
+    land_gain = totalLand * growthPerRound
+    land_value = calcLandPrice(R_CASE_HOAI_DUC.rentPerSqmYear, z_rate)
+    pool_delta = -land_purchase_price
   } else if (decision.landChoice === 'speculate') {
-    // Bắc Ninh bubble: rounds 1-2 bubble up, round 3 plateau, round 4 crash
-    land_value = commit
+    land_purchase_price = commit
+    const totalLand = landAssets + commit
+    let growthRate: number
     if (roundInPhase <= 2) {
-      land_gain = commit * (R_CASE_BAC_NINH.bubbleGrowthPct / 2) // ~+20% / round
+      growthRate = R_CASE_BAC_NINH.bubbleGrowthPct / 2
     } else if (roundInPhase === 3) {
-      land_gain = commit * 0.02 // mild peak gain
+      growthRate = 0.02
     } else {
-      land_gain = commit * R_CASE_BAC_NINH.crashPct // -15% crash
+      growthRate = R_CASE_BAC_NINH.crashPct
     }
+    land_gain = totalLand * growthRate
+    land_value = calcLandPrice(R_CASE_BAC_NINH.rentPerSqmYear, z_rate)
+    pool_delta = -land_purchase_price
+  } else if (decision.landChoice === 'rent') {
+    rent_paid = commit * 0.05
+    land_gain = -rent_paid
+    pool_delta = -rent_paid
+    land_value = calcLandPrice(R_CASE_HOAI_DUC.rentPerSqmYear, z_rate)
   }
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
@@ -305,6 +361,8 @@ export function distributePhase4(
     rent_paid,
     land_value,
     land_gain,
+    land_purchase_price,
+    pool_delta,
     lesson: PHASE4_LESSONS[idx],
   }
 }
