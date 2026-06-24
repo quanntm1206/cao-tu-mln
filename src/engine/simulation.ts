@@ -1,4 +1,4 @@
-import { SECTOR_PROFILES } from '../data/economyConstants'
+﻿import { SECTOR_PROFILES } from '../data/economyConstants'
 import { calcLandPrice, calcProfitRate } from './economy'
 
 export { calcLandPrice, calcProfitRate }
@@ -38,14 +38,14 @@ export function splitCVM(invested: number, sectorId: 'co_khi' | 'det' | 'da'): S
 export function splitCVMWithRate(
   invested: number,
   sectorId: 'co_khi' | 'det' | 'da',
-  sectorRate: number,
+  _sectorRate: number,
 ): SectorBreakdown {
   const profile = SECTOR_PROFILES.find((s) => s.id === sectorId)!
   if (invested <= 0) return { c: 0, v: 0, m: 0 }
   const cv = profile.organicComposition
   const v = invested / (cv + 1)
   const c = invested - v
-  const m = invested * sectorRate
+  const m = v * profile.surplusValueRate
   return { c, v, m }
 }
 
@@ -61,15 +61,16 @@ export function convergeSectorRates(
   }
 }
 
-export function productionMultiplier(
+export function productionDeployCap(
   fixedCapital: number,
   materialsStock: number,
   baseCapital: number,
 ): number {
   if (baseCapital <= 0) return 1.0
-  const bonus = Math.min(0.3, ((fixedCapital + materialsStock) / baseCapital) * 0.3)
+  const bonus = Math.min(0.15, ((fixedCapital + materialsStock) / baseCapital) * 0.15)
   return 1.0 + bonus
 }
+export const productionMultiplier = productionDeployCap
 
 export function liquidAvailable(mPool: number, _debtPrincipal: number): number {
   return Math.max(0, mPool)

@@ -25,7 +25,7 @@ export default function DistributionBreakdown() {
       <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">PHÂN CHIA m · p + lợi nhuận thương nghiệp + Z + R</p>
       <h3 className="font-display text-xl font-bold mb-1">Bạn đã thấy m chia về 4 hướng</h3>
       <p className="text-sm text-[var(--color-lab-fg-muted)] mb-6">
-        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái vào Δ V (vốn ứng trước).
+        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái vào Δ tài sản/vốn khả dụng.
       </p>
 
       {/* Stacked horizontal bar */}
@@ -86,7 +86,7 @@ export default function DistributionBreakdown() {
 
       <div className="mt-6 pt-5 border-t border-[var(--color-lab-border)] flex items-baseline justify-between">
         <p className="text-xs text-[var(--color-lab-fg-muted)] font-mono uppercase tracking-widest">
-          Δ V tổng
+          Δ tài sản/vốn khả dụng tổng
         </p>
         <p className="lab-display-num text-2xl" style={{ color: totalDelta >= 0 ? '#10B981' : '#EF4444' }}>
           {totalDelta >= 0 ? '+' : ''}{formatVnd(totalDelta, true)}

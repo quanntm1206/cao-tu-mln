@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../../store/gameStore'
 import { formatVnd } from '../../lib/currency'
@@ -8,6 +8,7 @@ import ResultSection from './ResultSection'
 import NarrativeCard from './NarrativeCard'
 import PhaseWrapup from './PhaseWrapup'
 import { LabSlider, ControlsCard, LabToggle } from './InlineDecision'
+import DontMisunderstand from './DontMisunderstand'
 
 const ACCENT = '#10B981'
 
@@ -178,6 +179,8 @@ export default function Phase2Page({ onNextPhase }: Props) {
         quote={{ text: 'Tư bản thương nghiệp không tạo ra giá trị thặng dư, mà chỉ chiếm một phần giá trị thặng dư từ sản xuất.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.73' }}
         color={ACCENT}
       />
+
+      <DontMisunderstand phase={2} accent={ACCENT} />
 
       {showEvent && (
         <section ref={eventRef} className="py-12 border-b border-[var(--color-lab-border)]">

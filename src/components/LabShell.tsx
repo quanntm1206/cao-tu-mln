@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+﻿import { type ReactNode } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
 import { FlaskConical, Trophy, RotateCcw } from 'lucide-react'
@@ -75,7 +75,7 @@ export default function LabShell({ children, onLeaderboard, onReset }: Props) {
           </div>
 
           <div className="text-right shrink-0 mr-1">
-            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">V</p>
+            <p className="text-[10px] uppercase tracking-widest text-[var(--color-lab-fg-dim)]">Tài sản/vốn khả dụng</p>
             <p className="lab-display-num text-sm text-[var(--color-lab-cyan)]">
               {formatVnd(m_pool, true)}
             </p>

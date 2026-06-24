@@ -1,4 +1,4 @@
-import { formatVnd } from '../lib/currency'
+﻿import { formatVnd } from '../lib/currency'
 
 export type EndingId =
   | 'industrial_pure'
@@ -50,7 +50,7 @@ export function deriveEnding(input: EndingInput): EndingResult {
     { label: 'Lợi nhuận TN', value: fmt(merchant_profit) + ` (${pct(merchant_profit, total)})` },
     { label: 'Lãi tức đã trả (Z)', value: fmt(interest_paid) + ` (${pct(interest_paid, total)})` },
     { label: 'Địa tô đã trả (R)', value: fmt(rent_paid) + ` (${pct(rent_paid, total)})` },
-    { label: 'V cuối (vốn ứng trước)', value: fmt(m_pool) },
+    { label: 'Tài sản/vốn khả dụng cuối', value: fmt(m_pool) },
   ]
 
   // Score each ending

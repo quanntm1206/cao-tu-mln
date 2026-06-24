@@ -45,7 +45,7 @@ export function distributeProfit(
   return { z_interest, z_earned, rent_cost, p_merchant, available }
 }
 
-/** Giá cả đất đai = R / Z′  (vốn hóa địa tô) */
+/** Marxist land price: P_land = R / Z′ — capitalized ground-rent stream at the bank rate Z′ (not new surplus value m). */
 export function calcLandPrice(R: number, i: number): number {
   return i > 0 ? R / i : 0
 }

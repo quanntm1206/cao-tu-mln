@@ -5,7 +5,6 @@ import { formatVnd } from '../../lib/currency'
 import { deriveEnding } from '../../data/endings'
 import { FINAL_CHECKLIST } from '../../data/teachingAids'
 import { Download, Trophy, RotateCcw, Award, CheckSquare, Square } from 'lucide-react'
-import SankeyFlow from './SankeyFlow'
 import MPoolTrajectory from './MPoolTrajectory'
 import DistributionBreakdown from './DistributionBreakdown'
 
@@ -104,7 +103,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình V, cách m phân chia, và kết cục được rút ra.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình tài sản/vốn khả dụng, cách m phân chia, và kết cục được rút ra.
           </p>
         </div>
       </motion.section>
@@ -139,7 +138,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">ĐÓNG GÓP THEO PHA</p>
-          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy V, pha nào kéo xuống?</h2>
+          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy tài sản/vốn khả dụng, pha nào kéo xuống?</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
             {phaseStats.map((ps) => {
               const positive = ps.delta >= 0
@@ -165,19 +164,6 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <DistributionBreakdown />
-        </div>
-      </section>
-
-      {/* ============ SANKEY ============ */}
-      <section className="py-12 border-b border-[var(--color-lab-border)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <SankeyFlow
-            industrial={industrial_profit}
-            merchant={merchant_profit}
-            finance={interest_earned - interest_paid}
-            rent={rent_paid}
-            startingM={startingM}
-          />
         </div>
       </section>
 

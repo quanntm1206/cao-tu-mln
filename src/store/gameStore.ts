@@ -102,6 +102,7 @@ export interface GameState {
   reinvest_rate: number
   sector_rates: SectorRates
   phase2_surplus_per_round: number
+  phase4_profit_per_round: number
   m_created_total: number
 
   p_bar_rate: number
@@ -166,6 +167,7 @@ const DEFAULT_STATE: Omit<
   reinvest_rate: 0,
   sector_rates: getInitialSectorRates(),
   phase2_surplus_per_round: 0,
+  phase4_profit_per_round: 0,
   m_created_total: 0,
 
   p_bar_rate: P_BAR_TARGET,
@@ -250,6 +252,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       reinvest_rate: 0,
       sector_rates: getInitialSectorRates(),
       phase2_surplus_per_round: 0,
+      phase4_profit_per_round: 0,
       m_created_total: 0,
       history: [],
       eventLog: [],
@@ -342,11 +345,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
       default: {
         const d = decision as { landChoice?: LandChoice }
-        const z_rate = getZRateForRound(s.round)
+        const z_prime = getZRateForRound(s.round)
+        const profitPerRound =
+          roundInPhase === 1 && s.phase4_profit_per_round === 0
+            ? s.industrial_profit / 4
+            : s.phase4_profit_per_round
         result = distributePhase4(
+          profitPerRound,
           s.m_pool,
           s.land_assets,
-          z_rate,
+          z_prime,
           { landChoice: (d.landChoice as LandChoice) ?? s.land_choice },
           roundInPhase,
         )
@@ -365,6 +373,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     let land_assets = s.land_assets
     let sector_rates = s.sector_rates
     let phase2_surplus_per_round = s.phase2_surplus_per_round
+    let phase4_profit_per_round = s.phase4_profit_per_round
     let m_created_total = s.m_created_total
 
     if (result.phase === 1) {
@@ -390,10 +399,14 @@ export const useGameStore = create<GameState>((set, get) => ({
       lent_principal = r.lent_after
     } else {
       const r = result as Phase4Result
-      rent_paid += r.rent_paid
-      if (r.land_purchase_price > 0) {
-        land_assets += r.land_purchase_price + r.land_gain
+      rent_paid += r.rent_paid_r
+      if (roundInPhase === 1 && phase4_profit_per_round === 0) {
+        phase4_profit_per_round = s.industrial_profit / 4
       }
+      if (r.land_purchase_price > 0) {
+        land_assets += r.land_purchase_price
+      }
+      land_assets += r.land_asset_revaluation
       m_pool += r.pool_delta
     }
 
@@ -439,6 +452,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       land_assets,
       sector_rates,
       phase2_surplus_per_round,
+      phase4_profit_per_round,
       m_created_total,
       round: newRound,
       phase: getPhaseForRound(Math.min(newRound, TOTAL_ROUNDS)),

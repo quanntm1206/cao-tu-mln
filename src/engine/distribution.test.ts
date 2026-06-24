@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import {
   getPhaseForRound,
   getRoundInPhase,
@@ -139,15 +139,25 @@ describe('distributePhase1', () => {
     expect(small.total_industrial_profit).toBeLessThan(full.total_industrial_profit)
   })
 
-  it('production multiplier boosts profit when fixedCapital > 0', () => {
-    const base = distributePhase1({ ...baseParams, allocations: { co_khi: 1_000_000, det: 0, da: 0 } })
-    const boosted = distributePhase1({
+  it('deploy cap allows more allocation when effectiveCash > availableCash', () => {
+    // With fixedCapital, productionDeployCap > 1, effectiveCash > availableCash
+    // So allocations that exceed availableCash but not effectiveCash get through
+    const noCap = distributePhase1({
       ...baseParams,
-      allocations: { co_khi: 1_000_000, det: 0, da: 0 },
-      fixedCapital: M * 0.5,
-      materialsStock: M * 0.5,
+      availableCash: 1_000_000,
+      allocations: { co_khi: 1_200_000, det: 0, da: 0 },
+      fixedCapital: 0,
+      materialsStock: 0,
     })
-    expect(boosted.total_industrial_profit).toBeGreaterThan(base.total_industrial_profit)
+    const withCap = distributePhase1({
+      ...baseParams,
+      availableCash: 1_000_000,
+      allocations: { co_khi: 1_200_000, det: 0, da: 0 },
+      fixedCapital: M,
+      materialsStock: 0,
+    })
+    // deployCap = 1.15, effectiveCash = 1_150_000, cappedTotal = 1_150_000 > 1_000_000
+    expect(withCap.total_industrial_profit).toBeGreaterThan(noCap.total_industrial_profit)
   })
 })
 
@@ -232,43 +242,50 @@ describe('distributePhase3', () => {
 })
 
 describe('distributePhase4', () => {
-  it('buying land costs pool_delta < 0 and yields land_gain > 0', () => {
-    const result = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
+  const profit = 5000000000
+
+  it('buying land costs pool_delta < 0 and yields land_asset_revaluation > 0', () => {
+    const result = distributePhase4(profit, M, 0, 0.06, { landChoice: 'buy' }, 1)
     expect(result.phase).toBe(4)
     expect(result.pool_delta).toBeLessThan(0)
-    expect(result.land_gain).toBeGreaterThan(0)
+    expect(result.land_asset_revaluation).toBeGreaterThan(0)
     expect(result.land_purchase_price).toBeGreaterThan(0)
+    expect(result.m_new_from_land).toBe(0)
   })
 
-  it('land_value reflects calcLandPrice reference', () => {
-    const result = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
-    expect(result.land_value).toBeGreaterThan(0)
+  it('p_land reflects calcLandPrice reference', () => {
+    const result = distributePhase4(profit, M, 0, 0.06, { landChoice: 'buy' }, 1)
+    expect(result.p_land).toBeGreaterThan(0)
+    expect(result.land_value).toBe(result.p_land)
   })
 
-  it('renting incurs rent cost and negative pool_delta', () => {
-    const result = distributePhase4(M, 0, 0.06, { landChoice: 'rent' }, 1)
-    expect(result.rent_paid).toBeGreaterThan(0)
-    expect(result.pool_delta).toBeLessThan(0)
+  it('renting takes R from profit share and reduces profit_after_rent', () => {
+    const result = distributePhase4(profit, M, 0, 0.06, { landChoice: 'rent' }, 1)
+    expect(result.rent_paid_r).toBeGreaterThan(0)
+    expect(result.profit_after_rent).toBeCloseTo(profit - result.rent_paid_r)
+    expect(result.pool_delta).toBeCloseTo(-result.rent_paid_r)
   })
 
-  it('speculation yields gain in early rounds and loss in late rounds', () => {
-    const early = distributePhase4(M, 0, 0.06, { landChoice: 'speculate' }, 1)
-    const late = distributePhase4(M, 0, 0.06, { landChoice: 'speculate' }, 4)
-    expect(early.land_gain).toBeGreaterThan(0)
-    expect(late.land_gain).toBeLessThan(0)
+  it('speculation revalues assets only — no cash purchase', () => {
+    const early = distributePhase4(profit, M, 1_000_000_000, 0.06, { landChoice: 'speculate' }, 1)
+    const late = distributePhase4(profit, M, 1_000_000_000, 0.06, { landChoice: 'speculate' }, 4)
+    expect(early.land_asset_revaluation).toBeGreaterThan(0)
+    expect(late.land_asset_revaluation).toBeLessThan(0)
+    expect(early.land_purchase_price).toBe(0)
+    expect(early.pool_delta).toBe(0)
   })
 
   it('no land choice yields zero values and zero pool_delta', () => {
-    const result = distributePhase4(M, 0, 0.06, { landChoice: 'none' }, 1)
-    expect(result.rent_paid).toBe(0)
-    expect(result.land_gain).toBe(0)
+    const result = distributePhase4(profit, M, 0, 0.06, { landChoice: 'none' }, 1)
+    expect(result.rent_paid_r).toBe(0)
+    expect(result.land_asset_revaluation).toBe(0)
     expect(result.pool_delta).toBe(0)
   })
 
-  it('existing land_assets amplify land_gain for buy', () => {
-    const noAssets = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
-    const withAssets = distributePhase4(M, 1_000_000_000, 0.06, { landChoice: 'buy' }, 1)
-    expect(withAssets.land_gain).toBeGreaterThan(noAssets.land_gain)
+  it('existing land_assets amplify revaluation for buy', () => {
+    const noAssets = distributePhase4(profit, M, 0, 0.06, { landChoice: 'buy' }, 1)
+    const withAssets = distributePhase4(profit, M, 1_000_000_000, 0.06, { landChoice: 'buy' }, 1)
+    expect(withAssets.land_asset_revaluation).toBeGreaterThan(noAssets.land_asset_revaluation)
   })
 })
 
@@ -285,13 +302,13 @@ describe('calcDistributionTotals', () => {
     })
     const r2 = distributePhase2(r1.total_industrial_profit, { merchantShare: 0.1, useMerchant: true }, 1)
     const r3 = distributePhase3(M, 0, 500_000_000, { action: 'lend', amount: 0 }, 1)
-    const r4 = distributePhase4(M, 0, 0.06, { landChoice: 'buy' }, 1)
+    const r4 = distributePhase4(5000000000, M, 0, 0.06, { landChoice: 'buy' }, 1)
 
     const totals = calcDistributionTotals([r1, r2, r3, r4])
     expect(totals.total_industrial).toBeCloseTo(r1.total_industrial_profit)
     expect(totals.total_merchant).toBeCloseTo(r2.merchant_profit)
     expect(totals.total_finance).toBeCloseTo(Math.max(0, r3.net_finance))
-    expect(totals.total_rent).toBeCloseTo(r4.land_gain)
+    expect(totals.total_rent).toBeCloseTo(r4.rent_paid_r)
   })
 })
 

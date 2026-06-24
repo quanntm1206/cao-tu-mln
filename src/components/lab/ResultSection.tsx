@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { ArrowDown, CheckCircle2 } from 'lucide-react'
 import { formatVnd } from '../../lib/currency'
 import { useGameStore } from '../../store/gameStore'
@@ -71,7 +71,8 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
                 <>
                   <MetricRow label="m phân chia (vòng)" value={formatVnd(r.distributable_surplus, true)} />
                   <MetricRow label="Lợi nhuận thương nghiệp" value={formatVnd(r.merchant_profit, true)} accent="var(--color-lab-yellow)" />
-                  <MetricRow label="p giữ lại (CN)" value={formatVnd(r.industrial_profit_after, true)} accent={accent} big />
+                  <MetricRow label="Lợi nhuận CN sau chia" value={formatVnd(r.industrial_profit_after, true)} accent={accent} big />
+                  <MetricRow label="m mới do lưu thông tạo ra" value="= 0" />
                   <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Không tạo m mới — chỉ chuyển phần m đã có.</p>
                 </>
               )
@@ -82,9 +83,12 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
                 <>
                   <MetricRow label="Vay thêm (T)" value={formatVnd(r.borrowed_principal, true)} />
                   <MetricRow label="Cho vay khóa (T)" value={formatVnd(r.lent_principal_delta, true)} />
+                  <MetricRow label="Gốc cho vay (T_cho_vay)" value={formatVnd(r.t_cho_vay, true)} />
                   <MetricRow label="Lãi đã trả (Z)" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
                   <MetricRow label="Lãi thu được (Z)" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
-                  <MetricRow label="Δ V (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <MetricRow label={`Z = T_cho_vay × Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.t_cho_vay * r.z_prime, true)} accent={accent} />
+                  <MetricRow label="m mới do tài chính tạo ra" value="= 0" />
+                  <MetricRow label="Δ tiền mặt" value={formatVnd(r.pool_delta, true)} accent={accent} big />
                   <MetricRow label="Tài chính ròng" value={formatVnd(r.net_finance, true)} accent={accent} big />
                 </>
               )
@@ -93,12 +97,15 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
               const r = result as Phase4Result
               return (
                 <>
-                  <MetricRow label="Giá mua đất" value={formatVnd(r.land_purchase_price, true)} />
-                  <MetricRow label="Địa tô đã trả (R)" value={formatVnd(r.rent_paid, true)} accent="#EF4444" />
-                  <MetricRow label="Giá cả đất đai (R/Z′)" value={formatVnd(r.land_value, true)} />
-                  <MetricRow label="Tái định giá tài sản" value={formatVnd(r.land_gain, true)} />
-                  <MetricRow label="Δ V (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
-                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Lời/lỗ đất là biến động giá tài sản, không phải m mới.</p>
+                  <MetricRow label="m phân phối (trước địa tô)" value={formatVnd(r.profit_before_rent, true)} />
+                  <MetricRow label="Địa tô R (phần m nhượng)" value={formatVnd(r.rent_paid_r, true)} accent="#EF4444" />
+                  <MetricRow label="m giữ lại sau địa tô" value={formatVnd(r.profit_after_rent, true)} accent={accent} />
+                  <MetricRow label="Giá mua đất (tiền mặt)" value={formatVnd(r.land_purchase_price, true)} />
+                  <MetricRow label={`P = R / Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.p_land, true)} />
+                  <MetricRow label="Tái định giá tài sản đất" value={formatVnd(r.land_asset_revaluation, true)} />
+                  <MetricRow label="m mới do đất tạo ra" value="= 0" />
+                  <MetricRow label="Δ tiền mặt" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Tái định giá chỉ cộng vào tài sản đất — không cộng vào tài sản/vốn khả dụng.</p>
                 </>
               )
             })()}
@@ -117,7 +124,7 @@ export default function ResultSection({ result, accent, prevRound, isLastInPhase
 
         {isPhaseEnd && (
           <div className="mb-6">
-            <OpenQuestionInline phase={result.phase as GamePhase} accent={accent} />
+            <OpenQuestionInline phase={result.phase as GamePhase} accent={accent} onSkip={onContinue} />
           </div>
         )}
 

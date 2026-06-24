@@ -39,7 +39,7 @@ export default function MPoolTrajectory() {
   if (trajectory.length <= 1) {
     return (
       <div className="lab-card-elevated p-6 sm:p-8">
-        <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">M-POOL TRAJECTORY</p>
+        <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">TÀI SẢN/VỐN KHẢ DỤNG</p>
         <p className="text-sm text-[var(--color-lab-fg-muted)]">Chưa có vòng nào được áp dụng.</p>
       </div>
     )
@@ -75,13 +75,13 @@ export default function MPoolTrajectory() {
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
       <div className="flex items-baseline justify-between mb-1 flex-wrap gap-2">
-        <p className="lab-cite text-[var(--color-lab-cyan)]">M-POOL TRAJECTORY · 16 vòng</p>
+        <p className="lab-cite text-[var(--color-lab-cyan)]">TÀI SẢN/VỐN KHẢ DỤNG · 16 vòng</p>
         <p className="text-xs font-mono text-[var(--color-lab-fg-dim)]">
           {trajectory.length - 1}/16 vòng đã chơi
         </p>
       </div>
       <h3 className="font-display text-xl font-bold mb-6">
-        V đi từ {formatVnd(startingM, true)} đến{' '}
+        Tài sản/vốn khả dụng đi từ {formatVnd(startingM, true)} đến{' '}
         <span style={{ color: positive ? '#10B981' : '#EF4444' }}>{formatVnd(m_pool, true)}</span>
       </h3>
 

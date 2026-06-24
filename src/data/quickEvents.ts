@@ -1,4 +1,4 @@
-import type { Feature, HistoryEntry } from '../store/gameStore'
+﻿import type { Feature, HistoryEntry } from '../store/gameStore'
 
 export const FORBIDDEN_QUICK_EVENT_TERMS = [
   'tư bản đảo',
@@ -121,7 +121,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'buy-machines',
         label: 'Mua máy móc 100 triệu đồng',
         resultText: 'Bạn tăng tư bản cố định, nâng cao năng lực sản xuất dài hạn.',
-        teachingPoint: 'Máy móc chuyển giá trị của mình dần vào sản phẩm qua khấu hao, không tự tạo thêm giá trị mới.',
+        teachingPoint: 'Máy móc (c) chuyển giá trị của mình dần vào sản phẩm qua khấu hao — KHÔNG tự tạo thêm giá trị thặng dư m mới. Chỉ lao động sống (v) mới tạo ra m.',
         effect: { cashDelta: -100 * M, machinesDelta: 100 * M },
       },
       {
@@ -212,7 +212,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     concept: 'accumulation',
     title: 'Hội chợ triển lãm công nghiệp cơ khí',
     description: 'Hội chợ công nghiệp quốc tế khai mạc tại Hà Nội, cơ hội kết nối đối tác và tìm hiểu công nghệ.',
-    teachingPoint: 'Hoạt động triển lãm thúc đẩy lưu thông thông tin kỹ thuật, gián tiếp ảnh hưởng đến quyết định tích lũy tư bản.',
+    teachingPoint: 'Triển lãm hỗ trợ kết nối và thực hiện giá trị hàng hóa — không tạo ra m mới. Chỉ lao động sống trong sản xuất mới tạo ra giá trị thặng dư.',
     choices: [
       {
         id: 'attend-fair',
@@ -313,7 +313,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['merchant'],
     title: 'Hội chợ thương mại quốc tế tại TP.HCM',
     description: 'Hội chợ mở ra cơ hội ký kết hợp đồng bán hàng với đối tác nước ngoài, doanh thu dự kiến tăng.',
-    teachingPoint: 'Thị trường quốc tế mở rộng phạm vi thực hiện giá trị hàng hóa, góp phần thực hiện giá trị thặng dư nhanh hơn.',
+    teachingPoint: 'Hội chợ thương mại hỗ trợ LƯU THÔNG và THỰC HIỆN giá trị hàng hóa — không TẠO RA giá trị thặng dư m mới. M chỉ sinh ra trong quá trình sản xuất (v × m′).',
     choices: [
       {
         id: 'exhibit',

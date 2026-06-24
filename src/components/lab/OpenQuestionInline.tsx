@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useGameStore } from '../../store/gameStore'
 import type { GamePhase } from '../../engine/distribution'
 import { MessageSquareText } from 'lucide-react'
@@ -10,9 +10,9 @@ const QUESTIONS: Record<GamePhase, string> = {
   4: 'Địa tô khác lãi tức và lợi nhuận thương nghiệp thế nào? Công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng cho thấy điều gì?',
 }
 
-interface Props { phase: GamePhase; accent: string }
+interface Props { phase: GamePhase; accent: string; onSkip?: () => void }
 
-export default function OpenQuestionInline({ phase, accent }: Props) {
+export default function OpenQuestionInline({ phase, accent, onSkip }: Props) {
   const { saveOpenAnswer, openAnswers } = useGameStore()
   const [draft, setDraft] = useState(openAnswers[phase] ?? '')
   const [saved, setSaved] = useState(false)
@@ -47,6 +47,14 @@ export default function OpenQuestionInline({ phase, accent }: Props) {
       >
         {saved ? '✓ Đã lưu phản hồi' : 'Lưu câu trả lời'}
       </button>
+      {onSkip && (
+        <button
+          onClick={onSkip}
+          className="lab-btn-ghost mt-1 w-full py-2 rounded-lg text-sm text-[var(--color-lab-fg-dim)]"
+        >
+          Bỏ qua
+        </button>
+      )}
     </div>
   )
 }

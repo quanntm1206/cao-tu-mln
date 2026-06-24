@@ -1,4 +1,4 @@
-import {
+﻿import {
   Z_RATE_TABLE_2022_2024,
   R_CASE_HOAI_DUC,
   R_CASE_BAC_NINH,
@@ -10,7 +10,7 @@ import {
   type SectorBreakdown,
   splitCVMWithRate,
   convergeSectorRates,
-  productionMultiplier,
+  productionDeployCap,
   getInitialSectorRates,
 } from './simulation'
 
@@ -20,6 +20,7 @@ export { getInitialSectorRates }
 export type GamePhase = 1 | 2 | 3 | 4
 
 export type LandChoice = 'buy' | 'rent' | 'speculate' | 'none'
+export type RentType = LandChoice
 export type FinanceAction = 'borrow' | 'lend' | 'none'
 export type MarketCondition = 'boom' | 'normal' | 'recession'
 
@@ -87,6 +88,7 @@ export interface Phase2Result {
   merchant_profit: number
   industrial_profit_after: number
   distributable_surplus: number
+  m_new_from_circulation: 0
   pool_delta: number
   lesson: string
 }
@@ -101,6 +103,9 @@ export interface Phase3Result {
   lent_principal_delta: number
   debt_after: number
   lent_after: number
+  m_new_from_finance: 0
+  z_prime: number
+  t_cho_vay: number
   pool_delta: number
   lesson: string
 }
@@ -108,12 +113,23 @@ export interface Phase3Result {
 export interface Phase4Result {
   phase: 4
   roundInPhase: number
-  rent_paid: number
-  land_value: number
-  land_gain: number
+  profit_before_rent: number
+  rent_paid_r: number
+  profit_after_rent: number
+  z_prime: number
+  p_land: number
+  land_asset_revaluation: number
+  rent_type: RentType
   land_purchase_price: number
+  m_new_from_land: 0
   pool_delta: number
   lesson: string
+  /** @deprecated use rent_paid_r */
+  rent_paid: number
+  /** @deprecated use p_land */
+  land_value: number
+  /** @deprecated use land_asset_revaluation */
+  land_gain: number
 }
 
 export type PhaseResult = Phase1Result | Phase2Result | Phase3Result | Phase4Result
@@ -155,7 +171,7 @@ export function calcDistributionTotals(results: PhaseResult[]): {
     if (r.phase === 1) total_industrial += r.total_industrial_profit
     if (r.phase === 2) total_merchant += r.merchant_profit
     if (r.phase === 3) total_finance += Math.max(0, r.net_finance)
-    if (r.phase === 4) total_rent += r.land_gain
+    if (r.phase === 4) total_rent += r.rent_paid_r
   }
   return { total_industrial, total_merchant, total_finance, total_rent }
 }
@@ -170,8 +186,10 @@ const PHASE1_LESSONS_VI = [
 export function distributePhase1(params: Phase1Params): Phase1Result {
   const { availableCash, sectorRates, allocations, roundInPhase, fixedCapital, materialsStock, baseCapital } = params
 
+  const deployCap = productionDeployCap(fixedCapital, materialsStock, baseCapital)
+  const effectiveCash = availableCash * deployCap
   const rawTotal = allocations.co_khi + allocations.det + allocations.da
-  const cappedTotal = Math.min(rawTotal, Math.max(0, availableCash))
+  const cappedTotal = Math.min(rawTotal, Math.max(0, effectiveCash))
   const scale = rawTotal > 0 ? cappedTotal / rawTotal : 0
 
   const capped = {
@@ -180,17 +198,15 @@ export function distributePhase1(params: Phase1Params): Phase1Result {
     da: allocations.da * scale,
   }
 
-  const multiplier = productionMultiplier(fixedCapital, materialsStock, baseCapital)
-
   const breakdown = {
     co_khi: splitCVMWithRate(capped.co_khi, 'co_khi', sectorRates.co_khi),
     det: splitCVMWithRate(capped.det, 'det', sectorRates.det),
     da: splitCVMWithRate(capped.da, 'da', sectorRates.da),
   }
 
-  const co_khi_profit = breakdown.co_khi.m * multiplier
-  const det_profit = breakdown.det.m * multiplier
-  const da_profit = breakdown.da.m * multiplier
+  const co_khi_profit = breakdown.co_khi.m
+  const det_profit = breakdown.det.m
+  const da_profit = breakdown.da.m
   const total_c = breakdown.co_khi.c + breakdown.det.c + breakdown.da.c
   const total_v = breakdown.co_khi.v + breakdown.det.v + breakdown.da.v
   const total_industrial_profit = co_khi_profit + det_profit + da_profit
@@ -245,6 +261,7 @@ export function distributePhase2(
     merchant_profit,
     industrial_profit_after,
     distributable_surplus: distributableSurplus,
+    m_new_from_circulation: 0 as const,
     pool_delta: 0,
     lesson: PHASE2_LESSONS[idx],
   }
@@ -265,6 +282,8 @@ export function distributePhase3(
   roundInPhase: number,
 ): Phase3Result {
   const z_rate = getZRateForRound(8 + roundInPhase)
+  const z_prime = z_rate
+  let t_cho_vay = lentPrincipal
 
   const interest_paid = debtPrincipal * z_rate
   const interest_earned = lentPrincipal * z_rate * 0.75
@@ -283,6 +302,7 @@ export function distributePhase3(
     lent_principal_delta = safe_lend
     lent_after = lentPrincipal + safe_lend
   }
+  t_cho_vay = lent_after
 
   const pool_delta = net_finance + borrowed_principal - lent_principal_delta
 
@@ -297,45 +317,55 @@ export function distributePhase3(
     lent_principal_delta,
     debt_after,
     lent_after,
+    m_new_from_finance: 0 as const,
+    z_prime,
+    t_cho_vay,
     pool_delta,
     lesson: PHASE3_LESSONS[idx],
   }
 }
 
 const PHASE4_LESSONS = [
-  'Địa tô là phần giá trị thặng dư mà nhà tư bản phải nhượng cho chủ sở hữu đất.',
-  'Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng, phản ánh sự vốn hóa địa tô.',
-  'Bong bóng giá đất không phản ánh giá trị thực, mà phản ánh kỳ vọng đầu cơ tương lai.',
-  'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',
+  'Địa tô R là phần giá trị thặng dư mà nhà tư bản sản xuất nhượng cho chủ sở hữu đất — không phải m mới.',
+  'Giá cả đất đai P = R / Z′: vốn hóa dòng địa tô kỳ vọng theo tỷ suất lợi tức ngân hàng (Z′).',
+  'Bong bóng giá đất là biến động giá cả trên thị trường thứ cấp — tài sản đất đai, không sinh thêm m.',
+  'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại phần m đã có trong xã hội.',
 ]
 
 export const LAND_COMMIT_FRACTION = 0.25
 
 export function distributePhase4(
+  profitBeforeRent: number,
   availableCash: number,
   landAssets: number,
-  z_rate: number,
+  z_prime: number,
   decision: Phase4Decision,
   roundInPhase: number,
 ): Phase4Result {
   const commit = Math.max(0, availableCash) * LAND_COMMIT_FRACTION
+  const choice = decision.landChoice
+  const profit_before_rent = Math.max(0, profitBeforeRent)
 
-  let rent_paid = 0
-  let land_value = 0
-  let land_gain = 0
+  const rentReferenceR =
+    choice === 'speculate' ? R_CASE_BAC_NINH.rentPerSqmYear : R_CASE_HOAI_DUC.rentPerSqmYear
+  const p_land = calcLandPrice(rentReferenceR, z_prime)
+
+  let rent_paid_r = 0
+  let profit_after_rent = profit_before_rent
   let land_purchase_price = 0
+  let land_asset_revaluation = 0
   let pool_delta = 0
 
-  if (decision.landChoice === 'buy') {
+  if (choice === 'rent') {
+    rent_paid_r = profit_before_rent * LAND_COMMIT_FRACTION
+    profit_after_rent = profit_before_rent - rent_paid_r
+    pool_delta = -rent_paid_r
+  } else if (choice === 'buy') {
     land_purchase_price = commit
-    const totalLand = landAssets + commit
     const growthPerRound = R_CASE_HOAI_DUC.priceGrowthPct / ROUNDS_PER_PHASE
-    land_gain = totalLand * growthPerRound
-    land_value = calcLandPrice(R_CASE_HOAI_DUC.rentPerSqmYear, z_rate)
+    land_asset_revaluation = (landAssets + land_purchase_price) * growthPerRound
     pool_delta = -land_purchase_price
-  } else if (decision.landChoice === 'speculate') {
-    land_purchase_price = commit
-    const totalLand = landAssets + commit
+  } else if (choice === 'speculate') {
     let growthRate: number
     if (roundInPhase <= 2) {
       growthRate = R_CASE_BAC_NINH.bubbleGrowthPct / 2
@@ -344,25 +374,27 @@ export function distributePhase4(
     } else {
       growthRate = R_CASE_BAC_NINH.crashPct
     }
-    land_gain = totalLand * growthRate
-    land_value = calcLandPrice(R_CASE_BAC_NINH.rentPerSqmYear, z_rate)
-    pool_delta = -land_purchase_price
-  } else if (decision.landChoice === 'rent') {
-    rent_paid = commit * 0.05
-    land_gain = -rent_paid
-    pool_delta = -rent_paid
-    land_value = calcLandPrice(R_CASE_HOAI_DUC.rentPerSqmYear, z_rate)
+    land_asset_revaluation = landAssets * growthRate
+    pool_delta = 0
   }
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))
   return {
     phase: 4,
     roundInPhase,
-    rent_paid,
-    land_value,
-    land_gain,
+    profit_before_rent,
+    rent_paid_r,
+    profit_after_rent,
+    z_prime,
+    p_land,
+    land_asset_revaluation,
+    rent_type: choice,
     land_purchase_price,
+    m_new_from_land: 0 as const,
     pool_delta,
     lesson: PHASE4_LESSONS[idx],
+    rent_paid: rent_paid_r,
+    land_value: p_land,
+    land_gain: land_asset_revaluation,
   }
 }

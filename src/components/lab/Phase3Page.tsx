@@ -99,7 +99,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
       controls={
         <ControlsCard
           title={`Quyết định vòng ${roundInPhase}`}
-          subtitle={`V khả dụng: ${formatVnd(mPool, true)}`}
+          subtitle={`Tài sản/vốn khả dụng: ${formatVnd(mPool, true)}`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ action, amount: action === 'none' ? 0 : amount })}
           accent={ACCENT}
@@ -120,7 +120,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
               value={amount}
               max={maxAmount}
               onChange={setAmount}
-              hint={`Tối đa ${formatVnd(maxAmount, true)} (50% V)`}
+              hint={`Tối đa ${formatVnd(maxAmount, true)} (50% tài sản/vốn khả dụng)`}
               accent={ACCENT}
             />
           )}
@@ -171,7 +171,7 @@ export default function Phase3Page({ onNextPhase }: Props) {
           ],
         }}
         bigNumber={m_pool}
-        bigNumberLabel="V khả dụng"
+        bigNumberLabel="Tài sản/vốn khả dụng"
         quote={{ text: 'Tư bản sinh ra lợi tức trở thành tư bản trừu tượng nhất, tự tăng giá trị trong nhận thức.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.75' }}
         color={ACCENT}
       />

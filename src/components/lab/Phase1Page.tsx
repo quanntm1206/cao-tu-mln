@@ -75,7 +75,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
   return (
     <RoundSection
       roundLabel={`VÒNG ${roundInPhase}/4 · PHÂN BỔ M-POOL`}
-      title="Phân bổ V vào 3 ngành — đâu là c+v, đâu là m?"
+      title="Phân bổ vốn vào 3 ngành — đâu là c+v, đâu là m?"
       description={
         <>
           <p>{hints[roundInPhase - 1]}</p>
@@ -91,7 +91,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
       controls={
         <ControlsCard
           title={`Phân bổ vòng ${roundInPhase}`}
-          subtitle={`Tổng V (vốn ứng trước): ${mPool.toLocaleString('vi-VN')} ₫`}
+          subtitle={`Tài sản/vốn khả dụng: ${mPool.toLocaleString('vi-VN')} ₫`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ co_khi: coKhi, det, da })}
           accent={ACCENT_HEX}
@@ -117,7 +117,7 @@ function Phase1Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (s: SectorSt
             label="Da giày (p′ = 40%) — tự động"
             value={da}
             total={mPool}
-            hint="= V − cơ khí − dệt may"
+            hint="= tổng vốn − cơ khí − dệt may"
             accent="#FACC15"
           />
         </ControlsCard>
@@ -166,7 +166,7 @@ export default function Phase1Page({ onNextPhase }: Props) {
       <HeroSection
         phase={1}
         title="Sản xuất tạo ra giá trị — m từ đâu mà có?"
-        subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ V (vốn ứng trước). Phân bổ vào 3 ngành và quan sát m = v × m′ sinh ra như thế nào qua 4 vòng."
+        subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ tài sản/vốn khả dụng. Phân bổ vào 3 ngành và quan sát m = v × m′ sinh ra như thế nào qua 4 vòng."
         formula={{
           l: "p'",
           r: "= m / (c + v)   ·   m = v × m'",
@@ -183,7 +183,7 @@ export default function Phase1Page({ onNextPhase }: Props) {
           ],
         }}
         bigNumber={m_pool}
-        bigNumberLabel="V hiện có (vốn ứng trước)"
+        bigNumberLabel="Tài sản/vốn khả dụng"
         quote={{
           text: 'Lưu thông không tạo ra giá trị mới. Giá trị thặng dư có nguồn gốc trong sản xuất.',
           cite: 'Mác, Tư bản, dẫn theo Giáo trình KTCT Mác–Lênin, Chương 3, tr.70',
