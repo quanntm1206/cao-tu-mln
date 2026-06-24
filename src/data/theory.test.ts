@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { THEORY_LESSONS, THEORY_SECTIONS, getLessonForRound } from './theory'
 
 const allText = THEORY_LESSONS.map((l) =>
@@ -26,14 +26,14 @@ describe('theory lessons align with MLN122 chapter 3 tr.70-78', () => {
   })
 
   it('covers key concepts from tr.70-78', () => {
-    const required = ['p\'', 'Z', 'R', 'gia dat', 'lai tuc', 'dia to', 'thuong nghiep', 'phan phoi']
+    const required = ["p'", 'Z', 'R', 'giá đất', 'lãi tức', 'địa tô', 'thương nghiệp', 'phân phối']
     for (const phrase of required) {
       expect(allText.toLowerCase()).toContain(phrase.toLowerCase())
     }
   })
 
   it('mentions Vietnam real data', () => {
-    expect(allText.toLowerCase()).toContain('viet nam')
+    expect(allText.toLowerCase()).toContain('việt nam')
   })
 
   it('getLessonForRound falls back to last lesson for out-of-range', () => {

@@ -1,4 +1,4 @@
-﻿import { useGameStore } from '../store/gameStore'
+import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
 import OpenQuestionCard from './OpenQuestionCard'
 import type { GamePhase } from '../engine/distribution'
@@ -16,7 +16,7 @@ export default function RoundResultModal() {
   }
 
   const fmt = (n: number) => formatVnd(n, true)
-  const continueLabel = gameOver ? 'Xem tong ket' : `Tiep tuc vong ${round}`
+  const continueLabel = gameOver ? 'Xem tổng kết' : `Tiếp tục vòng ${round}`
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70 p-4">
@@ -24,15 +24,15 @@ export default function RoundResultModal() {
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-2xl">
-              {lastResult.phase === 1 ? '🏭' : lastResult.phase === 2 ? '🛒' : lastResult.phase === 3 ? '🏦' : '🏔'}
+              {lastResult.phase === 1 ? '🏭' : lastResult.phase === 2 ? '🏪' : lastResult.phase === 3 ? '🏦' : '🏗️'}
             </span>
             <div>
-              <p className="text-xs text-amber-300 uppercase tracking-wider">Vong {prevRound} – Pha {lastResult.phase}/4</p>
+              <p className="text-xs text-amber-300 uppercase tracking-wider">Vòng {prevRound} - Pha {lastResult.phase}/4</p>
               <h2 className="text-lg font-bold text-stone-50">
-                {lastResult.phase === 1 ? 'San xuat Cong nghiep'
-                  : lastResult.phase === 2 ? 'Thuong nghiep'
-                  : lastResult.phase === 3 ? 'Tai chinh / Lai tuc'
-                  : 'Dat dai & Dia to'}
+                {lastResult.phase === 1 ? 'Sản xuất Công nghiệp'
+                  : lastResult.phase === 2 ? 'Thương nghiệp'
+                  : lastResult.phase === 3 ? 'Tài chính / Lãi tức'
+                  : 'Đất đai & Địa tô'}
               </h2>
             </div>
           </div>
@@ -43,11 +43,11 @@ export default function RoundResultModal() {
               const r = lastResult
               return (
                 <>
-                  <ResultRow label="Loi nhuan Co khi" value={fmt(r.co_khi_profit)} />
-                  <ResultRow label="Loi nhuan Det may" value={fmt(r.det_profit)} />
-                  <ResultRow label="Loi nhuan Da giay" value={fmt(r.da_profit)} />
-                  <ResultRow label="Tong loi nhuan CN" value={fmt(r.total_industrial_profit)} highlight />
-                  <ResultRow label="Ty suat loi nhuan p'" value={`${(r.p_rate * 100).toFixed(1)}%`} />
+                  <ResultRow label="Lợi nhuận Cơ khí" value={fmt(r.co_khi_profit)} />
+                  <ResultRow label="Lợi nhuận Dệt may" value={fmt(r.det_profit)} />
+                  <ResultRow label="Lợi nhuận Da giày" value={fmt(r.da_profit)} />
+                  <ResultRow label="Tổng lợi nhuận CN" value={fmt(r.total_industrial_profit)} highlight />
+                  <ResultRow label="Tỷ suất lợi nhuận p'" value={`${(r.p_rate * 100).toFixed(1)}%`} />
                 </>
               )
             })()}
@@ -55,8 +55,8 @@ export default function RoundResultModal() {
               const r = lastResult
               return (
                 <>
-                  <ResultRow label="Loi nhuan TN nhuong" value={fmt(r.merchant_profit)} />
-                  <ResultRow label="Loi nhuan CN giu lai" value={fmt(r.industrial_profit_after)} highlight />
+                  <ResultRow label="Lợi nhuận TN nhượng" value={fmt(r.merchant_profit)} />
+                  <ResultRow label="Lợi nhuận CN giữ lại" value={fmt(r.industrial_profit_after)} highlight />
                 </>
               )
             })()}
@@ -64,9 +64,9 @@ export default function RoundResultModal() {
               const r = lastResult
               return (
                 <>
-                  <ResultRow label="Lai da tra (Z)" value={fmt(r.interest_paid)} color="text-red-400" />
-                  <ResultRow label="Lai thu duoc" value={fmt(r.interest_earned)} color="text-green-400" />
-                  <ResultRow label="Tai chinh rong" value={fmt(r.net_finance)} highlight />
+                  <ResultRow label="Lãi đã trả (Z)" value={fmt(r.interest_paid)} color="text-red-400" />
+                  <ResultRow label="Lãi thu được" value={fmt(r.interest_earned)} color="text-green-400" />
+                  <ResultRow label="Tài chính ròng" value={fmt(r.net_finance)} highlight />
                 </>
               )
             })()}
@@ -74,9 +74,9 @@ export default function RoundResultModal() {
               const r = lastResult
               return (
                 <>
-                  <ResultRow label="Dia to da tra (R)" value={fmt(r.rent_paid)} color="text-red-400" />
-                  <ResultRow label="Gia tri dat" value={fmt(r.land_value)} />
-                  <ResultRow label="Gain/loss dat" value={fmt(r.land_gain)} highlight />
+                  <ResultRow label="Địa tô đã trả (R)" value={fmt(r.rent_paid)} color="text-red-400" />
+                  <ResultRow label="Giá trị đất" value={fmt(r.land_value)} />
+                  <ResultRow label="Gain/loss đất" value={fmt(r.land_gain)} highlight />
                 </>
               )
             })()}
@@ -84,14 +84,14 @@ export default function RoundResultModal() {
 
           {/* Lesson */}
           <div className="rounded-xl bg-amber-950/30 border border-amber-800/40 p-3 mb-4">
-            <p className="text-xs text-amber-300 mb-1 font-semibold">Bai hoc kinh te chinh tri</p>
+            <p className="text-xs text-amber-300 mb-1 font-semibold">Bài học kinh tế chính trị</p>
             <p className="text-sm text-stone-200 leading-relaxed">{lastResult.lesson}</p>
           </div>
 
           {/* Quick event */}
           {lastEvent && (
             <div className="rounded-xl bg-stone-900/60 border border-stone-700/50 p-3 mb-4">
-              <p className="text-xs text-stone-400 mb-1">Tinh huong: {lastEvent.title}</p>
+              <p className="text-xs text-stone-400 mb-1">Tình huống: {lastEvent.title}</p>
               <p className="text-sm text-stone-300">{lastEvent.resultText}</p>
             </div>
           )}

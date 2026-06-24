@@ -1,13 +1,13 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 
 interface Props { onShowLeaderboard: () => void }
 
 const PHASES = [
-  { n: 1, icon: '🏭', label: 'San xuat Cong nghiep', desc: 'Phan bo M-pool cho co khi, det may, da giay. Hoc p\' va ly thuyet loi nhuan.' },
-  { n: 2, icon: '🛒', label: 'Thuong nghiep', desc: 'Quyet dinh dung kenh thuong nhan. Kham pha loi nhuan TN tu GTTT.' },
-  { n: 3, icon: '🏦', label: 'Tu ban Tai chinh', desc: 'Vay hoac cho vay von. Hieu lai tuc Z la phan phoi tu m.' },
-  { n: 4, icon: '🏔', label: 'Dat dai & Dia to', desc: 'Mua / thue / dau co dat. Thay gia dat = R / i trong thuc te VN.' },
+  { n: 1, icon: '🏭', label: 'Sản xuất Công nghiệp', desc: "Phân bổ M-pool cho cơ khí, dệt may, da giày. Học p' và lý thuyết lợi nhuận." },
+  { n: 2, icon: '🏪', label: 'Thương nghiệp', desc: 'Quyết định dùng kênh thương nhân. Khám phá lợi nhuận TN từ GTTT.' },
+  { n: 3, icon: '🏦', label: 'Tư bản Tài chính', desc: 'Vay hoặc cho vay vốn. Hiểu lãi tức Z là phần phối từ m.' },
+  { n: 4, icon: '🏗️', label: 'Đất đai & Địa tô', desc: 'Mua / thuê / đầu cơ đất. Thấy giá đất = R / i trong thực tế VN.' },
 ]
 
 export default function IntroScreen({ onShowLeaderboard }: Props) {
@@ -27,19 +27,19 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
       </div>
 
       <div className="relative z-10 text-center mb-8">
-        <div className="chapter-badge mx-auto mb-4">📖 Chuong 3 – Phan chia GTTT</div>
+        <div className="chapter-badge mx-auto mb-4">📖 Chương 3 - Phân chia GTTT</div>
         <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="text-5xl drop-shadow-lg">📚</span>
+          <span className="text-5xl drop-shadow-lg">⚙️</span>
           <h1 className="text-5xl sm:text-6xl font-black dossier-title">
-            Phan chia <span className="text-amber-300">GTTT</span>
+            Phân chia <span className="text-amber-300">GTTT</span>
           </h1>
         </div>
         <p className="text-stone-300 text-lg max-w-2xl mx-auto leading-relaxed">
-          Mo phong phan chia gia tri thang du va tien de ra tien: <br />
-          <span className="text-amber-300 font-semibold">m = p + LN thuong nghiep + Z + R</span>
+          Mô phỏng phân chia giá trị thặng dư và tiền đẻ ra tiền: <br />
+          <span className="text-amber-300 font-semibold">m = p + LN thương nghiệp + Z + R</span>
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {['T-H-T\'', 'p\' = m/(c+v)', 'Z = lai tuc', 'R = dia to', 'Gia dat = R/i'].map((f) => (
+          {["T-H-T'", "p' = m/(c+v)", 'Z = lãi tức', 'R = địa tô', 'Giá đất = R/i'].map((f) => (
             <span key={f} className="formula-chip">{f}</span>
           ))}
         </div>
@@ -59,22 +59,22 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
 
       <div className="relative z-10 theory-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
         <div className="relative z-10">
-          <h2 className="text-xl font-bold text-stone-50 mb-5">Bat dau hoc phan</h2>
+          <h2 className="text-xl font-bold text-stone-50 mb-5">Bắt đầu học phần</h2>
 
           <div className="mb-4">
-            <label className="block text-sm text-stone-300 mb-1">Ten hoc vien</label>
+            <label className="block text-sm text-stone-300 mb-1">Tên học viên</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-              placeholder="Nhap ten cua ban..."
+              placeholder="Nhập tên của bạn..."
               className="w-full rounded-xl bg-stone-900/70 border border-amber-900/30 text-stone-100 px-4 py-3 focus:outline-none focus:border-amber-600/60"
             />
           </div>
 
           <p className="text-xs text-stone-500 mb-5">
-            16 vong, 4 pha × 4 vong. Giao trinh KTCT Mac-Lenin, Chuong 3, tr. 70–78.
+            16 vòng, 4 pha x 4 vòng. Giáo trình KTCT Mác-Lênin, Chương 3, tr. 70-78.
           </p>
 
           <button
@@ -82,14 +82,14 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
             disabled={!name.trim()}
             className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${name.trim() ? 'btn-action' : 'bg-stone-900 text-stone-500 cursor-not-allowed'}`}
           >
-            Bat dau 4 pha hoc tap
+            Bắt đầu 4 pha học tập
           </button>
 
           <button
             onClick={onShowLeaderboard}
             className="w-full mt-3 py-2.5 rounded-xl font-semibold text-sm bg-stone-800/70 text-stone-300 hover:bg-stone-700 transition-colors"
           >
-            🏆 Xem bang xep hang
+            🏆 Xem bảng xếp hạng
           </button>
         </div>
       </div>

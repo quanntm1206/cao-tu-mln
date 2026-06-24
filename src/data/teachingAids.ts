@@ -1,4 +1,4 @@
-﻿export interface TeachingAid {
+export interface TeachingAid {
   round: number
   objective: string
   discussionQuestion: string
@@ -11,7 +11,7 @@ export interface GlossaryItem {
 }
 
 export const TEACHING_AIDS: TeachingAid[] = [
-  { round: 1, objective: "Nhận diện vận động T–H–T' và vì sao tiền ứng trước trở thành tư bản.", discussionQuestion: "Vì sao mua rẻ bán đắt không đủ để giải thích nguồn gốc giá trị thặng dư?", focusMetric: "Quan sát tiền T chuyển thành yếu tố sản xuất rồi quay về thành T'." },
+  { round: 1, objective: "Nhận diện vận động T-H-T' và vì sao tiền ứng trước trở thành tư bản.", discussionQuestion: "Vì sao mua rẻ bán đắt không đủ để giải thích nguồn gốc giá trị thặng dư?", focusMetric: "Quan sát tiền T chuyển thành yếu tố sản xuất rồi quay về thành T'." },
   { round: 2, objective: 'Hiểu sức lao động là hàng hóa đặc biệt tạo ra giá trị mới.', discussionQuestion: 'Điểm đặc biệt của hàng hóa sức lao động so với nguyên liệu và máy móc là gì?', focusMetric: 'Quan sát số công nhân và tiền công như tư bản khả biến v.' },
   { round: 3, objective: 'Phân biệt c, v, m trong giá trị hàng hóa G = c + v + m.', discussionQuestion: 'Vì sao máy móc, nguyên liệu chỉ chuyển giá trị còn lao động sống tạo giá trị mới?', focusMetric: 'Quan sát tư bản cố định, tư bản lưu động và lợi nhuận vòng.' },
   { round: 4, objective: 'Củng cố tư bản bất biến c và tư bản khả biến v.', discussionQuestion: 'Nếu tăng máy móc mà không tăng lao động sống thì nguồn m được giải thích thế nào?', focusMetric: 'Quan sát cấu tạo hữu cơ c/v bắt đầu xuất hiện.' },
@@ -27,19 +27,19 @@ export const TEACHING_AIDS: TeachingAid[] = [
   { round: 14, objective: 'Hiểu chi phí sản xuất k = c + v và lợi nhuận là hình thức biểu hiện của m.', discussionQuestion: 'Vì sao cùng một m có thể được nhìn thành p khi xét từ chi phí k?', focusMetric: 'Quan sát k, m và lợi nhuận ròng.' },
   { round: 15, objective: "Đọc p' và lợi nhuận bình quân P̄.", discussionQuestion: "Những nhân tố nào làm p' khác P̄?", focusMetric: "Quan sát biểu đồ p' so với P̄." },
   { round: 16, objective: 'Hiểu lợi nhuận thương nghiệp là một phần m được phân chia.', discussionQuestion: 'Tư bản thương nghiệp có tạo nguồn m độc lập không?', focusMetric: 'Quan sát kênh thương nghiệp và p_tn trong dòng m.' },
-  { round: 17, objective: 'Hiểu lợi tức là phần lợi nhuận trả cho tư bản cho vay.', discussionQuestion: 'Vì sao lãi vay vẫn được quy về phân chia giá trị thặng dư?', focusMetric: 'Quan sát nợ, cho vay và z.' },
-  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức giá đất = R / i cho thấy quan hệ nào giữa địa tô và lợi tức?', focusMetric: 'Quan sát R, z và chi phí thuê đất.' },
+  { round: 17, objective: 'Hiểu lãi tức là phần lợi nhuận trả cho tư bản cho vay.', discussionQuestion: 'Vì sao lãi vay vẫn được quy về phân chia giá trị thặng dư?', focusMetric: 'Quan sát nợ, cho vay và z.' },
+  { round: 18, objective: 'Hiểu địa tô và giá đất như địa tô tư bản hóa.', discussionQuestion: 'Công thức giá đất = R / i cho thấy quan hệ nào giữa địa tô và lãi tức?', focusMetric: 'Quan sát R, z và chi phí thuê đất.' },
 ]
 
 export const GLOSSARY: GlossaryItem[] = [
-  { term: 'T–H–T\'', meaning: 'Công thức chung của tư bản: ứng tiền ra mua hàng hóa để thu về số tiền lớn hơn.' },
+  { term: "T-H-T'", meaning: "Công thức chung của tư bản: ứng tiền ra mua hàng hóa để thu về số tiền lớn hơn." },
   { term: 'c', meaning: 'Tư bản bất biến: máy móc, nguyên liệu; chuyển giá trị vào sản phẩm, không tự tạo m.' },
   { term: 'v', meaning: 'Tư bản khả biến: tiền mua sức lao động; biến đổi vì lao động sống tạo giá trị mới.' },
   { term: 'm', meaning: 'Giá trị thặng dư: phần giá trị mới vượt quá v do lao động tạo ra.' },
-  { term: "m'", meaning: 'Tỷ suất giá trị thặng dư: m / v, đo mức độ bóc tách lao động thặng dư trong mô hình giáo trình.' },
+  { term: "m'", meaning: 'Tỷ suất giá trị thặng dư: m / v, đo mức độ bóc lột lao động thặng dư trong mô hình giáo trình.' },
   { term: "p'", meaning: 'Tỷ suất lợi nhuận: p / (c + v), nhìn m dưới hình thức lợi nhuận so với toàn bộ tư bản ứng trước.' },
   { term: 'P̄', meaning: 'Lợi nhuận bình quân / tỷ suất bình quân dùng để so sánh với p cá biệt.' },
-  { term: 'z', meaning: 'Lợi tức: phần lợi nhuận chuyển cho người sở hữu tư bản cho vay.' },
+  { term: 'z', meaning: 'Lãi tức: phần lợi nhuận chuyển cho người sở hữu tư bản cho vay.' },
   { term: 'R', meaning: 'Địa tô: phần giá trị thặng dư chuyển cho chủ sở hữu đất.' },
   { term: 'ch', meaning: 'Thời gian chu chuyển/lưu thông trong mô hình.' },
   { term: 'n', meaning: 'Số vòng chu chuyển: n = CH / ch.' },
@@ -50,9 +50,9 @@ export function getTeachingAidForRound(round: number): TeachingAid {
 }
 
 export const FINAL_CHECKLIST: string[] = [
-  "Co the trinh bay cong thuc T-H-T' va giai thich tai sao m phat sinh trong san xuat, khong phai luu thong.",
-  'Phan biet duoc p (loi nhuan CN), p_TN (TN), Z (lai tuc), R (dia to) va moi quan he voi m.',
-  'Su dung cong thuc gia dat = R/i de giai thich tai sao gia dat tang khi lai suat giam.',
-  'Lien he duoc du lieu thuc te VN (lai suat 2022-2024, dat Hoai Duc, Bac Ninh) voi ly thuyet.',
-  "Tra loi duoc: 'Tien de ra tien' co nghia gi trong khuon kho giao trinh MLN Chuong 3?",
+  "Có thể trình bày công thức T-H-T' và giải thích tại sao m phát sinh trong sản xuất, không phải lưu thông.",
+  'Phân biệt được p (lợi nhuận CN), p_TN (TN), Z (lãi tức), R (địa tô) và mối quan hệ với m.',
+  'Sử dụng công thức giá đất = R/i để giải thích tại sao giá đất tăng khi lãi suất giảm.',
+  'Liên hệ được dữ liệu thực tế VN (lãi suất 2022-2024, đất Hoài Đức, Bắc Ninh) với lý thuyết.',
+  "Trả lời được: 'Tiền đẻ ra tiền' có nghĩa gì trong khuôn khổ giáo trình MLN Chương 3?",
 ]

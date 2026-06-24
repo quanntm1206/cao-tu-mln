@@ -1,4 +1,4 @@
-﻿import { useGameStore } from '../store/gameStore'
+import { useGameStore } from '../store/gameStore'
 import { CASE_STUDIES } from '../data/caseStudies'
 import type { GamePhase } from '../engine/distribution'
 
@@ -14,7 +14,7 @@ export default function CaseStudyPanel() {
 
   return (
     <div className="theory-card rounded-xl p-4">
-      <p className="text-xs uppercase tracking-wider text-amber-300 mb-3">Case study – Pha {phase}/4</p>
+      <p className="text-xs uppercase tracking-wider text-amber-300 mb-3">Case study - Pha {phase}/4</p>
       {cases.map((cs) => (
         <div key={cs.id} className="mb-4 last:mb-0">
           <p className="text-sm font-semibold text-stone-100 leading-snug mb-1">{cs.title}</p>
@@ -31,7 +31,7 @@ export default function CaseStudyPanel() {
             ))}
           </div>
           <p className="text-[10px] text-stone-500">
-            Cong thuc: <span className="text-amber-400">{cs.relatedFormula}</span>
+            Công thức: <span className="text-amber-400">{cs.relatedFormula}</span>
           </p>
           <p className="text-[10px] text-stone-600 mt-0.5">
             {cs.source} ({cs.verifiedDate})

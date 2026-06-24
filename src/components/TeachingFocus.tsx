@@ -1,29 +1,29 @@
-﻿import { useGameStore } from '../store/gameStore'
+import { useGameStore } from '../store/gameStore'
 
 const PHASE_FOCUS: Record<number, { title: string; concept: string; formula: string; objective: string }> = {
   1: {
-    title: 'Pha 1 – Loi nhuan Cong nghiep',
-    concept: 'p\' = m / (c+v)',
-    formula: 'Ty suat loi nhuan binh quan',
-    objective: 'Hieu loi nhuan CN xuat phat tu GTTT m, khong phai tu mua ban.',
+    title: 'Pha 1 - Lợi nhuận Công nghiệp',
+    concept: "p' = m / (c+v)",
+    formula: 'Tỷ suất lợi nhuận bình quân',
+    objective: 'Hiểu lợi nhuận CN xuất phát từ GTTT m, không phải từ mua bán.',
   },
   2: {
-    title: 'Pha 2 – Loi nhuan Thuong nghiep',
-    concept: 'p_TN = phan m nhuong cho thuong nhan',
+    title: 'Pha 2 - Lợi nhuận Thương nghiệp',
+    concept: 'p_TN = phần m nhượng cho thương nhân',
     formula: 'm = p_CN + p_TN',
-    objective: 'Tu ban thuong nghiep khong tao m doc lap; no la phan phoi tu m.',
+    objective: 'Tư bản thương nghiệp không tạo m độc lập; nó là phân phối từ m.',
   },
   3: {
-    title: 'Pha 3 – Lai tuc (Z)',
-    concept: 'Z = m chuyen cho chu so huu tu ban cho vay',
-    formula: 'Gia von cho vay × lai suat',
-    objective: 'Lai tuc khong phai nguon GTTT doc lap – la hinh thuc phan chia tu m.',
+    title: 'Pha 3 - Lãi tức (Z)',
+    concept: 'Z = m chuyển cho chủ sở hữu tư bản cho vay',
+    formula: 'Giá vốn cho vay x lãi suất',
+    objective: 'Lãi tức không phải nguồn GTTT độc lập - là hình thức phân chia từ m.',
   },
   4: {
-    title: 'Pha 4 – Dia to (R) & Gia dat',
-    concept: 'Gia dat = R / i',
-    formula: 'Dia to = m chuyen cho chu so huu dat',
-    objective: 'Gia dat phan anh su von hoa dia to. Bong bong dat tach roi GTTT thuc.',
+    title: 'Pha 4 - Địa tô (R) & Giá đất',
+    concept: 'Giá đất = R / i',
+    formula: 'Địa tô = m chuyển cho chủ sở hữu đất',
+    objective: 'Giá đất phản ánh sự vốn hóa địa tô. Bong bóng đất tách rời GTTT thực.',
   },
 }
 
@@ -35,7 +35,7 @@ export default function TeachingFocus({ round }: { round: number }) {
   return (
     <div className="theory-card rounded-xl p-4 mb-4">
       <div className="relative z-10">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-1">Muc tieu Pha {phase} – Vong {roundInPhase}/4</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-1">Mục tiêu Pha {phase} - Vòng {roundInPhase}/4</p>
         <p className="text-sm font-bold text-stone-50 mb-1">{focus.title}</p>
         <p className="text-sm text-stone-300 leading-relaxed mb-2">{focus.objective}</p>
         <div className="bg-stone-950/60 rounded-lg p-2 text-xs font-mono text-center">

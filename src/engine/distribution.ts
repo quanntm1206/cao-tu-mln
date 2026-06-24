@@ -162,7 +162,7 @@ export function distributePhase1(
 
 const PHASE2_LESSONS = [
   'Tư bản thương nghiệp không tạo ra giá trị nhưng chiếm một phần giá trị thặng dư.',
-  'Lợi nhuận thương nghiệp là phần giá trị thặng dư nhà sản xuất nhường cho thương nhân.',
+  'Lợi nhuận thương nghiệp là phần giá trị thặng dư nhà sản xuất nhượng cho thương nhân.',
   'Sử dụng kênh thương mại giúp tăng tốc lưu thông nhưng giảm phần lợi nhuận giữ lại.',
   'Bình quân hóa lợi nhuận tạo ra tỷ suất lợi nhuận bình quân toàn xã hội.',
 ]
@@ -224,7 +224,7 @@ export function distributePhase3(
 }
 
 const PHASE4_LESSONS = [
-  'Địa tô là phần giá trị thặng dư mà nhà tư bản phải nhường cho chủ sở hữu đất.',
+  'Địa tô là phần giá trị thặng dư mà nhà tư bản phải nhượng cho chủ sở hữu đất.',
   'Giá đất = địa tô / tỷ suất lợi tức, phản ánh sự vốn hóa địa tô.',
   'Bong bóng giá đất không phản ánh giá trị thực, mà phản ánh kỳ vọng đầu cơ tương lai.',
   'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',

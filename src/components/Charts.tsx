@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -46,14 +46,14 @@ export default function Charts() {
 
   const tabs: { id: ChartTab; label: string }[] = [
     { id: 'mpool', label: 'M-pool' },
-    { id: 'profits', label: 'Loi nhuan' },
-    { id: 'distribution', label: 'Phan phoi' },
+    { id: 'profits', label: 'Lợi nhuận' },
+    { id: 'distribution', label: 'Phân phối' },
   ]
 
   if (history.length === 0) {
     return (
       <div className="glass-card rounded-xl p-6 text-center text-stone-500 text-sm">
-        Chua co du lieu – hay bat dau thi dau!
+        Chưa có dữ liệu - hãy bắt đầu thi đấu!
       </div>
     )
   }
@@ -71,26 +71,26 @@ export default function Charts() {
 
       {tab === 'mpool' && (
         <div>
-          <p className="text-xs text-stone-500 mb-2">Loi nhuan CN tich luy qua cac vong</p>
+          <p className="text-xs text-stone-500 mb-2">Lợi nhuận CN tích lũy qua các vòng</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={chartData.filter(d => d.ind > 0)}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
               <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
               <YAxis tickFormatter={formatVndAxis} tick={{ fill: '#9ca3af', fontSize: 10 }} width={55} />
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatVndAxis(v)} />
-              <Bar dataKey="ind" name="Loi nhuan CN" fill="#3b82f6" radius={[4,4,0,0]} />
+              <Bar dataKey="ind" name="Lợi nhuận CN" fill="#3b82f6" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
           {phase >= 2 && (
             <>
-              <p className="text-xs text-stone-500 mt-4 mb-2">Loi nhuan TN cac vong</p>
+              <p className="text-xs text-stone-500 mt-4 mb-2">Lợi nhuận TN các vòng</p>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={chartData.filter(d => d.mer > 0)}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                   <YAxis tickFormatter={formatVndAxis} tick={{ fill: '#9ca3af', fontSize: 10 }} width={55} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatVndAxis(v)} />
-                  <Bar dataKey="mer" name="Loi nhuan TN" fill="#f59e0b" radius={[4,4,0,0]} />
+                  <Bar dataKey="mer" name="Lợi nhuận TN" fill="#f59e0b" radius={[4,4,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             </>
@@ -100,7 +100,7 @@ export default function Charts() {
 
       {tab === 'profits' && (
         <div>
-          <p className="text-xs text-stone-500 mb-2">Ty suat loi nhuan p' (Pha 1)</p>
+          <p className="text-xs text-stone-500 mb-2">Tỷ suất lợi nhuận p' (Pha 1)</p>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData.filter(d => d.p_rate !== null)}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -115,7 +115,7 @@ export default function Charts() {
 
       {tab === 'distribution' && (
         <div>
-          <p className="text-xs text-stone-500 mb-2">Phan phoi GTTT tich luy – m = p + p_TN + Z + R</p>
+          <p className="text-xs text-stone-500 mb-2">Phân phối GTTT tích lũy - m = p + p_TN + Z + R</p>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={chartData.slice(-8)}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

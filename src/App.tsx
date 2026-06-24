@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useGameStore } from './store/gameStore'
 import { formatVnd } from './lib/currency'
 import { FINAL_CHECKLIST } from './data/teachingAids'
@@ -43,18 +43,18 @@ function downloadText(filename: string, content: string, type: string) {
 }
 
 const SOURCES = [
-  { label: 'Giao trinh KTCT Mac-Lenin (Bo GD)', url: 'https://saomaidata.vn/library/803.Giao-Trinh-Kinh-Te-Chinh-Tri-Mac-Lenin.aspx' },
-  { label: 'Bao cao BDS DKRA 2024', url: 'https://dkra.vn/bao-cao-thi-truong' },
-  { label: 'NHNN – Lai suat 2022-2024', url: 'https://sbv.gov.vn/webcenter/portal/vi/menu/trangchu/tk/ldnh' },
-  { label: 'So TN&MT Bac Ninh – Dat KCN', url: 'https://baodautu.vn/bat-dong-san' },
-  { label: 'Kinh te chinh tri Marx-Lenin (Wikipedia)', url: 'https://vi.wikipedia.org/wiki/Kinh_t%E1%BA%BF_ch%C3%ADnh_tr%E1%BB%8B_Marx%E2%80%93Lenin' },
+  { label: 'Giáo trình KTCT Mác-Lênin (Bộ GD)', url: 'https://saomaidata.vn/library/803.Giao-Trinh-Kinh-Te-Chinh-Tri-Mac-Lenin.aspx' },
+  { label: 'Báo cáo BDS DKRA 2024', url: 'https://dkra.vn/bao-cao-thi-truong' },
+  { label: 'NHNN - Lãi suất 2022-2024', url: 'https://sbv.gov.vn/webcenter/portal/vi/menu/trangchu/tk/ldnh' },
+  { label: 'Sở TN&MT Bắc Ninh - Đất KCN', url: 'https://baodautu.vn/bat-dong-san' },
+  { label: 'Kinh tế chính trị Marx-Lenin (Wikipedia)', url: 'https://vi.wikipedia.org/wiki/Kinh_t%E1%BA%BF_ch%C3%ADnh_tr%E1%BB%8B_Marx%E2%80%93Lenin' },
 ]
 
-const SURVEY_LABELS = ['Rat kho', 'Vua phai', 'De hieu']
+const SURVEY_LABELS = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
 const CONCEPT_LABELS = [
   'm = p + p_TN + Z + R',
-  'Gia dat = R / i',
-  'T – H – T\'',
+  'Giá đất = R / i',
+  "T - H - T'",
 ]
 
 function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
@@ -112,24 +112,24 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-4 py-10">
       <div className="text-center">
-        <div className="text-6xl mb-4">📚</div>
-        <h1 className="text-4xl font-bold mb-2 text-amber-300">Hoan thanh hoc phan!</h1>
+        <div className="text-6xl mb-4">🎓</div>
+        <h1 className="text-4xl font-bold mb-2 text-amber-300">Hoàn thành học phần!</h1>
         <p className="text-stone-300 text-lg">{playerName}</p>
         <p className="text-stone-500 text-sm mt-2 max-w-md mx-auto">
-          Ban da hoan thanh 4 pha: san xuat CN, thuong nghiep, tai chinh, dat dai.
-          Chu de: <span className="text-amber-300">m = p + LN TN + Z + R</span>
+          Bạn đã hoàn thành 4 pha: sản xuất CN, thương nghiệp, tài chính, đất đai.
+          Chủ đề: <span className="text-amber-300">m = p + LN TN + Z + R</span>
         </p>
       </div>
 
       {/* M-pool summary */}
       <div className="theory-card rounded-2xl p-6 w-full max-w-md text-center">
         <div className="relative z-10">
-          <p className="text-stone-400 text-sm mb-2">M-pool cuoi</p>
+          <p className="text-stone-400 text-sm mb-2">M-pool cuối</p>
           <p className={`text-4xl font-bold ${m_pool >= startingM ? 'text-green-400' : 'text-red-400'}`}>
             {formatVnd(m_pool)}
           </p>
           <p className="text-sm text-stone-400 mt-2">
-            {growth >= 0 ? '+' : ''}{growth.toFixed(1)}% so voi M ban dau
+            {growth >= 0 ? '+' : ''}{growth.toFixed(1)}% so với M ban đầu
           </p>
         </div>
       </div>
@@ -142,26 +142,26 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
       {/* Ending */}
       <div className="theory-card rounded-2xl p-5 w-full max-w-2xl">
         <div className="relative z-10">
-          <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Ket cuc mo phong</p>
+          <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Kết cục mô phỏng</p>
           <h2 className="text-2xl font-black text-stone-50 mb-2">{ending.title}</h2>
           <p className="text-sm text-stone-300 leading-relaxed mb-4">{ending.summary}</p>
           <div className="space-y-3 rounded-xl border border-amber-900/35 bg-stone-950/35 p-4">
             <p className="text-sm text-stone-300 leading-relaxed">
-              <span className="font-bold text-amber-200">Vi sao ket cuc nay?</span> {ending.whyThisHappened}
+              <span className="font-bold text-amber-200">Vì sao kết cục này?</span> {ending.whyThisHappened}
             </p>
             <p className="text-sm text-stone-300 leading-relaxed">
-              <span className="font-bold text-amber-200">Lien he giao trinh:</span> {ending.textbookConnection}
+              <span className="font-bold text-amber-200">Liên hệ giáo trình:</span> {ending.textbookConnection}
             </p>
             {ending.secondaryConsequences.length > 0 && (
               <p className="text-sm text-stone-300">
-                <span className="font-bold text-amber-200">Khia canh khac:</span> {ending.secondaryConsequences.join('; ')}
+                <span className="font-bold text-amber-200">Khía cạnh khác:</span> {ending.secondaryConsequences.join('; ')}
               </p>
             )}
           </div>
           <div className="mt-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Cau hoi thao luan</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Câu hỏi thảo luận</p>
             {ending.reflectionQuestions.map((q) => (
-              <p key={q} className="text-sm text-stone-300 mb-1">• {q}</p>
+              <p key={q} className="text-sm text-stone-300 mb-1">▸ {q}</p>
             ))}
           </div>
         </div>
@@ -169,7 +169,7 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
 
       {/* Checklist */}
       <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Checklist cuoi bai</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Checklist cuối bài</p>
         <div className="space-y-2">
           {FINAL_CHECKLIST.map((item) => (
             <label key={item} className="flex items-start gap-2 rounded-lg bg-stone-950/35 p-2 text-sm text-stone-300 cursor-pointer">
@@ -183,9 +183,9 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
 
       {/* MicroSurvey */}
       <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-3">Khao sat nhanh</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-3">Khảo sát nhanh</p>
         <div className="mb-4">
-          <p className="text-sm text-stone-300 mb-2">Do kho cua hoc phan:</p>
+          <p className="text-sm text-stone-300 mb-2">Độ khó của học phần:</p>
           <div className="flex gap-2">
             {SURVEY_LABELS.map((l, i) => (
               <button key={l} onClick={() => setSurveyDifficulty(i)}
@@ -196,7 +196,7 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
           </div>
         </div>
         <div className="mb-4">
-          <p className="text-sm text-stone-300 mb-2">Khai niem ro nhat:</p>
+          <p className="text-sm text-stone-300 mb-2">Khái niệm rõ nhất:</p>
           <div className="flex gap-2">
             {CONCEPT_LABELS.map((l, i) => (
               <button key={l} onClick={() => setSurveyConcept(i)}
@@ -207,18 +207,18 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
           </div>
         </div>
         <textarea value={surveyComment} onChange={(e) => setSurveyComment(e.target.value)}
-          rows={2} placeholder="Gop y them (tuy chon)..."
+          rows={2} placeholder="Góp ý thêm (tùy chọn)..."
           className="w-full rounded-lg bg-stone-900/70 border border-amber-900/30 text-stone-100 text-sm px-3 py-2 resize-none focus:outline-none" />
       </div>
 
       {/* Sources */}
       <div className="glass-card rounded-xl p-4 w-full max-w-md">
-        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Tai lieu tham khao</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Tài liệu tham khảo</p>
         <div className="space-y-2">
           {SOURCES.map((s) => (
             <a key={s.url} href={s.url} target="_blank" rel="noreferrer"
               className="flex items-center gap-2 text-sm text-stone-300 hover:text-amber-300 transition-colors">
-              <span className="text-stone-500">•</span> {s.label}
+              <span className="text-stone-500">▸</span> {s.label}
             </a>
           ))}
         </div>
@@ -227,13 +227,13 @@ function FinalScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
       {/* Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
         <button onClick={onLeaderboard} className="px-6 py-3 bg-amber-700 hover:bg-amber-600 rounded-xl font-semibold transition-colors text-stone-50">
-          🏆 Bang xep hang
+          🏆 Bảng xếp hạng
         </button>
         <button onClick={exportReport} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
-          💾 Xuat bao cao JSON
+          📥 Xuất báo cáo JSON
         </button>
         <button onClick={reset} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
-          🔄 Choi lai
+          🔄 Chơi lại
         </button>
       </div>
     </div>

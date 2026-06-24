@@ -1,23 +1,23 @@
-/** Quy mo tien te theo doanh nghiep san xuat vua va nho Viet Nam (don vi: VND). */
+/** Quy mô tiền tệ theo doanh nghiệp sản xuất vừa và nhỏ Việt Nam (đơn vị: VND). */
 
 export const CAPITAL_OPTIONS = [
-  { label: '5 ty dong (De)', value: 5_000_000_000 },
-  { label: '3 ty dong (TB)', value: 3_000_000_000 },
-  { label: '1,5 ty dong (Kho)', value: 1_500_000_000 },
+  { label: '5 tỷ đồng (Dễ)', value: 5_000_000_000 },
+  { label: '3 tỷ đồng (TB)', value: 3_000_000_000 },
+  { label: '1,5 tỷ đồng (Khó)', value: 1_500_000_000 },
 ] as const
 
 export const DEFAULT_CAPITAL = 3_000_000_000
 
-/** Tong gia tri thang du m co san khi bat dau */
+/** Tổng giá trị thặng dư m có sẵn khi bắt đầu */
 export const STARTING_M = 200_000_000_000
 
-/** Ty suat loi nhuan binh quan muc tieu (P bar) */
+/** Tỷ suất lợi nhuận bình quân mục tiêu (P bar) */
 export const P_BAR_TARGET = 0.20
 
 export const SECTOR_PROFILES = [
-  { id: 'co_khi', label: 'Co khi', profitRate: 0.20 },
-  { id: 'det', label: 'Det may', profitRate: 0.30 },
-  { id: 'da', label: 'Da giay', profitRate: 0.40 },
+  { id: 'co_khi', label: 'Cơ khí', profitRate: 0.20 },
+  { id: 'det', label: 'Dệt may', profitRate: 0.30 },
+  { id: 'da', label: 'Da giày', profitRate: 0.40 },
 ] as const
 
 export type SectorId = (typeof SECTOR_PROFILES)[number]['id']

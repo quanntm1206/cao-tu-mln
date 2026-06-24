@@ -1,7 +1,7 @@
 import type { Feature, HistoryEntry } from '../store/gameStore'
 
 export const FORBIDDEN_QUICK_EVENT_TERMS = [
-  'tư bản ảo',
+  'tư bản đảo',
   'chứng khoán',
   'M&A',
   'khủng hoảng thanh khoản',
@@ -83,7 +83,7 @@ export interface QuickEventSelection {
 const M = 1_000_000
 
 export const QUICK_EVENTS: QuickEvent[] = [
-  // ── Pha 1: Tư bản công nghiệp (vòng 1–4) ──────────────────────────────────
+  // ── Pha 1: Tư bản công nghiệp (vòng 1-4) ──────────────────────────────────
   {
     id: 'import-materials-cheap',
     unlockRound: 1,
@@ -96,7 +96,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'buy-batch',
         label: 'Mua lô hàng 80 triệu đồng',
         resultText: 'Bạn nhập thêm nguyên liệu giá tốt, tăng dự trữ đầu vào sản xuất.',
-        teachingPoint: 'Tư bản bất biến được tái tạo ở mức chi phí thấp hơn, cải thiện tỷ suất lợi nhuận p\'.',
+        teachingPoint: "Tư bản bất biến được tái tạo ở mức chi phí thấp hơn, cải thiện tỷ suất lợi nhuận p'.",
         effect: { cashDelta: -80 * M, materialsDelta: 80 * M },
       },
       {
@@ -128,7 +128,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'skip-upgrade',
         label: 'Không mua, giữ nguyên trang thiết bị',
         resultText: 'Bạn quan sát năng lực sản xuất với tư bản cố định hiện tại.',
-        teachingPoint: 'Tư bản cố định không đổi giúp theo dõi tác động riêng lẻ của các yếu tố khác lên p\'.',
+        teachingPoint: "Tư bản cố định không đổi giúp theo dõi tác động riêng lẻ của các yếu tố khác lên p'.",
         effect: {},
       },
     ],
@@ -161,7 +161,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     id: 'power-outage',
     unlockRound: 2,
     concept: 'reproduction',
-    title: 'Cúp điện đột xuất khu công nghiệp',
+    title: 'Cắt điện đột xuất khu công nghiệp',
     description: 'Lưới điện khu vực mất ổn định, sản xuất có thể bị gián đoạn nếu không có nguồn dự phòng.',
     teachingPoint: 'Điện là điều kiện vật chất cho sản xuất; gián đoạn chuỗi cung ứng tác động đến toàn bộ quá trình tạo ra giá trị mới.',
     choices: [
@@ -201,7 +201,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'wait-supplier',
         label: 'Chờ nhà cung cấp, giảm nhẹ sản xuất',
         resultText: 'Sản xuất vòng này bị ảnh hưởng do thiếu nguyên liệu đầu vào.',
-        teachingPoint: 'Thiếu điều kiện vật chất làm chu trình T – H – T\' bị ngắt quãng tại khâu sản xuất.',
+        teachingPoint: "Thiếu điều kiện vật chất làm chu trình T → H → T' bị ngắt quãng tại khâu sản xuất.",
         effect: { materialsDelta: -40 * M },
       },
     ],
@@ -261,26 +261,26 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['materials'],
     title: 'Giá nguyên liệu đầu vào tăng đột biến',
     description: 'Giá thép và nhôm tăng 20% do căng thẳng thương mại quốc tế. Chi phí sản xuất sẽ tăng vòng tới.',
-    teachingPoint: 'Biến động giá tư bản bất biến tác động trực tiếp đến chi phí sản xuất k và tỷ suất lợi nhuận p\'.',
+    teachingPoint: "Biến động giá tư bản bất biến tác động trực tiếp đến chi phí sản xuất k và tỷ suất lợi nhuận p'.",
     choices: [
       {
         id: 'stockpile',
         label: 'Mua trữ nguyên liệu 90 triệu trước khi tăng',
         resultText: 'Bạn dự trữ nguyên liệu với giá thấp hơn để sản xuất vòng sau.',
-        teachingPoint: 'Dự trữ đầu vào khi giá còn thấp là cách bảo vệ tỷ suất lợi nhuận trước biến động chi phí c.',
+        teachingPoint: "Dự trữ đầu vào khi giá còn thấp là cách bảo vệ tỷ suất lợi nhuận trước biến động chi phí c.",
         effect: { cashDelta: -90 * M, materialsDelta: 90 * M },
       },
       {
         id: 'no-stockpile',
         label: 'Không tích trữ, chấp nhận giá mới',
         resultText: 'Bạn tiếp tục với lượng nguyên liệu hiện có và chấp nhận chi phí cao hơn.',
-        teachingPoint: 'Không dự trữ cho thấy tác động trực tiếp của tăng chi phí c lên k và p\'.',
+        teachingPoint: "Không dự trữ cho thấy tác động trực tiếp của tăng chi phí c lên k và p'.",
         effect: {},
       },
     ],
   },
 
-  // ── Pha 2: Tư bản thương nghiệp (vòng 5–8) ────────────────────────────────
+  // ── Pha 2: Tư bản thương nghiệp (vòng 5-8) ────────────────────────────────
   {
     id: 'merchant-contract-offer',
     unlockRound: 5,
@@ -319,7 +319,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'exhibit',
         label: 'Tham gia triển lãm, thu về 80 triệu',
         resultText: 'Bạn ký được hợp đồng mới với đối tác quốc tế.',
-        teachingPoint: 'Lưu thông hàng hóa quốc tế là giai đoạn H\' – T\' trong chu kỳ tư bản công nghiệp.',
+        teachingPoint: "Lưu thông hàng hóa quốc tế là giai đoạn H' - T' trong chu kỳ tư bản công nghiệp.",
         effect: { cashDelta: 80 * M },
       },
       {
@@ -369,7 +369,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'grant-discount',
         label: 'Đồng ý tăng chiết khấu thêm 2%',
         resultText: 'Bạn nhượng thêm phần m cho thương nhân để giữ kênh phân phối.',
-        teachingPoint: 'Phần m nhường cho thương nhân tăng lên khi thương nhân có ưu thế đàm phán lớn hơn.',
+        teachingPoint: 'Phần m nhượng cho thương nhân tăng lên khi thương nhân có ưu thế đàm phán lớn hơn.',
         effect: { merchantRateDelta: 0.02 },
       },
       {
@@ -388,13 +388,13 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['merchant'],
     title: 'Cạnh tranh quyết liệt giành thị phần',
     description: 'Doanh nghiệp cùng ngành hạ giá bán 10% để giành thị phần. Bạn phải quyết định chiến lược.',
-    teachingPoint: 'Cạnh tranh về giá là biểu hiện của quá trình bình quân hóa tỷ suất lợi nhuận giữa các tư bản.',
+    teachingPoint: "Cạnh tranh về giá là biểu hiện của quá trình bình quân hóa tỷ suất lợi nhuận giữa các tư bản.",
     choices: [
       {
         id: 'lower-price',
         label: 'Hạ giá theo để giữ thị phần, chi 50 triệu marketing',
         resultText: 'Bạn chấp nhận giảm biên lợi nhuận để bảo vệ thị phần.',
-        teachingPoint: 'Cạnh tranh về giá làm cho tỷ suất lợi nhuận cá biệt hội tụ về mức bình quân ngành.',
+        teachingPoint: "Cạnh tranh về giá làm cho tỷ suất lợi nhuận cá biệt hội tụ về mức bình quân ngành.",
         effect: { cashDelta: -50 * M },
       },
       {
@@ -432,7 +432,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     ],
   },
 
-  // ── Pha 3: Tư bản tài chính (vòng 9–12) ───────────────────────────────────
+  // ── Pha 3: Tư bản tài chính (vòng 9-12) ───────────────────────────────────
   {
     id: 'rate-hike-shock',
     unlockRound: 9,
@@ -584,7 +584,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     ],
   },
 
-  // ── Pha 4: Địa tô – Tư bản đất đai (vòng 13–16) ──────────────────────────
+  // ── Pha 4: Địa tô - Tư bản đất đai (vòng 13-16) ──────────────────────────
   {
     id: 'industrial-land-price-rise',
     unlockRound: 13,
@@ -641,7 +641,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     concept: 'rent',
     requiredFeatures: ['rent'],
     title: 'Giá đất vùng lân cận sụt giảm mạnh',
-    description: 'Một số khu vực gần đây giá đất giảm 30–40% sau khi dự án hạ tầng bị hoãn vô thời hạn.',
+    description: 'Một số khu vực gần đây giá đất giảm 30-40% sau khi dự án hạ tầng bị hoãn vô thời hạn.',
     teachingPoint: 'Khi cơ sở vật chất không hình thành, địa tô kỳ vọng không thành hiện thực, giá đất sụt giảm.',
     choices: [
       {
@@ -729,7 +729,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
       {
         id: 'avoid-volatility',
         label: 'Không đầu tư, tránh rủi ro biến động',
-        resultText: 'Bạn không tham gia vào đợt biến động giá tài sản lần này.',
+        resultText: 'Bạn không tham gia vào đợt biến động giá tài sản lớn này.',
         teachingPoint: 'Thị trường bất động sản biến động mạnh khi lãi suất thay đổi, phản ánh tính không ổn định của vốn hóa địa tô.',
         effect: {},
       },

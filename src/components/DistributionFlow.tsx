@@ -1,4 +1,4 @@
-﻿import { useGameStore } from '../store/gameStore'
+import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
 
 export default function DistributionFlow() {
@@ -8,23 +8,23 @@ export default function DistributionFlow() {
   const total = Math.max(1, industrial_profit + merchant_profit + Math.abs(netInterest) + rent_paid)
 
   const bars = [
-    { label: 'Loi nhuan CN', key: 'ind', value: industrial_profit, color: '#3b82f6' },
-    { label: 'Loi nhuan TN', key: 'mer', value: merchant_profit, color: '#f59e0b' },
-    { label: 'Lai tuc (Z)', key: 'fin', value: Math.abs(netInterest), color: '#ef4444' },
-    { label: 'Dia to (R)', key: 'ren', value: rent_paid, color: '#f97316' },
+    { label: 'Lợi nhuận CN', key: 'ind', value: industrial_profit, color: '#3b82f6' },
+    { label: 'Lợi nhuận TN', key: 'mer', value: merchant_profit, color: '#f59e0b' },
+    { label: 'Lãi tức (Z)', key: 'fin', value: Math.abs(netInterest), color: '#ef4444' },
+    { label: 'Địa tô (R)', key: 'ren', value: rent_paid, color: '#f97316' },
   ].filter((b) => b.value > 0)
 
   return (
     <div className="glass-card rounded-xl p-4">
       <p className="text-xs uppercase tracking-wider text-amber-300 mb-1">
-        Dong chay M – Phan chia gia tri thang du
+        Dòng chảy M - Phân chia giá trị thặng dư
       </p>
       <p className="text-xs text-stone-500 mb-3">
-        m = p + LN thuong nghiep + Z + R &nbsp;|&nbsp; M-pool hien tai: <span className="text-emerald-300 font-bold">{formatVnd(m_pool, true)}</span>
+        m = p + LN thương nghiệp + Z + R &nbsp;|&nbsp; M-pool hiện tại: <span className="text-emerald-300 font-bold">{formatVnd(m_pool, true)}</span>
       </p>
 
       {bars.length === 0 ? (
-        <p className="text-xs text-stone-600 italic">Chua co du lieu phan phoi – hay thi dau!</p>
+        <p className="text-xs text-stone-600 italic">Chưa có dữ liệu phân phối - hãy thi đấu!</p>
       ) : (
         <>
           <div className="flex h-5 rounded-lg overflow-hidden mb-3 gap-px">

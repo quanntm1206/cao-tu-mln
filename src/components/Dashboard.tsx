@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { formatVnd } from '../lib/currency'
@@ -14,7 +14,7 @@ type Tab = 'decisions' | 'charts' | 'metrics'
 
 interface Props { onLeaderboard: () => void }
 
-const chartFallback = <div className="glass-card rounded-xl p-6 text-sm text-stone-400">Dang tai bieu do…</div>
+const chartFallback = <div className="glass-card rounded-xl p-6 text-sm text-stone-400">Đang tải biểu đồ.</div>
 
 export default function Dashboard({ onLeaderboard }: Props) {
   const { playerName, round, maxRounds, m_pool, phase, reset } = useGameStore()
@@ -31,9 +31,9 @@ export default function Dashboard({ onLeaderboard }: Props) {
     <div className="min-h-screen flex flex-col">
       <header className="glass-card border-b border-amber-900/30 px-3 sm:px-4 py-3 flex flex-wrap sm:flex-nowrap items-center gap-3 lg:sticky lg:top-0 z-10">
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-2xl">📚</span>
+          <span className="text-2xl">⚙️</span>
           <span className="font-black text-sm sm:text-lg leading-none whitespace-nowrap">
-            <span className="text-stone-50">Phan chia</span>
+            <span className="text-stone-50">Phân chia</span>
             <span className="text-amber-300"> GTTT</span>
           </span>
         </div>
@@ -42,7 +42,7 @@ export default function Dashboard({ onLeaderboard }: Props) {
           <div className="flex items-center gap-2 mb-1 overflow-hidden">
             <span className="text-sm text-stone-300 truncate hidden sm:inline">{playerName}</span>
             <span className="text-xs text-amber-400 shrink-0 font-semibold">Pha {phase}/4</span>
-            <span className="text-xs text-stone-500 shrink-0">Vong {round}/{maxRounds}</span>
+            <span className="text-xs text-stone-500 shrink-0">Vòng {round}/{maxRounds}</span>
           </div>
           <div className="w-full bg-stone-800 rounded-full h-1.5">
             <div className={`h-1.5 rounded-full bg-gradient-to-r ${phaseColor} to-green-700 transition-all`}
@@ -57,11 +57,11 @@ export default function Dashboard({ onLeaderboard }: Props) {
 
         <div className="flex gap-1 sm:gap-2 shrink-0">
           <button onClick={() => setShowTeacherPanel(true)}
-            className="text-amber-300 hover:text-amber-200 text-xs font-black border border-amber-800/50 rounded-lg px-2 py-1 transition-colors" title="Cong cu giao vien">GV</button>
+            className="text-amber-300 hover:text-amber-200 text-xs font-black border border-amber-800/50 rounded-lg px-2 py-1 transition-colors" title="Công cụ giáo viên">GV</button>
           <button onClick={onLeaderboard}
-            className="text-amber-300 hover:text-amber-200 text-lg sm:text-xl transition-colors" title="Bang xep hang">🏆</button>
+            className="text-amber-300 hover:text-amber-200 text-lg sm:text-xl transition-colors" title="Bảng xếp hạng">🏆</button>
           <button onClick={() => setShowResetConfirm(true)}
-            className="text-stone-400 hover:text-stone-200 text-lg sm:text-xl transition-colors" title="Bat dau lai">🔄</button>
+            className="text-stone-400 hover:text-stone-200 text-lg sm:text-xl transition-colors" title="Bắt đầu lại">🔄</button>
         </div>
       </header>
 
@@ -69,12 +69,12 @@ export default function Dashboard({ onLeaderboard }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70">
           <div className="theory-card rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
             <div className="relative z-10">
-              <p className="text-3xl mb-3">🔄</p>
-              <h2 className="text-xl font-bold text-stone-50 mb-2">Bat dau lai?</h2>
-              <p className="text-sm text-stone-300 leading-relaxed mb-5">Tien trinh hien tai se bi xoa. Bang xep hang da luu truoc do khong bi anh huong.</p>
+              <p className="text-3xl mb-3">⚠️</p>
+              <h2 className="text-xl font-bold text-stone-50 mb-2">Bắt đầu lại?</h2>
+              <p className="text-sm text-stone-300 leading-relaxed mb-5">Tiến trình hiện tại sẽ bị xóa. Bảng xếp hạng đã lưu trước đó không bị ảnh hưởng.</p>
               <div className="flex gap-3">
-                <button onClick={() => setShowResetConfirm(false)} className="flex-1 rounded-xl border border-stone-700/70 bg-stone-900/70 py-3 font-bold text-stone-100 hover:bg-stone-800">Huy</button>
-                <button onClick={reset} className="flex-1 rounded-xl py-3 font-bold btn-primary">Choi lai</button>
+                <button onClick={() => setShowResetConfirm(false)} className="flex-1 rounded-xl border border-stone-700/70 bg-stone-900/70 py-3 font-bold text-stone-100 hover:bg-stone-800">Hủy</button>
+                <button onClick={reset} className="flex-1 rounded-xl py-3 font-bold btn-primary">Chơi lại</button>
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function Dashboard({ onLeaderboard }: Props) {
       {!isDesktop && (
         <div className="flex border-b border-amber-900/30 bg-stone-950/30">
           {(['decisions', 'metrics', 'charts'] as Tab[]).map((t) => {
-            const labels: Record<Tab, string> = { decisions: '⚡ Quyet dinh', metrics: '📊 Chi so', charts: '📈 Bieu do' }
+            const labels: Record<Tab, string> = { decisions: '🎯 Quyết định', metrics: '📊 Chỉ số', charts: '📈 Biểu đồ' }
             return (
               <button key={t} onClick={() => setTab(t)}
                 className={`flex-1 py-2.5 text-xs font-medium transition-colors ${tab === t ? 'text-amber-300 border-b-2 border-amber-400' : 'text-stone-400'}`}>
