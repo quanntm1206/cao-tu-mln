@@ -37,6 +37,7 @@ npm run build
 |---|---|
 | [AGENT_CONTEXT.md](./AGENT_CONTEXT.md) | Bản đồ repo cho AI agent |
 | [GAME_CONTENT.md](./GAME_CONTENT.md) | Nội dung game và mapping giáo trình |
+| [TEACHING_GUIDE.md](./TEACHING_GUIDE.md) | Kịch bản dùng từng màn game để dạy học |
 | [HOSTING.md](./HOSTING.md) | Deploy GitHub Pages / Netlify |
 
 ## Cấu trúc `src/`

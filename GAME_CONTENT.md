@@ -4,6 +4,8 @@
 
 Cáo Tử MLN là game web giáo dục cho **Chương 3 — Giá trị thặng dư trong nền kinh tế thị trường** của giáo trình Kinh tế chính trị Mác–Lênin. Game chỉ mô phỏng các quan hệ lý luận cần học, không mở rộng thành game quản trị doanh nghiệp.
 
+Nếu cần dùng game trực tiếp trên lớp, xem kịch bản từng màn tại [`TEACHING_GUIDE.md`](./TEACHING_GUIDE.md).
+
 ## Nguyên tắc phạm vi
 
 - Giữ: `T–H–T'`, hàng hóa sức lao động, tiền công, `G = c + v + m`, `m'`, `M`, tích lũy tư bản, chu chuyển, lợi nhuận, lợi tức, lợi nhuận thương nghiệp, địa tô và giá đất.
