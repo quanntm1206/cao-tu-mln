@@ -66,6 +66,8 @@ function NumberInput({
   min,
   max,
   step,
+  unit,
+  preview,
   onChange,
 }: {
   label: string
@@ -73,20 +75,30 @@ function NumberInput({
   min: number
   max: number
   step?: number
+  unit?: string
+  preview?: string
   onChange: (v: number) => void
 }) {
   return (
     <div className="mb-4">
       <label className="block text-sm text-stone-300 mb-1">{label}</label>
-      <input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={step ?? 1}
-        onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value))))}
-        className="input-field w-full rounded-lg px-3 py-2"
-      />
+      <div className="relative">
+        <input
+          type="number"
+          value={value}
+          min={min}
+          max={max}
+          step={step ?? 1}
+          onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value))))}
+          className={`input-field w-full rounded-lg py-2 ${unit ? 'pr-16 pl-3' : 'px-3'}`}
+        />
+        {unit && (
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-semibold text-amber-200/80">
+            {unit}
+          </span>
+        )}
+      </div>
+      {preview && <p className="mt-1 text-xs text-stone-500">{preview}</p>}
     </div>
   )
 }
@@ -265,6 +277,8 @@ export default function DecisionPanel() {
             min={0}
             max={maxInvest}
             step={INVEST_STEP}
+                        unit="đ"
+            preview={formatVnd(decisions.invest_machines, true)}
             onChange={(v) => set('invest_machines', v)}
           />
         </Section>
@@ -278,6 +292,8 @@ export default function DecisionPanel() {
             min={0}
             max={maxInvest}
             step={INVEST_STEP}
+                        unit="đ"
+            preview={formatVnd(decisions.invest_materials, true)}
             onChange={(v) => set('invest_materials', v)}
           />
         </Section>
@@ -295,6 +311,8 @@ export default function DecisionPanel() {
             min={0}
             max={maxInvest}
             step={INVEST_STEP}
+                        unit="đ"
+            preview={formatVnd(decisions.invest_rnd, true)}
             onChange={(v) => set('invest_rnd', v)}
           />
         </Section>
@@ -313,6 +331,8 @@ export default function DecisionPanel() {
             min={0}
             max={maxInvest}
             step={LOGISTICS_UNIT_COST}
+                        unit="đ"
+            preview={formatVnd(decisions.invest_logistics, true)}
             onChange={(v) => set('invest_logistics', v)}
           />
           <Toggle
@@ -346,6 +366,8 @@ export default function DecisionPanel() {
             min={0}
             max={MAX_LOAN_PER_ROUND}
             step={LOAN_STEP}
+                        unit="đ"
+            preview={formatVnd(decisions.take_loan, true)}
             onChange={(v) => set('take_loan', v)}
           />
           {debt > 0 && (
@@ -355,6 +377,8 @@ export default function DecisionPanel() {
               min={0}
               max={Math.min(maxInvest, debt)}
               step={INVEST_STEP}
+                            unit="đ"
+              preview={formatVnd(decisions.repay_loan, true)}
               onChange={(v) => set('repay_loan', v)}
             />
           )}
@@ -364,6 +388,8 @@ export default function DecisionPanel() {
             min={0}
             max={maxInvest}
             step={LEND_STEP}
+                        unit="đ"
+            preview={formatVnd(decisions.lend_out, true)}
             onChange={(v) => set('lend_out', v)}
           />
           {lending > 0 && (
@@ -373,6 +399,8 @@ export default function DecisionPanel() {
               min={0}
               max={lending}
               step={LEND_STEP}
+                            unit="đ"
+              preview={formatVnd(decisions.recall_lending, true)}
               onChange={(v) => set('recall_lending', v)}
             />
           )}
@@ -394,6 +422,8 @@ export default function DecisionPanel() {
               min={0}
               max={Math.min(10, Math.floor(cash / Math.max(1, landUnitPrice)))}
               step={1}
+                            unit="đơn vị"
+              preview={landPurchaseCost > 0 ? `Tổng giá đất: ${formatVnd(landPurchaseCost, true)}` : 'Mỗi đơn vị đất tính theo địa tô tư bản hóa'}
               onChange={(v) => set('buy_land', v)}
             />
           )}

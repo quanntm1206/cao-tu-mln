@@ -4,6 +4,56 @@ import { getTeachingAidForRound } from '../data/teachingAids'
 import { formatVnd } from '../lib/currency'
 import SurplusFlow from './SurplusFlow'
 
+const UNLOCK_EXPLANATIONS: Record<number, {
+  icon: string
+  title: string
+  summary: string
+  formula?: string
+  teachingPoint: string
+}> = {
+  3: {
+    icon: '🏗️',
+    title: 'Mở khóa: Tư bản cố định và nguyên vật liệu',
+    summary: 'Từ vòng này, bạn có thể đầu tư máy móc và mua thêm nguyên liệu để thấy rõ bộ phận tư bản bất biến c.',
+    formula: 'G = c + v + m',
+    teachingPoint: 'Máy móc và nguyên liệu không tự tạo ra giá trị thặng dư; chúng chuyển giá trị vào sản phẩm. Nguồn m vẫn gắn với lao động sống.',
+  },
+  5: {
+    icon: '🔬',
+    title: 'Mở khóa: Tăng năng suất lao động',
+    summary: 'Bạn có thể chi cải tiến năng suất để làm giảm t_n, tức thời gian lao động tất yếu.',
+    formula: "m' = m / v",
+    teachingPoint: 'Khi t_n giảm trong cùng ngày lao động, phần lao động thặng dư tăng lên. Đây là cách minh họa giá trị thặng dư tương đối.',
+  },
+  7: {
+    icon: '🚚',
+    title: 'Mở khóa: Thời gian lưu thông và thương nghiệp',
+    summary: 'Bạn có thể rút ngắn lưu thông hoặc dùng kênh thương nghiệp để thấy chu chuyển tư bản.',
+    formula: 'n = CH / ch',
+    teachingPoint: 'Rút ngắn thời gian lưu thông làm tăng số vòng chu chuyển. Lợi nhuận thương nghiệp là một phần giá trị thặng dư được phân chia.',
+  },
+  9: {
+    icon: '🏦',
+    title: 'Mở khóa: Lợi tức',
+    summary: 'Bạn có thể vay thêm hoặc cho vay ra để quan sát quan hệ giữa lợi nhuận và lợi tức.',
+    formula: 'z = tư bản cho vay × lãi suất',
+    teachingPoint: 'Lợi tức không phải nguồn giá trị thặng dư độc lập; nó là phần lợi nhuận chuyển cho chủ sở hữu tư bản cho vay.',
+  },
+  11: {
+    icon: '🌾',
+    title: 'Mở khóa: Đất đai và địa tô',
+    summary: 'Bạn có thể thuê hoặc mua đất để quan sát địa tô và giá đất trong mô hình.',
+    formula: 'Giá đất = R / i',
+    teachingPoint: 'Địa tô là phần giá trị thặng dư chuyển cho chủ sở hữu đất; giá đất được hiểu như địa tô tư bản hóa.',
+  },
+  13: {
+    icon: '📊',
+    title: 'Mở khóa: Toàn bộ chỉ số giá trị thặng dư',
+    summary: "Game hiển thị đầy đủ m, m', p', c/v để tổng hợp các khái niệm Chương 3.",
+    formula: "m' = m / v; p' = m / (c + v)",
+    teachingPoint: "m' đo mức độ giá trị thặng dư so với tư bản khả biến; p' nhìn cùng phần m dưới hình thức lợi nhuận so với toàn bộ tư bản ứng trước.",
+  },
+}
 export default function RoundResultModal() {
   const {
     round,
@@ -98,26 +148,40 @@ export default function RoundResultModal() {
                 <h3 className="text-sm font-bold text-amber-300">{lesson.title}</h3>
               </div>
               {lesson.formula && <p className="formula-chip mb-3 inline-block">{lesson.formula}</p>}
+              {(lesson.symbolGuide || lesson.formulaPurpose) && (
+                <div className="mb-3 grid gap-2 rounded-xl border border-amber-900/35 bg-stone-950/45 p-3 text-xs leading-relaxed text-stone-300">
+                  {lesson.symbolGuide && (
+                    <p><span className="font-bold text-amber-200">Ký hiệu nghĩa là gì?</span> {lesson.symbolGuide}</p>
+                  )}
+                  {lesson.formulaPurpose && (
+                    <p><span className="font-bold text-amber-200">Công thức để làm gì?</span> {lesson.formulaPurpose}</p>
+                  )}
+                </div>
+              )}
               <p className="text-sm text-stone-300 leading-relaxed">{lesson.explanation}</p>
               {lesson.marxSource && <p className="text-xs text-stone-500 mt-2 italic">— {lesson.marxSource}</p>}
             </div>
           )}
 
           {history.length > 0 && (() => {
-            const newFeatureRounds: Record<number, string> = {
-              3: '🏗️ Đầu tư máy móc đã mở khóa!',
-              5: '🔬 Tăng năng suất lao động đã mở khóa!',
-              7: '🚚 Chu chuyển & thương nghiệp đã mở khóa!',
-              9: '🏦 Lợi tức đã mở khóa!',
-              11: '🌾 Đất đai & Địa tô đã mở khóa!',
-              13: '📊 Tất cả chỉ số GTTT đã hiển thị!',
-            }
-            const msg = newFeatureRounds[round]
-            if (!msg) return null
+            const unlock = UNLOCK_EXPLANATIONS[round]
+            if (!unlock) return null
             return (
-              <div className="mt-4 bg-red-950/35 border border-amber-800/40 rounded-xl p-3 flex items-center gap-2">
-                <span className="text-xl">🔓</span>
-                <p className="text-sm text-amber-200 font-medium">{msg}</p>
+              <div className="mt-5 rounded-2xl border border-amber-500/55 bg-gradient-to-br from-amber-950/55 via-red-950/35 to-stone-950/70 p-4 shadow-xl" role="dialog" aria-label={unlock.title}>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-2xl">
+                    {unlock.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.2em] text-amber-300">Cửa sổ mở khóa</p>
+                    <h3 className="mt-1 text-lg font-black text-amber-100">{unlock.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-stone-200">{unlock.summary}</p>
+                    {unlock.formula && <p className="formula-chip mt-3 inline-block">{unlock.formula}</p>}
+                    <p className="mt-3 text-xs leading-relaxed text-amber-100">
+                      <span className="font-bold">Ý nghĩa giáo trình:</span> {unlock.teachingPoint}
+                    </p>
+                  </div>
+                </div>
               </div>
             )
           })()}
@@ -132,4 +196,7 @@ export default function RoundResultModal() {
     </div>
   )
 }
+
+
+
 

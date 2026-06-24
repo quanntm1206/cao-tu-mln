@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { THEORY_LESSONS } from './theory'
 
 const allLessonText = THEORY_LESSONS.map((lesson) =>
-  [lesson.title, lesson.concept, lesson.formula, lesson.explanation, lesson.marxSource]
+  [lesson.title, lesson.concept, lesson.formula, lesson.symbolGuide, lesson.formulaPurpose, lesson.explanation, lesson.marxSource]
     .filter(Boolean)
     .join(' '),
 ).join('\n')
@@ -27,6 +27,14 @@ describe('theory lessons align with MLN122 chapter 3 scope', () => {
     }
   })
 
+
+  it('explains every formula for non-economics learners', () => {
+    for (const lesson of THEORY_LESSONS) {
+      expect(lesson.formula, `round ${lesson.round} formula`).toBeTruthy()
+      expect(lesson.symbolGuide, `round ${lesson.round} symbol guide`).toBeTruthy()
+      expect(lesson.formulaPurpose, `round ${lesson.round} formula purpose`).toBeTruthy()
+    }
+  })
   it('does not introduce concepts beyond the chapter 3 teaching brief', () => {
     const forbidden = [
       'tư bản ảo',
@@ -43,3 +51,4 @@ describe('theory lessons align with MLN122 chapter 3 scope', () => {
     }
   })
 })
+

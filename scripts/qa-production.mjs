@@ -51,6 +51,9 @@ async function runScenario(viewport) {
 
     const next = page.getByRole('button', { name: /Tiếp tục|Xem tổng kết/ })
     if (await next.count()) {
+      if (body.includes('Kết thúc vòng') && body.includes('Vòng 2') && !body.includes('Tiếp tục vòng 2') && !body.toLowerCase().includes('cửa sổ mở khóa')) {
+        throw new Error(`Unlock popup missing after round 2 at ${viewport.width}x${viewport.height}`)
+      }
       await assertVisibleInViewport(page, next.first(), `Continue button at ${viewport.width}x${viewport.height}`)
       const scrollArea = page.getByTestId('round-result-scroll-area')
       const footer = page.getByTestId('round-result-footer')
@@ -121,6 +124,10 @@ if (failures.length > 0) {
   console.error(`QA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
+
+
+
+
 
 
 
