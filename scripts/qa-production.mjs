@@ -5,6 +5,16 @@ const executablePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrom
 
 const browser = await chromium.launch({ headless: true, executablePath })
 const results = []
+async function assertVisibleInViewport(page, locator, label) {
+  const box = await locator.boundingBox()
+  if (!box) throw new Error(`${label} is not rendered`)
+  const viewport = page.viewportSize()
+  if (!viewport) throw new Error(`${label} has no viewport`)
+  const visible = box.y >= 0 && box.y + box.height <= viewport.height && box.x >= 0 && box.x + box.width <= viewport.width
+  if (!visible) {
+    throw new Error(`${label} is outside viewport: ${JSON.stringify({ box, viewport })}`)
+  }
+}
 
 async function runScenario(viewport) {
   const page = await browser.newPage({ viewport, acceptDownloads: true })
@@ -41,6 +51,7 @@ async function runScenario(viewport) {
 
     const next = page.getByRole('button', { name: /Tiếp tục|Xem tổng kết/ })
     if (await next.count()) {
+      await assertVisibleInViewport(page, next.first(), `Continue button at ${viewport.width}x${viewport.height}`)
       await next.first().click()
       continue
     }
@@ -79,6 +90,7 @@ async function runScenario(viewport) {
 
 for (const viewport of [
   { width: 1440, height: 900 },
+  { width: 1366, height: 768 },
   { width: 1024, height: 768 },
   { width: 390, height: 844 },
 ]) {
@@ -100,3 +112,5 @@ if (failures.length > 0) {
   console.error(`QA failed:\n${failures.join('\n')}`)
   process.exit(1)
 }
+
+
