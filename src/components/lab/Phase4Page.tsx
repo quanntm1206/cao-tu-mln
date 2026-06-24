@@ -57,7 +57,7 @@ function RentMetricsPanel({
       </p>
       <div className="grid sm:grid-cols-2 gap-4 mb-5">
         <Stat label="m phân phối / vòng" value={formatVnd(profitPerRound, true)} accent="var(--color-lab-yellow)" />
-        <Stat label="Z′ (lãi suất NHNN)" value={`${(zPrime * 100).toFixed(1)}%`} accent={ACCENT} />
+        <Stat label="Z′ (tỷ suất lợi tức NHNN)" value={`${(zPrime * 100).toFixed(1)}%`} accent={ACCENT} />
         <Stat label="R thuê (nếu chọn thuê)" value={formatVnd(rentR, true)} accent="#EF4444" />
         <Stat label="m sau địa tô" value={formatVnd(afterRent, true)} />
         <Stat label="P tham chiếu (₫/m²)" value={formatVnd(pLand, true)} />
@@ -159,7 +159,7 @@ function Phase4Round({
               {
                 value: 'rent',
                 label: 'Thuê đất sản xuất',
-                hint: `R = ${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% phần m / vòng — trừ khỏi V`,
+                hint: `R = ${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% phần m / vòng — giả định mô phỏng, trừ khỏi lợi nhuận giữ lại`,
               },
               {
                 value: 'buy',
@@ -181,7 +181,7 @@ function Phase4Round({
 
 const TAKEAWAYS = [
   'Địa tô R là phần m nhà sản xuất nhượng cho chủ đất — không phải lao động của họ, mà từ quyền sở hữu đất.',
-  'Giá cả đất đai P = R / Z′: vốn hóa dòng địa tô kỳ vọng; mua đất trừ V, không tạo m mới.',
+  'Giá cả đất đai P = R / Z′: vốn hóa dòng địa tô kỳ vọng; mua đất dùng tiền mặt, không tạo m mới.',
   'Bong bóng/sụp trên thị trường thứ cấp chỉ tái định giá tài sản — minh họa rủi ro BĐS VN, không sinh thêm m.',
 ]
 
@@ -234,15 +234,15 @@ export default function Phase4Page({ onComplete }: Props) {
         subtitle="Pha 4: Đất không sinh m mới. Thuê đất trả R từ phần m; giá cả P = R/Z′ vốn hóa địa tô; mua đất trừ tiền mặt; đầu cơ chỉ tái định giá tài sản."
         formula={{
           l: 'Giá cả đất đai P',
-          r: '= Địa tô R / Tỷ suất lợi tức ngân hàng Z′',
+          r: '= R / Z′',
           title: 'Tư bản hóa địa tô',
           purpose:
             'R là phần m nhượng cho chủ đất. Z′ là giá tư bản tiền tệ dùng chiết khấu. P vốn hóa dòng R kỳ vọng — không phải m mới từ lao động.',
           analogy:
-            'Giống thuê mặt bằng mỗi tháng (trả R cho chủ nhà) hoặc mua luôn căn hộ: giá mua ≈ tiền thuê chia cho lãi suất vay (P = R/Z′). Chủ nhà không làm trong quán nhưng vẫn nhận phần lợi nhuận nhờ quyền sở hữu đất.',
+            'Giống thuê mặt bằng mỗi tháng (trả R cho chủ nhà) hoặc mua luôn căn hộ: giá mua ≈ tiền thuê chia cho tỷ suất lợi tức Z′ (P = R/Z′). Chủ nhà không làm trong quán nhưng vẫn nhận phần lợi nhuận nhờ quyền sở hữu đất.',
           legend: [
             { sym: 'R', meaning: 'Địa tô — phần m chuyển cho chủ đất (₫/năm hoặc phần m/vòng)' },
-            { sym: 'Z′', meaning: 'Tỷ suất lợi tức ngân hàng — mẫu số vốn hóa' },
+            { sym: 'Z′', meaning: 'Tỷ suất lợi tức — mẫu số vốn hóa địa tô (P = R/Z′)' },
             { sym: 'P', meaning: 'Giá cả đất đai — vốn hóa địa tô (₫/m² tham chiếu)' },
           ],
         }}
@@ -260,9 +260,9 @@ export default function Phase4Page({ onComplete }: Props) {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lab-card p-5">
           <p className="lab-cite mb-2" style={{ color: ACCENT }}>MINI BÀI — ĐỊA TÔ CHÊNH LỆCH & TUYỆT ĐỐI</p>
           <ul className="space-y-2 text-sm text-[var(--color-lab-fg-muted)]">
-            <li><strong className="text-[var(--color-lab-fg)]">Địa tô chênh lệch:</strong> đất màu mỡ/vị trí thuận lợi giúp lợi nhuận siêu ngạch — phần đó chuyển thành địa tô chênh lệch cho chủ đất.</li>
-            <li><strong className="text-[var(--color-lab-fg)]">Địa tô tuyệt đối:</strong> do độc quyền sở hữu ruộng đất, chủ đất thu địa tô ngay cả trên loại đất kém nhất được đưa vào canh tác.</li>
-            <li>Địa tô là hình thức <em>phân phối</em> giá trị thặng dư — không phải m mới do đất tự sinh ra.</li>
+            <li><strong className="text-[var(--color-lab-fg)]">Địa tô chênh lệch:</strong> phát sinh do điều kiện sản xuất thuận lợi hơn (độ màu mỡ, vị trí, hạ tầng) hoặc đầu tư thâm canh. Phần lợi nhuận siêu ngạch chuyển thành địa tô chênh lệch (I: điều kiện tự nhiên/vị trí; II: thâm canh).</li>
+            <li><strong className="text-[var(--color-lab-fg)]">Địa tô tuyệt đối:</strong> phát sinh từ độc quyền sở hữu ruộng đất; chủ đất có thể thu địa tô ngay cả trên loại đất xấu nhất được đưa vào sản xuất/kinh doanh.</li>
+            <li><strong className="text-[var(--color-lab-fg)]">Kết luận:</strong> cả địa tô tuyệt đối và địa tô chênh lệch đều là hình thức <em>phân phối</em> giá trị thặng dư — không phải m mới do đất tự tạo ra.</li>
             <li>Giá đất có thể tách xa cơ sở địa tô do đầu cơ/tín dụng/quy hoạch; trong lý luận giáo trình, P = R/Z′ giải thích giá cả đất đai.</li>
           </ul>
         </div>

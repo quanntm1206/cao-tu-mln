@@ -39,7 +39,7 @@ export default function MPoolTrajectory() {
   if (trajectory.length <= 1) {
     return (
       <div className="lab-card-elevated p-6 sm:p-8">
-        <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">TÀI SẢN/VỐN KHẢ DỤNG</p>
+        <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">DÒNG TIỀN / THANH KHOẢN</p>
         <p className="text-sm text-[var(--color-lab-fg-muted)]">Chưa có vòng nào được áp dụng.</p>
       </div>
     )
@@ -75,15 +75,16 @@ export default function MPoolTrajectory() {
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
       <div className="flex items-baseline justify-between mb-1 flex-wrap gap-2">
-        <p className="lab-cite text-[var(--color-lab-cyan)]">TÀI SẢN/VỐN KHẢ DỤNG · 16 vòng</p>
+        <p className="lab-cite text-[var(--color-lab-cyan)]">DÒNG TIỀN / THANH KHOẢN · 16 vòng</p>
         <p className="text-xs font-mono text-[var(--color-lab-fg-dim)]">
           {trajectory.length - 1}/16 vòng đã chơi
         </p>
       </div>
       <h3 className="font-display text-xl font-bold mb-6">
-        Tài sản/vốn khả dụng đi từ {formatVnd(startingM, true)} đến{' '}
+        Thanh khoản (tiền mặt khả dụng) đi từ {formatVnd(startingM, true)} đến{' '}
         <span style={{ color: positive ? '#10B981' : '#EF4444' }}>{formatVnd(m_pool, true)}</span>
       </h3>
+      <p className="text-sm text-[var(--color-lab-fg-muted)] mb-4">Biểu đồ thanh khoản không đồng nhất với tài sản ròng (đã trừ nợ và nghĩa vụ giao hàng) hay giá trị thặng dư m.</p>
 
       <div className="w-full overflow-hidden">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">

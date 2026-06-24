@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../../store/gameStore'
 import { formatVnd } from '../../lib/currency'
+import { calcSessionNetWorth } from '../../lib/networth'
 import { deriveEnding } from '../../data/endings'
 import { FINAL_CHECKLIST } from '../../data/teachingAids'
 import { Download, Trophy, RotateCcw, Award, CheckSquare, Square } from 'lucide-react'
@@ -9,7 +10,7 @@ import MPoolTrajectory from './MPoolTrajectory'
 import DistributionBreakdown from './DistributionBreakdown'
 
 const DIFFICULTY = ['Rất khó', 'Vừa phải', 'Dễ hiểu']
-const CONCEPT = ['k = c + v', 'Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng', "T - H - T'"]
+const CONCEPT = ['k = c + v', 'P = R / Z′', 'T − H − T′']
 
 interface Props { onLeaderboard: () => void }
 
@@ -25,6 +26,12 @@ function downloadJSON(filename: string, data: unknown) {
 
 const PHASE_NAMES = ['Sản xuất', 'Thương nghiệp', 'Tài chính', 'Địa tô']
 const PHASE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899']
+const PHASE_NOTES = [
+  'Tạo m trong sản xuất',
+  'Phân phối/thực hiện m',
+  'Dòng tiền tín dụng/lợi tức Z — không tạo m',
+  'Địa tô/tái định giá tài sản đất — không tạo m',
+]
 
 export default function FinalInfographic({ onLeaderboard }: Props) {
   const {
@@ -40,7 +47,13 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
   const [comment, setComment] = useState('')
 
   const ending = deriveEnding({ industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid, m_pool })
-  const netWorth = m_pool + land_assets + lent_principal - debt_principal
+  const netWorth = calcSessionNetWorth({
+    cash: m_pool,
+    landAssets: land_assets,
+    lentPrincipal: lent_principal,
+    debtPrincipal: debt_principal,
+    deliveryObligation: delivery_obligation,
+  })
   const growth = startingM > 0 ? ((netWorth - startingM) / startingM) * 100 : 0
   const positive = netWorth >= startingM
   const totalEvents = eventLog.length
@@ -52,7 +65,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
     for (const e of entries) {
       const r = e.result
       if (r.phase === 1) delta += r.total_industrial_profit
-      else if (r.phase === 3) delta += r.net_finance
+      else if (r.phase === 3) delta += r.pool_delta
       else if (r.phase === 4) delta += r.land_gain
     }
     return { phase: ph, name: PHASE_NAMES[ph - 1], color: PHASE_COLORS[ph - 1], delta, rounds: entries.length }
@@ -67,6 +80,8 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       completedAt: new Date().toLocaleString('vi-VN'),
       schema: 'surplus-lab-v3',
       mPool: Math.round(m_pool),
+      netWorth: Math.round(netWorth),
+      deliveryObligation: Math.round(delivery_obligation),
       startingM: Math.round(startingM),
       growthPct: Number(growth.toFixed(2)),
       distribution: {
@@ -105,7 +120,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            16 vòng · 4 pha · {totalEvents} sự kiện. Game mô phỏng quá trình m được tạo ra trong sản xuất và được phân phối thành p, lợi nhuận thương nghiệp, Z, R — các hình thái này phân phối/thực hiện/chuyển hóa m, không tạo m mới.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Game mô phỏng quá trình m được tạo ra trong sản xuất và được phân phối/thực hiện/chuyển hóa thành p, lợi nhuận thương nghiệp, Z, R. Thương nghiệp, tài chính và địa tô không tạo m mới.
           </p>
         </div>
       </motion.section>
@@ -113,8 +128,8 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       {/* ============ HEADLINE NUMBERS ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <Headline label="Tiền mặt khả dụng" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
-          <Headline label="Tài sản ròng" value={formatVnd(netWorth, true)} color="var(--color-lab-cyan)" sub="tiền mặt + đất + cho vay − nợ" />
+          <Headline label="Tiền mặt khả dụng" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} sub="Không đồng nhất với tài sản ròng hay giá trị thặng dư." big />
+          <Headline label="Tài sản ròng" value={formatVnd(netWorth, true)} color="var(--color-lab-cyan)" sub="tiền mặt + đất + cho vay − nợ − nghĩa vụ giao hàng" />
           <Headline
             label="Tăng trưởng"
             value={`${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`}
@@ -140,7 +155,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <AssetRow label="Nợ gốc" value={formatVnd(debt_principal, true)} />
             <AssetRow label="Vốn cho vay" value={formatVnd(lent_principal, true)} />
             <AssetRow label="Tài sản đất" value={formatVnd(land_assets, true)} />
-            <AssetRow label="Nghĩa vụ giao hàng (cọc)" value={formatVnd(delivery_obligation, true)} />
+            <AssetRow label="Nghĩa vụ giao hàng (cọc)" value={formatVnd(delivery_obligation, true)} hint="Tiền cọc tăng tiền mặt tạm thời nhưng phát sinh nghĩa vụ giao hàng — không tính như tài sản ròng hay lợi nhuận." />
           </div>
         </div>
       </section>
@@ -155,7 +170,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">ĐÓNG GÓP THEO PHA</p>
-          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy tài sản/vốn khả dụng, pha nào kéo xuống?</h2>
+          <h2 className="font-display text-2xl font-bold mb-6">Đóng góp theo pha (dòng tiền / phân phối m)</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
             {phaseStats.map((ps) => {
               const positive = ps.delta >= 0
@@ -169,7 +184,8 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
                   <p className="lab-display-num text-2xl mt-1" style={{ color: positive ? ps.color : '#EF4444' }}>
                     {positive ? '+' : ''}{formatVnd(ps.delta, true)}
                   </p>
-                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-1 font-mono">{ps.rounds} vòng đã chơi</p>
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-1 leading-relaxed">{PHASE_NOTES[ps.phase - 1]}</p>
+                  <p className="text-[10px] text-[var(--color-lab-fg-dim)] mt-0.5 font-mono">{ps.rounds} vòng đã chơi</p>
                 </div>
               )
             })}
@@ -353,9 +369,9 @@ function Headline({ label, value, color, sub, big }: { label: string; value: str
   )
 }
 
-function AssetRow({ label, value }: { label: string; value: string }) {
+function AssetRow({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="lab-card p-3 flex justify-between gap-2">
+    <div className="lab-card p-3 flex justify-between gap-2" title={hint}>
       <span className="text-[var(--color-lab-fg-muted)]">{label}</span>
       <span className="lab-display-num text-sm">{value}</span>
     </div>

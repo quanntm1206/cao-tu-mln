@@ -225,3 +225,31 @@ describe('Finance UI pedagogy v0.7.1', () => {
     expect(source).toContain('Lưu thông không tạo ra m mới')
   })
 })
+
+
+describe('Accounting & symbols pedagogy v0.7.2', () => {
+  it('FinalInfographic uses calcSessionNetWorth with delivery obligation', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../components/lab/FinalInfographic.tsx'), 'utf-8')
+    expect(source).toContain('calcSessionNetWorth')
+    expect(source).toContain('deliveryObligation')
+    expect(source).toContain('nghĩa vụ giao hàng')
+  })
+
+  it('no forbidden Lãi suất Z or trừ khỏi V in UI sources', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    for (const rel of ['../components/lab/Phase3Page.tsx', '../components/lab/Phase4Page.tsx', '../data/quickEvents.ts']) {
+      const source = readFileSync(join(dir, rel), 'utf-8')
+      expect(source).not.toMatch(/Lãi suất Z/i)
+      expect(source).not.toMatch(/trừ khỏi V/i)
+      expect(source).not.toMatch(/Z hiện tại/)
+    }
+  })
+
+  it('gameStore leaderboard uses net worth not raw m_pool', () => {
+    const dir = dirname(fileURLToPath(import.meta.url))
+    const source = readFileSync(join(dir, '../store/gameStore.ts'), 'utf-8')
+    expect(source).toContain('calcSessionNetWorth')
+    expect(source).not.toMatch(/score: Math\.max\(0, Math\.round\(m_pool\)\)/)
+  })
+})

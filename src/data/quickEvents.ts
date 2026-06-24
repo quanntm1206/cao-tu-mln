@@ -97,7 +97,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'buy-batch',
         label: 'Mua lô hàng 80 triệu đồng',
         resultText: 'Bạn nhập thêm nguyên liệu giá tốt, tăng dự trữ đầu vào sản xuất.',
-        teachingPoint: "Tư bản bất biến được tái tạo ở mức chi phí thấp hơn, cải thiện tỷ suất lợi nhuận p'.",
+        teachingPoint: "Nguyên liệu thuộc tư bản bất biến c; chuyển giá trị vào sản phẩm, không tự tạo giá trị mới. p′ có thể cải thiện do chi phí tư bản ứng trước giảm, còn m vẫn gắn với lao động sống trong v.",
         effect: { cashDelta: -80 * M, materialsDelta: 80 * M },
       },
       {
@@ -170,7 +170,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
         id: 'buy-generator',
         label: 'Mua máy phát dự phòng 50 triệu đồng',
         resultText: 'Bạn đảm bảo liên tục sản xuất bằng nguồn điện dự phòng.',
-        teachingPoint: 'Đầu tư vào điều kiện hạ tầng sản xuất là một phần của tư bản cố định, duy trì quá trình tạo ra m.',
+        teachingPoint: 'Điện/máy phát duy trì điều kiện vật chất để quá trình sản xuất tạo m diễn ra liên tục — không tự tạo m.',
         effect: { cashDelta: -50 * M, machinesDelta: 50 * M },
       },
       {
@@ -491,13 +491,13 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['interest'],
     title: 'Quỹ đầu tư tư nhân tìm kiếm đối tác cho vay',
     description: 'Một quỹ tư nhân muốn vay 100 triệu đồng trong 6 tháng với lãi suất 9%/năm.',
-    teachingPoint: 'Cho vay là hình thức tư bản hóa tiền tệ nhàn rỗi; lãi suất thu về là phần m mà tư bản cho vay chiếm đoạt.',
+    teachingPoint: 'Cho vay là hình thức tư bản hóa tiền tệ nhàn rỗi; lợi tức Z là phần m/lợi nhuận mà tư bản cho vay chiếm đoạt.',
     choices: [
       {
         id: 'lend-fund',
         label: 'Cho quỹ vay 100 triệu đồng',
-        resultText: 'Bạn chuyển tiền nhàn rỗi thành tư bản cho vay, hưởng lãi suất 9%/năm.',
-        teachingPoint: 'Lãi suất Z = phần m mà tư bản cho vay thu được từ quá trình sản xuất qua trung gian tài chính.',
+        resultText: 'Bạn chuyển tiền nhàn rỗi thành tư bản cho vay, tỷ suất lợi tức Z′ tham chiếu 9%/năm.',
+        teachingPoint: 'Lợi tức Z là phần m/lợi nhuận mà tư bản cho vay thu được từ quá trình sản xuất qua trung gian tài chính.',
         effect: { lendingDelta: 100 * M, cashDelta: -100 * M },
       },
       {
@@ -593,7 +593,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['rent'],
     title: 'Đất khu công nghiệp tăng giá mạnh',
     description: 'Quy hoạch mới đẩy giá đất khu công nghiệp lân cận tăng 25%. Đây là cơ hội đầu tư hay rủi ro?',
-    teachingPoint: 'Giá đất = địa tô / lãi suất; giá tăng phản ánh kỳ vọng về địa tô tương lai, không phải giá trị lao động.',
+    teachingPoint: 'Giá đất P = R/Z′ (địa tô tư bản hóa); giá tăng phản ánh kỳ vọng về địa tô tương lai, không phải giá trị lao động.',
     choices: [
       {
         id: 'buy-land',
@@ -668,7 +668,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['rent'],
     title: 'Đô thị hóa mạnh đẩy giá đất tăng',
     description: 'Làn sóng đô thị hóa từ tỉnh về thành phố làm tăng nhu cầu đất ở và đất công nghiệp.',
-    teachingPoint: 'Đô thị hóa tăng nhu cầu đất, làm tăng địa tô và theo đó làm tăng giá đất theo công thức P = R/i.',
+    teachingPoint: 'Đô thị hóa tăng nhu cầu đất, làm tăng địa tô và theo đó làm tăng giá đất theo công thức P = R/Z′.',
     choices: [
       {
         id: 'invest-urban-land',
@@ -718,7 +718,7 @@ export const QUICK_EVENTS: QuickEvent[] = [
     requiredFeatures: ['rent'],
     title: 'Quỹ đầu tư bất động sản biến động mạnh',
     description: 'Quỹ đầu tư bất động sản (REIT) nội địa tăng 15% trong quý sau khi lãi suất điều hành giảm.',
-    teachingPoint: 'Lãi suất giảm làm tăng giá tài sản bất động sản theo công thức P = R/i; đây là minh họa trực tiếp vốn hóa địa tô.',
+    teachingPoint: 'Tỷ suất lợi tức Z′ giảm làm tăng P = R/Z′; đây là minh họa trực tiếp vốn hóa địa tô.',
     choices: [
       {
         id: 'invest-reit',

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calcNetWorth } from './networth'
+import { calcNetWorth, calcSessionNetWorth } from './networth'
 
 describe('calcNetWorth', () => {
   it('sums cash, fixed, circulating, lending minus debt', () => {
@@ -28,5 +28,12 @@ describe('calcNetWorth', () => {
       bank_interest_rate: 0.04,
     })
     expect(worth).toBe(6_000_000_000)
+  })
+
+  it('subtracts debt and delivery obligation', () => {
+    expect(calcSessionNetWorth({
+      cash: 500, landAssets: 200, lentPrincipal: 100,
+      debtPrincipal: 150, deliveryObligation: 120,
+    })).toBe(530)
   })
 })

@@ -30,7 +30,7 @@ function InterestChart({ action, amount, roundInPhase }: { action: 'borrow' | 'l
 
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
-      <p className="lab-cite mb-2" style={{ color: ACCENT }}>NHNN · LÃI SUẤT 2022–2024</p>
+      <p className="lab-cite mb-2" style={{ color: ACCENT }}>NHNN · TỶ SUẤT LỢI TỨC Z′ 2022–2024</p>
       <h3 className="font-display text-xl font-bold mb-6">
         Lãi tức <span style={{ color: ACCENT }}>Z</span> đến từ đâu trong chu kỳ thực?
       </h3>
@@ -64,9 +64,9 @@ function InterestChart({ action, amount, roundInPhase }: { action: 'borrow' | 'l
       </div>
 
       <div className="grid grid-cols-3 gap-3 pt-5 border-t border-[var(--color-lab-border)]">
-        <Stat label="Z hiện tại" value={`${(currentZ * 100).toFixed(1)}%`} accent={ACCENT} />
-        <Stat label="Trả lãi" value={formatVnd(interestPaid, true)} accent="#EF4444" />
-        <Stat label={action === 'lend' ? 'Thu lãi' : 'Tài chính ròng'} value={formatVnd(action === 'lend' ? interestEarned : netFinance, true)} accent={netFinance >= 0 ? '#10B981' : '#EF4444'} />
+        <Stat label="Z′ hiện tại" value={`${(currentZ * 100).toFixed(1)}%`} accent={ACCENT} />
+        <Stat label="Lợi tức Z phải trả" value={formatVnd(interestPaid, true)} accent="#EF4444" />
+        <Stat label={action === 'lend' ? 'Lợi tức Z thu được' : 'Tài chính ròng'} value={formatVnd(action === 'lend' ? interestEarned : netFinance, true)} accent={netFinance >= 0 ? '#10B981' : '#EF4444'} />
       </div>
     </div>
   )
@@ -93,7 +93,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
       title="Tiền tự đẻ ra tiền? Lãi tức là phần nào của m?"
       description={
         <p>Vay (trả Z) hay cho vay (thu Z) đều móc nối với phần giá trị thặng dư của sản xuất.
-        Lãi suất NHNN 2022–2024 là dữ liệu thực được dùng làm Z.</p>
+        Dữ liệu lãi suất NHNN 2022–2024 được dùng làm tỷ suất lợi tức Z′; lợi tức Z = TBCV × Z′.</p>
       }
       accent={ACCENT}
       chart={<InterestChart action={action} amount={amount} roundInPhase={roundInPhase} />}
@@ -134,7 +134,7 @@ function Phase3Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { action
 const TAKEAWAYS = [
   'Lãi tức Z là giá của tư bản cho vay — phản ánh phần giá trị thặng dư chuyển từ sản xuất sang tư bản tiền tệ.',
   'Tư bản cho vay không trực tiếp bóc lột lao động nhưng hưởng phần m từ quá trình sản xuất.',
-  'Lãi suất NHNN 2022–2024 dao động 3,7% – 7,8% — tín dụng là đòn bẩy nhưng cũng là nguồn gốc khủng hoảng.',
+  'Tỷ suất lợi tức Z′ (NHNN 2022–2024) dao động 3,7% – 7,8% — tín dụng tăng thanh khoản nhưng không tự tạo m.',
 ]
 
 interface Props { onNextPhase: () => void }
@@ -161,18 +161,18 @@ export default function Phase3Page({ onNextPhase }: Props) {
       <HeroSection
         phase={3}
         title="Tài chính: lãi tức Z là phần nào của m?"
-        subtitle="Pha 3: bạn quyết định vay hoặc cho vay — tỷ suất lợi tức Z′ theo NHNN 2022–2024 thực tế."
+        subtitle="Pha 3: vay hoặc cho vay theo tỷ suất lợi tức Z′; lợi tức Z là phần m được phân phối cho tư bản cho vay."
                 formula={{
           l: "Z",
           r: "= TBCV × Z′",
-          title: 'Tỷ suất lãi tức tư bản cho vay',
+          title: 'Lợi tức Z',
           purpose: 'Tư bản cho vay (TBCV) không trực tiếp tạo ra giá trị thặng dư. Lợi tức Z là phần lợi nhuận chuyển cho chủ TBCV; Z′ = Z/TBCV là giá của tư bản tiền tệ.',
           analogy:
-            'Giống vay ngân hàng để mở rộng quán: ngân hàng không pha trà sữa, nhưng mỗi năm bạn trả lãi (Z) trên số tiền vay (TBCV). Z′ là “% lãi/năm” trên mỗi triệu đồng cho vay.',
+            'Giống vay ngân hàng để có thêm tiền mở quán: ngân hàng không pha trà sữa và khoản vay không tự tạo m. Chỉ khi tiền vay được chuyển hóa thành tư liệu sản xuất và sức lao động trong sản xuất thì mới có điều kiện tạo giá trị thặng dư. Dù vậy, người vay vẫn phải trả lợi tức Z theo tỷ suất Z′.',
           legend: [
-            { sym: 'Z', meaning: 'Lợi tức — phần m (lợi nhuận) người vay trả cho chủ tư bản cho vay' },
+            { sym: 'Z', meaning: 'Lợi tức — phần lợi nhuận/m người vay trả cho chủ tư bản cho vay' },
             { sym: 'TBCV', meaning: 'Tư bản cho vay — vốn tiền tệ ứng trước' },
-            { sym: "Z'", meaning: 'Tỷ suất lãi tức = Z/TBCV (%/năm)' },
+            { sym: "Z'", meaning: 'Tỷ suất lợi tức = Z/TBCV (%/năm)' },
           ],
         }}
         bigNumber={m_pool}

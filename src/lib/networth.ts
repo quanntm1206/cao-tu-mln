@@ -23,3 +23,23 @@ export function calcNetWorth(s: NetWorthInput): number {
     landValue
   )
 }
+
+
+/** Session net worth: cash + land book + lent principal - debt - delivery obligation */
+export interface SessionNetWorthInput {
+  cash: number
+  landAssets: number
+  lentPrincipal: number
+  debtPrincipal: number
+  deliveryObligation: number
+}
+
+export function calcSessionNetWorth(s: SessionNetWorthInput): number {
+  return (
+    s.cash +
+    s.landAssets +
+    s.lentPrincipal -
+    s.debtPrincipal -
+    s.deliveryObligation
+  )
+}

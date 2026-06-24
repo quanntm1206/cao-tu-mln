@@ -51,7 +51,7 @@ export function getTeachingAidForRound(round: number): TeachingAid {
 }
 
 export const FINAL_CHECKLIST: string[] = [
-  "Có thể trình bày công thức T-H-T' và giải thích tại sao m phát sinh trong sản xuất, không phải lưu thông.",
+  "Có thể trình bày công thức T − H − T′ và giải thích tại sao m phát sinh trong sản xuất, không phải lưu thông.",
   'Phân biệt được p (lợi nhuận CN), lợi nhuận thương nghiệp, Z (lãi tức), R (địa tô) và mối quan hệ với m.',
   'Sử dụng công thức Giá cả đất đai = Địa tô / Tỷ suất lợi tức ngân hàng để giải thích tại sao giá đất tăng khi Z′ giảm.',
   'Liên hệ được dữ liệu thực tế VN (Z′ theo NHNN 2022-2024, đất Hoài Đức, Bắc Ninh) với lý thuyết.',

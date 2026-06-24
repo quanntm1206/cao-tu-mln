@@ -28,6 +28,7 @@ import {
   type ResolvedQuickEvent,
 } from '../data/quickEvents'
 import { saveLeaderboard, getLeaderboard, type LeaderboardEntry } from '../lib/storage'
+import { calcSessionNetWorth } from '../lib/networth'
 
 export type Feature =
   | 'hours'
@@ -447,7 +448,13 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (isGameOver) {
       saveLeaderboard({
         name: s.playerName,
-        score: Math.max(0, Math.round(m_pool)),
+        score: Math.max(0, Math.round(calcSessionNetWorth({
+          cash: m_pool,
+          landAssets: land_assets,
+          lentPrincipal: lent_principal,
+          debtPrincipal: debt_principal,
+          deliveryObligation: s.delivery_obligation,
+        }))),
         rounds: s.maxRounds,
         date: new Date().toLocaleDateString('vi-VN'),
       })

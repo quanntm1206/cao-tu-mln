@@ -15,7 +15,7 @@ export default function DistributionBreakdown() {
   const items = [
     { key: 'p', label: 'Lợi nhuận CN (giữ lại)', sym: 'p', color: '#3B82F6', value: p, hint: 'Phần m mà nhà tư bản CN giữ lại sau khi nhường TN' },
     { key: 'pTN', label: 'Lợi nhuận thương nghiệp', sym: 'LN TN', color: '#10B981', value: pTN, hint: 'Phần m đã chuyển cho thương nhân' },
-    { key: 'Z', label: 'Tài chính (net)', sym: 'Z', color: '#F59E0B', value: Z, hint: 'Lãi thu − lãi trả' },
+    { key: 'Z', label: 'Tài chính (net)', sym: 'Z', color: '#F59E0B', value: Z, hint: 'Lợi tức Z thu − Z trả' },
     { key: 'R', label: 'Địa tô đã trả', sym: 'R', color: '#EC4899', value: -R_paid, hint: 'Tô phải trả nếu thuê đất' },
   ]
   const totalAbsM = items.reduce((sum, it) => sum + Math.abs(it.value), 0) || 1
@@ -25,7 +25,7 @@ export default function DistributionBreakdown() {
       <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">PHÂN CHIA m · p + lợi nhuận thương nghiệp + Z + R</p>
       <h3 className="font-display text-xl font-bold mb-1">Bạn đã thấy m chia về 4 hướng</h3>
       <p className="text-sm text-[var(--color-lab-fg-muted)] mb-6">
-        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái vào Δ tài sản/vốn khả dụng.
+        Tỷ lệ chiều dài = mức đóng góp tương đối của mỗi hình thái phân phối m (không đồng nhất tài sản ròng).
       </p>
 
       {/* Stacked horizontal bar */}
@@ -86,7 +86,7 @@ export default function DistributionBreakdown() {
 
       <div className="mt-6 pt-5 border-t border-[var(--color-lab-border)] flex items-baseline justify-between">
         <p className="text-xs text-[var(--color-lab-fg-muted)] font-mono uppercase tracking-widest">
-          Δ tài sản/vốn khả dụng tổng
+          Δ thanh khoản tổng (tiền mặt khả dụng)
         </p>
         <p className="lab-display-num text-2xl" style={{ color: totalDelta >= 0 ? '#10B981' : '#EF4444' }}>
           {totalDelta >= 0 ? '+' : ''}{formatVnd(totalDelta, true)}

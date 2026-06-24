@@ -97,13 +97,16 @@ export default function ResultSection({ result, accent, prevRound, onContinue, o
                   <MetricRow label="Vay thêm (TBCV)" value={formatVnd(r.borrowed_principal, true)} />
                   <MetricRow label="Cho vay khóa (T)" value={formatVnd(r.lent_principal_delta, true)} />
                   <MetricRow label="Gốc cho vay (TBCV)" value={formatVnd(r.t_cho_vay, true)} />
-                  <MetricRow label="Lãi đã trả (Z)" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
-                  <MetricRow label="Lãi thu được (Z)" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
+                  <MetricRow label="Lợi tức Z phải trả" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
+                  <MetricRow label="Lợi tức Z thu được" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
                   <MetricRow label={`Z = TBCV × Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.t_cho_vay * r.z_prime, true)} accent={accent} />
                   <MetricRow label="Z phải trả" value={formatVnd(r.interest_paid, true)} accent="#EF4444" />
                   <MetricRow label="Z nhận được" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
+                  {r.borrowed_principal > 0 && (
+                    <p className="text-[11px] text-[var(--color-lab-fg-dim)]">Tiền vay làm tăng tiền mặt và nợ gốc; không tăng tài sản ròng và không tạo m.</p>
+                  )}
                   <MetricRow label="m mới do tài chính tạo ra" value="= 0" />
-                  <MetricRow label="Δ tiền mặt" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <MetricRow label="Δ thanh khoản (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
                   <MetricRow label="Tài chính ròng" value={formatVnd(r.net_finance, true)} accent={accent} big />
                 </>
               )
@@ -119,7 +122,7 @@ export default function ResultSection({ result, accent, prevRound, onContinue, o
                   <MetricRow label={`P = R / Z′ (${(r.z_prime * 100).toFixed(1)}%)`} value={formatVnd(r.p_land, true)} />
                   <MetricRow label="Tái định giá tài sản đất" value={formatVnd(r.land_asset_revaluation, true)} />
                   <MetricRow label="m mới do đất tạo ra" value="= 0" />
-                  <MetricRow label="Δ tiền mặt" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <MetricRow label="Δ thanh khoản (tiền mặt)" value={formatVnd(r.pool_delta, true)} accent={accent} big />
                   <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-2">Tái định giá chỉ cộng vào tài sản đất — không cộng vào tài sản/vốn khả dụng.</p>
                 </>
               )
