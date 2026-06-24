@@ -164,6 +164,8 @@ export default function Phase3Page({ onNextPhase }: Props) {
           r: '= Z / TBCV',
           title: 'Tỷ suất lãi tức tư bản cho vay',
           purpose: 'Tư bản cho vay (TBCV) không trực tiếp tạo ra giá trị thặng dư. Lợi tức Z là phần lợi nhuận chuyển cho chủ TBCV; Z′ = Z/TBCV là giá của tư bản tiền tệ.',
+          analogy:
+            'Giống vay ngân hàng để mở rộng quán: ngân hàng không pha trà sữa, nhưng mỗi năm bạn trả lãi (Z) trên số tiền vay (TBCV). Z′ là “% lãi/năm” trên mỗi triệu đồng cho vay.',
           legend: [
             { sym: 'Z', meaning: 'Lợi tức — phần m (lợi nhuận) người vay trả cho chủ tư bản cho vay' },
             { sym: 'TBCV', meaning: 'Tư bản cho vay — vốn tiền tệ ứng trước' },

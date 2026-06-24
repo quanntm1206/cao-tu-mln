@@ -167,6 +167,8 @@ export default function Phase2Page({ onNextPhase }: Props) {
           r: '',
           title: 'Công thức chung của tư bản',
           purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m — khi qua thương nhân, một phần m chuyển thành lợi nhuận thương nghiệp.",
+          analogy:
+            'Giống bạn làm trà sữa xong rồi nhờ Shopee/TikTok bán hộ: đồ uống đã có lợi nhuận từ sản xuất (m), sàn chỉ giúp đưa tới khách và lấy một phần hoa hồng — sàn không pha thêm ly nào.',
           legend: [
             { sym: 'T', meaning: 'Tiền vốn ứng trước ban đầu' },
             { sym: 'H', meaning: 'Hàng hóa — gồm sức lao động + tư liệu sản xuất' },

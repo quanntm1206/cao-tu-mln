@@ -11,6 +11,7 @@ export interface FormulaSpec {
   r: string
   title?: string
   purpose?: string
+  analogy?: string
   legend?: FormulaLegend[]
 }
 
@@ -67,6 +68,14 @@ export default function HeroSection({
               <div className="mb-4 pb-4 border-b border-[var(--color-lab-border)]">
                 <p className="lab-cite mb-1.5 text-[var(--color-lab-fg-dim)]">DÙNG ĐỂ LÀM GÌ</p>
                 <p className="text-sm text-[var(--color-lab-fg)] leading-relaxed">{formula.purpose}</p>
+                {formula.analogy && (
+                  <div className="mt-3 pt-3 border-t border-[var(--color-lab-border)]/60">
+                    <p className="lab-cite mb-1.5 text-[var(--color-lab-fg-dim)]">LIÊN TƯỞNG DỄ HIỂU</p>
+                    <p className="text-sm text-[var(--color-lab-fg-muted)] leading-relaxed italic">
+                      {formula.analogy}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

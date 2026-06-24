@@ -172,6 +172,8 @@ export default function Phase1Page({ onNextPhase }: Props) {
           r: "= m / (c + v)   ·   m = v × m'",
           title: 'Tỷ suất lợi nhuận',
           purpose: 'Mỗi đồng vốn k = c + v được tách thành c (tư bản bất biến) và v (tư bản khả biến). Chỉ v sinh ra m = v × m′. c/v khác nhau theo ngành ⇒ p′ khác nhau.',
+          analogy:
+            'Giống mở quán trà sữa: tiền máy xay + nguyên liệu (c) và tiền lương nhân viên (v). Chỉ giờ làm việc của nhân viên mới tạo thêm lợi nhuận (m); quán nhiều máy móc hơn nhân sự thì mỗi đồng bỏ ra thu về ít hơn (p′ thấp hơn).',
           legend: [
             { sym: "p'", meaning: 'Tỷ suất lợi nhuận = m/(c+v). Mô phỏng: cơ khí 20%, dệt 30%, da 40%' },
             { sym: 'm', meaning: 'Giá trị thặng dư — sinh ra từ v × m\', không phải từ c' },

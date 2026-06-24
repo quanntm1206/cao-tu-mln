@@ -233,6 +233,8 @@ export default function Phase4Page({ onComplete }: Props) {
           title: 'Tư bản hóa địa tô',
           purpose:
             'R là phần m nhượng cho chủ đất. Z′ là giá tư bản tiền tệ dùng chiết khấu. P vốn hóa dòng R kỳ vọng — không phải m mới từ lao động.',
+          analogy:
+            'Giống thuê mặt bằng mỗi tháng (trả R cho chủ nhà) hoặc mua luôn căn hộ: giá mua ≈ tiền thuê chia cho lãi suất vay (P = R/Z′). Chủ nhà không làm trong quán nhưng vẫn nhận phần lợi nhuận nhờ quyền sở hữu đất.',
           legend: [
             { sym: 'R', meaning: 'Địa tô — phần m chuyển cho chủ đất (₫/năm hoặc phần m/vòng)' },
             { sym: 'Z′', meaning: 'Tỷ suất lợi tức ngân hàng — mẫu số vốn hóa' },
