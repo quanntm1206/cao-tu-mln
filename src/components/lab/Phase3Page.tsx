@@ -161,14 +161,14 @@ export default function Phase3Page({ onNextPhase }: Props) {
         subtitle="Pha 3: bạn quyết định vay hoặc cho vay với lãi suất NHNN 2022–2024 thực tế."
         formula={{
           l: 'Z',
-          r: "= T' − T  ·  i = Z / T",
+          r: "= T' − T  ·  Z′ = Z / T",
           title: 'Lãi tức tư bản cho vay',
-          purpose: 'Z là phần m chuyển cho chủ tư bản cho vay — họ không sản xuất nhưng hưởng một phần giá trị thặng dư qua lãi suất i.',
+          purpose: 'Z là phần m chuyển cho chủ tư bản cho vay — họ không sản xuất nhưng hưởng một phần giá trị thặng dư qua tỷ suất lãi tức Z′.',
           legend: [
             { sym: 'Z', meaning: 'Lãi tức (tiền lãi) — phần m mà người vay trả cho chủ vốn' },
             { sym: 'T', meaning: 'Vốn cho vay ban đầu' },
             { sym: "T'", meaning: 'Vốn + lãi sau kỳ vay' },
-            { sym: 'i', meaning: 'Lãi suất (%/năm) — giá của tư bản tiền tệ' },
+            { sym: "Z'", meaning: 'Tỷ suất lãi tức = Z/T (%/năm) — giá của tư bản tiền tệ' },
           ],
         }}
         bigNumber={m_pool}
