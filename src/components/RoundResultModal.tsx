@@ -7,6 +7,7 @@ export default function RoundResultModal() {
   const {
     round,
     lastResult,
+    lastEvent,
     dismissLesson,
     unlockedFeatures,
     history,
@@ -67,6 +68,22 @@ export default function RoundResultModal() {
         </div>
 
         <SurplusFlow result={lastResult} surplusRevealed={surplusRevealed} />
+
+        {lastEvent && (
+          <div className="mt-5 bg-amber-950/40 border border-amber-800/40 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">⚡</span>
+              <h3 className="text-sm font-bold text-amber-300">Tình huống vòng này: {lastEvent.title}</h3>
+            </div>
+            <p className="text-sm text-gray-300 mb-2">
+              <span className="font-semibold text-white">Bạn chọn:</span> {lastEvent.choiceLabel}
+            </p>
+            <p className="text-sm text-gray-300 leading-relaxed mb-2">{lastEvent.resultText}</p>
+            <p className="text-xs text-amber-200 leading-relaxed">
+              <span className="font-bold">Liên hệ giáo trình:</span> {lastEvent.teachingPoint}
+            </p>
+          </div>
+        )}
 
         {lesson && (
           <div className="mt-5 bg-blue-950/40 border border-blue-800/40 rounded-xl p-4">

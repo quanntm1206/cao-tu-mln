@@ -11,12 +11,14 @@
 - Tuần hoàn, chu chuyển, tái sản xuất giản đơn và tái sản xuất mở rộng.
 - Tích lũy tư bản, cấu tạo hữu cơ, tích tụ và tập trung tư bản.
 - Lợi nhuận, lợi nhuận bình quân, lợi nhuận thương nghiệp, lợi tức, địa tô và giá đất.
+- Quick event ngẫu nhiên có seed, mỗi tình huống gắn với một khái niệm trong Chương 3.
 
 ## Nguyên tắc thiết kế
 
 - Game chỉ bao quát nội dung Chương 3 của giáo trình, không mở rộng thành môn quản trị kinh doanh.
-- Các yếu tố như sự kiện ngẫu nhiên, tinh thần công nhân, phá sản, khủng hoảng tín dụng, M&A hoặc tư bản ảo không còn là nội dung gameplay.
+- Không dùng event ngoài bài như tinh thần công nhân, phá sản, khủng hoảng tín dụng, M&A, đầu cơ hoặc tư bản ảo.
 - Các quyết định trong game chỉ đóng vai trò minh họa công thức và quan hệ lý luận.
+- Quick event chỉ được tác động nhẹ tới biến giáo trình đã có như `c`, `v`, `m`, `t_n`, chu chuyển, lợi tức, thương nghiệp hoặc địa tô.
 
 ## Công nghệ
 

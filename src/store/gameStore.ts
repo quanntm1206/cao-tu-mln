@@ -9,6 +9,14 @@ import {
   LOGISTICS_UNIT_COST,
 } from '../data/economyConstants'
 import { getDifficultyForCapital, type DifficultyId } from '../data/difficulty'
+import {
+  getQuickEventChoice,
+  getQuickEventForRound,
+  makeEventSeed,
+  type QuickEventEffect,
+  type QuickEventSelection,
+  type ResolvedQuickEvent,
+} from '../data/quickEvents'
 
 export type Feature =
   | 'hours'
@@ -29,7 +37,10 @@ export interface ResolvedGameEvent {
   round: number
   title: string
   description: string
-  effect: Record<string, never>
+  choiceId: string
+  choiceLabel: string
+  resultText: string
+  teachingPoint: string
 }
 
 function getUnlockedFeatures(round: number): Feature[] {
@@ -127,11 +138,18 @@ export interface GameState {
   history: HistoryEntry[]
   unlockedFeatures: Feature[]
   pendingLesson: boolean
+  pendingQuickEvent: ResolvedQuickEvent | null
+  pendingRoundDecisions: RoundDecisions | null
+  lastQuickEventChoice: QuickEventSelection | null
+  eventLog: QuickEventSelection[]
+  skipQuickEventOnce: boolean
+  forceQuickEventForTesting: boolean
   lastResult: RoundResult | null
   lastEvent: ResolvedGameEvent | null
 
   startGame: (name: string, initialCapital: number) => void
   applyRound: (decisions: RoundDecisions) => void
+  chooseQuickEvent: (choiceId: string) => void
   dismissLesson: () => void
   reset: () => void
   getLeaderboard: () => LeaderboardEntry[]
@@ -174,6 +192,12 @@ const DEFAULT_STATE = {
   history: [] as HistoryEntry[],
   unlockedFeatures: ['hours', 'reinvest'] as Feature[],
   pendingLesson: false,
+  pendingQuickEvent: null as ResolvedQuickEvent | null,
+  pendingRoundDecisions: null as RoundDecisions | null,
+  lastQuickEventChoice: null as QuickEventSelection | null,
+  eventLog: [] as QuickEventSelection[],
+  skipQuickEventOnce: false,
+  forceQuickEventForTesting: false,
   lastResult: null as RoundResult | null,
   lastEvent: null as ResolvedGameEvent | null,
 }
@@ -193,6 +217,66 @@ function calcSnapshotNetWorth(
     rent_per_unit,
     bank_interest_rate,
   })
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value))
+}
+
+function applyQuickEventEffectToDecisions(
+  decisions: RoundDecisions,
+  effect: QuickEventEffect,
+): RoundDecisions {
+  return {
+    ...decisions,
+    h: clampNumber(decisions.h + (effect.hDelta ?? 0), 6, 14),
+    v_per_worker: Math.max(0, decisions.v_per_worker + (effect.wageDelta ?? 0)),
+    workers: clampNumber(decisions.workers + (effect.workersDelta ?? 0), 1, 50),
+    use_merchant: effect.forceMerchant ? true : decisions.use_merchant,
+    merchant_rate: clampNumber(
+      decisions.merchant_rate + (effect.merchantRateDelta ?? 0),
+      0.03,
+      0.2,
+    ),
+    rent_mode: effect.forceRentMode ? true : decisions.rent_mode,
+    alpha: clampNumber(decisions.alpha + (effect.alphaDelta ?? 0), 0, 1),
+  }
+}
+
+function applyQuickEventEffectToSnapshot(
+  state: GameState,
+  effect: QuickEventEffect,
+): Partial<GameState> {
+  let cash = state.cash + (effect.cashDelta ?? 0)
+  let land_units = state.land_units
+
+  if (effect.landUnitsDelta && effect.landUnitsDelta > 0) {
+    const landPrice = state.rent_per_unit / state.bank_interest_rate
+    const affordableUnits = Math.min(effect.landUnitsDelta, Math.floor(cash / landPrice))
+    if (affordableUnits > 0) {
+      cash -= affordableUnits * landPrice
+      land_units += affordableUnits
+    }
+  }
+
+  return {
+    cash,
+    c_circulating_stock: Math.max(
+      0,
+      state.c_circulating_stock + (effect.materialsDelta ?? 0),
+    ),
+    c_fixed_book: Math.max(0, state.c_fixed_book + (effect.machinesDelta ?? 0)),
+    debt: Math.max(0, state.debt + (effect.debtDelta ?? 0)),
+    lending: Math.max(0, state.lending + (effect.lendingDelta ?? 0)),
+    land_units,
+    t_n: Math.max(state.base_t_n * 0.25, state.t_n + (effect.tNDelta ?? 0)),
+    tech_lead: Math.max(0, state.tech_lead + (effect.techLeadDelta ?? 0)),
+    logistics_level: clampNumber(
+      state.logistics_level + (effect.logisticsLevelDelta ?? 0),
+      0,
+      5,
+    ),
+  }
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -221,6 +305,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       history: [],
       lastResult: null,
       lastEvent: null,
+      pendingQuickEvent: null,
+      pendingRoundDecisions: null,
+      lastQuickEventChoice: null,
+      eventLog: [],
+      skipQuickEventOnce: false,
       pendingLesson: false,
     })
   },
@@ -228,6 +317,25 @@ export const useGameStore = create<GameState>((set, get) => ({
   applyRound: (decisions: RoundDecisions) => {
     const s = get()
     if (!s.started || s.gameOver) return
+
+    if (!s.skipQuickEventOnce) {
+      const event = getQuickEventForRound(
+        makeEventSeed(s.playerName, s.initialCapital),
+        s.round,
+        s.unlockedFeatures,
+        s.history,
+        { forceEvent: s.forceQuickEventForTesting },
+      )
+
+      if (event) {
+        set({
+          pendingQuickEvent: event,
+          pendingRoundDecisions: decisions,
+          lastQuickEventChoice: null,
+        })
+        return
+      }
+    }
 
     const profile = getDifficultyForCapital(s.initialCapital)
 
@@ -329,7 +437,19 @@ export const useGameStore = create<GameState>((set, get) => ({
     let new_p_bar = s.p_bar + (Math.random() * 2 - 1) * profile.p_bar_volatility
 
     const new_morale = s.morale
-    const lastEvent: ResolvedGameEvent | null = null
+    const selectedQuickEvent = s.lastQuickEventChoice
+    const lastEvent: ResolvedGameEvent | null = selectedQuickEvent
+      ? {
+          id: selectedQuickEvent.eventId,
+          round: s.round,
+          title: selectedQuickEvent.title,
+          description: selectedQuickEvent.resultText,
+          choiceId: selectedQuickEvent.choiceId,
+          choiceLabel: selectedQuickEvent.choiceLabel,
+          resultText: selectedQuickEvent.resultText,
+          teachingPoint: selectedQuickEvent.teachingPoint,
+        }
+      : null
 
     new_p_bar = Math.max(0.05, Math.min(0.5, new_p_bar))
 
@@ -397,14 +517,50 @@ export const useGameStore = create<GameState>((set, get) => ({
       marketTechLevel: new_market_tech,
       p_bar: new_p_bar,
       history: [...s.history, entry],
+      eventLog: selectedQuickEvent ? [...s.eventLog, selectedQuickEvent] : s.eventLog,
       lastResult: result,
       lastEvent,
+      lastQuickEventChoice: null,
+      pendingQuickEvent: null,
+      pendingRoundDecisions: null,
+      skipQuickEventOnce: false,
+      forceQuickEventForTesting: false,
       round: newRound,
       gameOver: isGameOver,
       gameOverReason,
       unlockedFeatures: getUnlockedFeatures(newRound),
       pendingLesson: true,
     })
+  },
+
+  chooseQuickEvent: (choiceId: string) => {
+    const s = get()
+    const event = s.pendingQuickEvent
+    const decisions = s.pendingRoundDecisions
+    if (!event || !decisions) return
+
+    const choice = getQuickEventChoice(event, choiceId)
+    if (!choice) return
+
+    const selection: QuickEventSelection = {
+      eventId: event.id,
+      choiceId: choice.id,
+      title: event.title,
+      choiceLabel: choice.label,
+      resultText: choice.resultText,
+      teachingPoint: choice.teachingPoint,
+      effect: choice.effect,
+    }
+
+    const nextDecisions = applyQuickEventEffectToDecisions(decisions, choice.effect)
+    set({
+      ...applyQuickEventEffectToSnapshot(s, choice.effect),
+      lastQuickEventChoice: selection,
+      pendingQuickEvent: null,
+      pendingRoundDecisions: null,
+      skipQuickEventOnce: true,
+    })
+    get().applyRound(nextDecisions)
   },
 
   dismissLesson: () => set({ pendingLesson: false }),

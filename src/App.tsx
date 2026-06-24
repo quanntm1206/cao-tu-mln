@@ -4,11 +4,12 @@ import { formatVnd } from './lib/currency'
 import IntroScreen from './components/IntroScreen'
 import Dashboard from './components/Dashboard'
 import RoundResultModal from './components/RoundResultModal'
+import QuickEventModal from './components/QuickEventModal'
 import Leaderboard from './components/Leaderboard'
 import { useState } from 'react'
 
 export default function App() {
-  const { started, gameOver, pendingLesson } = useGameStore()
+  const { started, gameOver, pendingLesson, pendingQuickEvent } = useGameStore()
   const [showLeaderboard, setShowLeaderboard] = useState(false)
 
   if (!started) {
@@ -18,6 +19,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0a0f1e]">
       {pendingLesson && <RoundResultModal />}
+      {pendingQuickEvent && <QuickEventModal />}
       {showLeaderboard && (
         <Leaderboard onClose={() => setShowLeaderboard(false)} />
       )}

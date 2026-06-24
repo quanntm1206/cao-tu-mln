@@ -339,6 +339,43 @@ Modal này là màn quan trọng nhất để dùng game như công cụ dạy h
 
 ---
 
+## Màn 6b — Tình huống nhanh kiểu BitLife
+
+**Khi nào xuất hiện:**
+
+- Một số vòng sẽ hiện tình huống nhanh trước khi tính kết quả sản xuất.
+- Event xuất hiện ngẫu nhiên có seed, nên cùng tên người chơi và cùng vốn khởi đầu sẽ gặp cùng chuỗi event.
+- Event chỉ mở khi người chơi đã học/mở khái niệm liên quan.
+
+**Hiển thị:**
+
+- Tiêu đề tình huống.
+- Mô tả ngắn.
+- Gợi ý bài học.
+- 2–3 lựa chọn.
+- Preview tác động nhẹ tới biến trong game.
+- Sau khi chọn: kết quả và phần **Liên hệ giáo trình**.
+
+**Mục tiêu dạy:**
+
+- Tạo cảm giác lựa chọn nhanh như game đời sống nhưng vẫn giữ nội dung trong Chương 3.
+- Biến mỗi tình huống thành câu hỏi thảo luận: lựa chọn này minh họa khái niệm nào?
+
+**Cách dùng khi dạy:**
+
+1. Khi event hiện ra, yêu cầu lớp đọc tình huống trước khi chọn.
+2. Cho học sinh dự đoán lựa chọn nào làm thay đổi `c`, `v`, `m`, `m'`, `n`, `z` hoặc `R`.
+3. Sau khi chọn, đọc phần **Liên hệ giáo trình**.
+4. Khi modal kết quả vòng hiện ra, so sánh dự đoán với chỉ số thật.
+
+**Câu hỏi gợi ý:**
+
+- Lựa chọn này tác động vào `c`, `v`, hay điều kiện tạo `m`?
+- Đây là GTTD tuyệt đối, GTTD tương đối, chu chuyển, lợi tức hay địa tô?
+- Tác động này có tạo nguồn giá trị mới độc lập không, hay chỉ làm điều kiện sản xuất/phân phối thay đổi?
+
+---
+
 ## Màn 7 — Dòng chảy khối m
 
 **Hiển thị trong modal kết quả:**

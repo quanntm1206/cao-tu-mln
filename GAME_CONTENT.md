@@ -10,15 +10,25 @@ Nếu cần dùng game trực tiếp trên lớp, xem kịch bản từng màn t
 
 - Giữ: `T–H–T'`, hàng hóa sức lao động, tiền công, `G = c + v + m`, `m'`, `M`, tích lũy tư bản, chu chuyển, lợi nhuận, lợi tức, lợi nhuận thương nghiệp, địa tô và giá đất.
 - Giữ có đổi ngôn ngữ: cải tiến năng suất dùng để minh họa giá trị thặng dư tương đối; rút ngắn lưu thông dùng để minh họa chu chuyển tư bản.
-- Bỏ khỏi gameplay: sự kiện ngẫu nhiên, tinh thần công nhân, phá sản sớm, khủng hoảng tín dụng, M&A, chu kỳ suy thoái, tư bản ảo và các mô phỏng quản trị SME.
+- Bỏ khỏi gameplay: event ngoài bài, tinh thần công nhân, phá sản sớm, khủng hoảng tín dụng, M&A, chu kỳ suy thoái, tư bản ảo và các mô phỏng quản trị SME.
 
 ## Luồng chơi
 
 1. Người chơi nhập tên và chọn vốn khởi đầu.
 2. Mỗi vòng là một quý sản xuất, tổng cộng 18 vòng.
 3. Người chơi điều chỉnh các biến đã mở khóa: giờ lao động, tiền công, lao động, máy móc, nguyên liệu, cải tiến năng suất, thời gian lưu thông, thương nghiệp, lợi tức, địa tô và tái đầu tư.
-4. Sau mỗi vòng, modal hiển thị kết quả sản xuất và một bài học bám giáo trình.
-5. Kết thúc vòng 18, game hiển thị tổng kết học phần.
+4. Một số vòng có **tình huống nhanh** kiểu BitLife: người chơi chọn 1 phương án, nhận tác động nhẹ và giải thích giáo trình.
+5. Sau mỗi vòng, modal hiển thị kết quả sản xuất và một bài học bám giáo trình.
+6. Kết thúc vòng 18, game hiển thị tổng kết học phần.
+
+## Quick event
+
+- Event xuất hiện ngẫu nhiên khoảng 45% số vòng, tối đa 1 event/vòng.
+- Random có seed từ tên người chơi và vốn khởi đầu, nên cùng tên/vốn sẽ gặp cùng chuỗi tình huống.
+- Event không xuất hiện trước khi người chơi đã mở/học feature liên quan.
+- Mỗi event có 2–3 lựa chọn, mỗi lựa chọn có tác động nhẹ tới biến đã có trong giáo trình như tiền mặt, nguyên liệu, máy móc, giờ lao động, tiền công, `t_n`, chu chuyển, lợi tức, thương nghiệp hoặc địa tô.
+- Mỗi lựa chọn có `teachingPoint` để giáo viên dừng lại hỏi lớp ngay sau khi người chơi chọn.
+- Event bị giới hạn phạm vi: không dùng morale, phá sản, chứng khoán, khủng hoảng tín dụng, M&A, đầu cơ hoặc mô phỏng quản trị SME ngoài bài.
 
 ## Mapping 18 vòng với giáo trình
 
