@@ -26,17 +26,12 @@ function describeEffect(effect: QuickEventEffect): string[] {
 
 function ChoiceCard({ choice, onChoose }: { choice: QuickEventChoice; onChoose: () => void }) {
   return (
-    <button
-      onClick={onChoose}
-      className="w-full text-left bg-gray-900/70 hover:bg-gray-800 border border-gray-700 hover:border-blue-500 rounded-xl p-4 transition-all"
-    >
-      <p className="text-sm font-bold text-white mb-2">{choice.label}</p>
-      <p className="text-xs text-gray-400 mb-3">{choice.resultText}</p>
+    <button onClick={onChoose} className="w-full text-left bg-stone-950/65 hover:bg-stone-900 border border-stone-700/70 hover:border-amber-400 rounded-xl p-4 transition-all">
+      <p className="text-sm font-bold text-stone-50 mb-2">{choice.label}</p>
+      <p className="text-xs text-stone-400 mb-3">{choice.resultText}</p>
       <div className="flex flex-wrap gap-2">
         {describeEffect(choice.effect).map((line) => (
-          <span key={line} className="text-[11px] bg-blue-950/60 text-blue-200 px-2 py-1 rounded-lg">
-            {line}
-          </span>
+          <span key={line} className="text-[11px] bg-amber-950/50 text-amber-100 px-2 py-1 rounded-lg">{line}</span>
         ))}
       </div>
     </button>
@@ -52,48 +47,41 @@ export default function QuickEventModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop bg-black/70">
-      <div className="glass-card rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-amber-800/40 max-h-[90vh] overflow-y-auto">
+      <div className="theory-card rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-3xl">⚡</span>
+          <span className="text-3xl">🧾</span>
           <div>
-            <p className="text-xs text-amber-300 uppercase tracking-wider">Tình huống nhanh · Vòng {event.round}</p>
-            <h2 className="text-2xl font-bold text-white">{event.title}</h2>
+            <p className="text-xs text-amber-300 uppercase tracking-wider">Tình huống sản xuất · Vòng {event.round}</p>
+            <h2 className="text-2xl font-bold text-stone-50">{event.title}</h2>
           </div>
         </div>
 
-        <p className="text-sm text-gray-300 leading-relaxed mb-4">{event.description}</p>
-
+        <p className="text-sm text-stone-300 leading-relaxed mb-4">{event.description}</p>
         <div className="bg-amber-950/30 border border-amber-800/40 rounded-xl p-3 mb-5">
-          <p className="text-xs text-amber-200 leading-relaxed">
-            <span className="font-bold">Gợi ý bài học:</span> {event.teachingPoint}
-          </p>
+          <p className="text-xs text-amber-200 leading-relaxed"><span className="font-bold">Gợi ý bài học:</span> {event.teachingPoint}</p>
         </div>
 
         {!selectedChoice ? (
           <div className="space-y-3">
             {event.choices.map((choice) => (
-              <ChoiceCard
-                key={choice.id}
-                choice={choice}
-                onChoose={() => setSelectedChoice(choice)}
-              />
+              <ChoiceCard key={choice.id} choice={choice} onChoose={() => setSelectedChoice(choice)} />
             ))}
           </div>
         ) : (
           <div className="space-y-4">
             <div className="bg-green-950/40 border border-green-800/40 rounded-xl p-4">
               <p className="text-sm font-bold text-green-300 mb-2">Bạn chọn: {selectedChoice.label}</p>
-              <p className="text-sm text-gray-300 mb-3">{selectedChoice.resultText}</p>
-              <p className="text-xs text-green-200 leading-relaxed">
-                <span className="font-bold">Liên hệ giáo trình:</span> {selectedChoice.teachingPoint}
-              </p>
+              <p className="text-sm text-stone-300 mb-3">{selectedChoice.resultText}</p>
+              <p className="text-xs text-green-200 leading-relaxed"><span className="font-bold">Liên hệ giáo trình:</span> {selectedChoice.teachingPoint}</p>
             </div>
-            <button
-              onClick={() => chooseQuickEvent(selectedChoice.id)}
-              className="w-full py-3 rounded-xl font-bold text-white transition-all bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500"
-            >
-              Áp dụng lựa chọn & tính vòng sản xuất →
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={() => setSelectedChoice(null)} className="flex-1 py-3 rounded-xl font-bold text-stone-100 border border-stone-700/70 bg-stone-900/70 hover:bg-stone-800 transition-all">
+                Đổi lựa chọn
+              </button>
+              <button onClick={() => chooseQuickEvent(selectedChoice.id)} className="flex-[1.25] py-3 rounded-xl font-bold text-stone-50 transition-all btn-primary">
+                Áp dụng lựa chọn & tính vòng sản xuất →
+              </button>
+            </div>
           </div>
         )}
       </div>

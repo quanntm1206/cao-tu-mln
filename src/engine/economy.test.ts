@@ -19,7 +19,7 @@ import {
   convergeToPBar,
   distributeProfit,
   calcLandPrice,
-  calcMoraleEffect,
+
   calcRound,
 } from './economy'
 
@@ -234,7 +234,6 @@ describe('Integration – full round calculation', () => {
     use_merchant: false,
     merchant_rate: 0,
     logistics_level: 0,
-    morale: 80,
     alpha: 0.5,
   }
 
@@ -253,12 +252,6 @@ describe('Integration – full round calculation', () => {
     expect(r.cash_delta).toBeCloseTo(r.net_profit - r.reinvestment, 5)
   })
 
-  it('calcMoraleEffect: stays neutral to avoid non-textbook management mechanics', () => {
-    const low = calcMoraleEffect(20)
-    const high = calcMoraleEffect(90)
-    expect(low).toEqual({ productivity_mult: 1, t_n_mult: 1 })
-    expect(high).toEqual({ productivity_mult: 1, t_n_mult: 1 })
-  })
 
   it('tech_lead decays each round in calcRound', () => {
     const r = calcRound({ ...base, tech_lead: 1.0 })
@@ -277,3 +270,6 @@ describe('Integration – full round calculation', () => {
     expect(withoutMaterials.m).toBeCloseTo(withMaterials.m * 0.5, 5)
   })
 })
+
+
+

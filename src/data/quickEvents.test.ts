@@ -54,4 +54,20 @@ describe('quick events', () => {
       expect(allEventText.toLowerCase()).not.toContain(term.toLowerCase())
     }
   })
+  it('keeps seeded event frequency useful for classroom replay', () => {
+    const names = ['Tester QA', 'Nguyen', 'A', 'Nhóm 1', 'Minh', 'cao']
+    const features: Feature[] = ['hours', 'reinvest', 'machines', 'materials', 'rnd', 'logistics', 'merchant', 'interest', 'rent', 'surplus_reveal']
+
+    for (const name of names) {
+      const seed = makeEventSeed(name, 3_000_000_000)
+      const eventRounds = Array.from({ length: 18 }, (_, index) => index + 1).filter((round) => (
+        getQuickEventForRound(seed, round, features, []) !== undefined
+      ))
+
+      expect(eventRounds.length).toBeGreaterThanOrEqual(4)
+      expect(eventRounds.length).toBeLessThanOrEqual(12)
+    }
+  })
 })
+
+

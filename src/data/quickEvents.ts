@@ -69,6 +69,7 @@ export interface ResolvedQuickEvent extends QuickEvent {
 }
 
 export interface QuickEventSelection {
+  round: number
   eventId: string
   choiceId: string
   title: string
@@ -76,6 +77,7 @@ export interface QuickEventSelection {
   resultText: string
   teachingPoint: string
   effect: QuickEventEffect
+  forcedByTeacher?: boolean
 }
 
 const MILLION = 1_000_000
@@ -685,11 +687,16 @@ function hashString(input: string): number {
     hash ^= input.charCodeAt(i)
     hash = Math.imul(hash, 16777619)
   }
+  hash += hash << 13
+  hash ^= hash >>> 7
+  hash += hash << 3
+  hash ^= hash >>> 17
+  hash += hash << 5
   return hash >>> 0
 }
 
-function seededUnit(seed: string): number {
-  return hashString(seed) / 0xffffffff
+export function seededUnit(seed: string): number {
+  return hashString(seed) / 0x100000000
 }
 
 function hasRequiredFeatures(event: QuickEvent, features: Feature[]): boolean {
@@ -711,13 +718,22 @@ export function getQuickEventForRound(
   ))
 
   if (eligible.length === 0) return undefined
-  if (!options.forceEvent && seededUnit(`${seed}::chance::${round}`) >= 0.45) return undefined
+  if (!options.forceEvent && seededUnit(`${seed}::quick-event::chance::round-${round}`) >= 0.4) return undefined
 
-  const index = Math.floor(seededUnit(`${seed}::pick::${round}`) * eligible.length) % eligible.length
+  const index = Math.floor(seededUnit(`${seed}::quick-event::pick::round-${round}`) * eligible.length) % eligible.length
   return { ...eligible[index], round }
 }
 
 export function getQuickEventChoice(event: QuickEvent, choiceId: string): QuickEventChoice | undefined {
   return event.choices.find((choice) => choice.id === choiceId)
 }
+
+
+
+
+
+
+
+
+
 

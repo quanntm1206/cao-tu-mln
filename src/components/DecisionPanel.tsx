@@ -33,8 +33,8 @@ function Slider({
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-1">
-        <span className="text-sm text-gray-300">{label}</span>
-        <span className="text-sm font-bold text-white bg-gray-800 px-2 py-0.5 rounded-lg">
+        <span className="text-sm text-stone-300">{label}</span>
+        <span className="text-sm font-bold text-stone-50 bg-stone-900 px-2 py-0.5 rounded-lg">
           {format(value)}
         </span>
       </div>
@@ -52,7 +52,7 @@ function Slider({
           }}
         />
       </div>
-      <div className="flex justify-between text-xs text-gray-600 mt-0.5">
+      <div className="flex justify-between text-xs text-stone-600 mt-0.5">
         <span>{format(min)}</span>
         <span>{format(max)}</span>
       </div>
@@ -77,7 +77,7 @@ function NumberInput({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-sm text-gray-300 mb-1">{label}</label>
+      <label className="block text-sm text-stone-300 mb-1">{label}</label>
       <input
         type="number"
         value={value}
@@ -85,7 +85,7 @@ function NumberInput({
         max={max}
         step={step ?? 1}
         onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value))))}
-        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+        className="input-field w-full rounded-lg px-3 py-2"
       />
     </div>
   )
@@ -102,11 +102,11 @@ function Toggle({
 }) {
   return (
     <div className="flex items-center justify-between mb-3">
-      <span className="text-sm text-gray-300">{label}</span>
+      <span className="text-sm text-stone-300">{label}</span>
       <button
         onClick={() => onChange(!value)}
         className={`relative w-12 h-6 rounded-full transition-colors ${
-          value ? 'bg-blue-600' : 'bg-gray-700'
+          value ? 'bg-amber-700' : 'bg-stone-800'
         }`}
       >
         <span
@@ -121,8 +121,8 @@ function Toggle({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="glass-card rounded-xl p-4 mb-4">
-      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    <div className="theory-card rounded-xl p-4 mb-4">
+      <h3 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
         {title}
       </h3>
       {children}
@@ -207,20 +207,20 @@ export default function DecisionPanel() {
 
   return (
     <div className="flex flex-col gap-0">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-        Quyết định vòng này
+      <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-wider mb-4">
+        Phiếu quyết định sản xuất
       </h2>
 
       {/* Spend summary */}
       <div className={`glass-card rounded-xl p-3 mb-4 flex items-center gap-3 ${!canAfford ? 'border border-red-700' : ''}`}>
         <div className="flex-1">
-          <p className="text-xs text-gray-400">Chi phí kế hoạch</p>
-          <p className={`text-lg font-bold ${!canAfford ? 'text-red-400' : 'text-white'}`}>
+          <p className="text-xs text-stone-400">Chi phí kế hoạch</p>
+          <p className={`text-lg font-bold ${!canAfford ? 'text-red-400' : 'text-stone-50'}`}>
             {formatVnd(totalSpend)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-gray-400">Tiền khả dụng</p>
+          <p className="text-xs text-stone-400">Tiền khả dụng</p>
           <p className="text-lg font-bold text-green-400">{formatVnd(cash)}</p>
         </div>
       </div>
@@ -286,7 +286,7 @@ export default function DecisionPanel() {
       {/* Productivity */}
       {has('rnd') && (
         <Section title="🔬 Tăng năng suất lao động">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-stone-500 mb-3">
             Tăng năng suất làm giảm t_n (lao động tất yếu) → GTTT tương đối ↑
           </p>
           <NumberInput
@@ -303,7 +303,7 @@ export default function DecisionPanel() {
       {/* Circulation */}
       {has('logistics') && (
         <Section title="🚚 Thời gian lưu thông">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-stone-500 mb-3">
             Rút ngắn thời gian lưu thông ch → tăng vòng quay n → tăng M_năm (mỗi cấp:{' '}
             {formatVnd(LOGISTICS_UNIT_COST, true)})
           </p>
@@ -337,7 +337,7 @@ export default function DecisionPanel() {
       {/* Finance */}
       {has('interest') && (
         <Section title="🏦 Lợi tức">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-stone-500 mb-3">
             Lãi suất: {(bank_interest_rate * 100).toFixed(0)}%/vòng. Nợ hiện tại: {formatVnd(debt, true)}
           </p>
           <NumberInput
@@ -412,7 +412,7 @@ export default function DecisionPanel() {
             onChange={(v) => set('alpha', v)}
             format={(v) => `${(v * 100).toFixed(0)}%`}
           />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-stone-500">
             Tái đầu tư {(decisions.alpha * 100).toFixed(0)}% lợi nhuận → mở rộng quy mô sản xuất
           </p>
         </Section>
@@ -424,8 +424,8 @@ export default function DecisionPanel() {
         disabled={!canAfford}
         className={`w-full py-4 rounded-xl font-bold text-lg transition-all mt-2 ${
           canAfford
-            ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-lg glow-green'
-            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+            ? 'btn-action'
+            : 'bg-stone-900 text-stone-500 cursor-not-allowed'
         }`}
       >
         {canAfford ? '▶ Thực hiện vòng sản xuất' : '⚠ Không đủ tiền'}
@@ -433,3 +433,5 @@ export default function DecisionPanel() {
     </div>
   )
 }
+
+

@@ -35,8 +35,6 @@ export interface RoundInputs {
   merchant_rate: number;         // fraction of profit the merchant takes
   // Logistics
   logistics_level: number;       // 0-5, reduces ch
-  // Morale
-  morale: number;                // 0-100
   // Reinvestment
   alpha: number;                 // reinvestment ratio [0, 1]
 }
@@ -238,23 +236,6 @@ export function calcLandPrice(R: number, i: number): number {
   return i > 0 ? R / i : 0
 }
 
-// ─── Morale effect ────────────────────────────────────────────────────────────
-
-/**
- * Neutral baseline: the game teaches value categories from the textbook,
- * not workplace-management morale mechanics.
- */
-export function calcMoraleEffect(morale: number): {
-  productivity_mult: number
-  t_n_mult: number
-} {
-  void morale
-  return {
-    productivity_mult: 1,
-    t_n_mult: 1,
-  }
-}
-
 // ─── Master round calculation ─────────────────────────────────────────────────
 
 export function calcRound(inputs: RoundInputs): RoundResult {
@@ -279,13 +260,10 @@ export function calcRound(inputs: RoundInputs): RoundResult {
     use_merchant,
     merchant_rate,
     logistics_level,
-    morale,
     alpha,
   } = inputs
 
-  // Morale adjustments
-  const { productivity_mult, t_n_mult } = calcMoraleEffect(morale)
-  const effective_t_n = t_n * t_n_mult
+  const effective_t_n = t_n
 
   // Logistics adjustment (merchant speeds circulation)
   const ch = applyLogistics(ch_raw, logistics_level, use_merchant)
@@ -310,7 +288,7 @@ export function calcRound(inputs: RoundInputs): RoundResult {
   // Surplus value (labor creates it); thiếu nguyên liệu → sản lượng giảm
   const { m: m_raw, m_rate } = calcSurplusValue(v, h, effective_t_n)
   const material_factor = c_circulating > 0 ? 1 : 0.5
-  const m = m_raw * productivity_mult * material_factor
+  const m = m_raw * material_factor
 
   // Gross output
   const G = k + m
@@ -375,3 +353,5 @@ export function calcRound(inputs: RoundInputs): RoundResult {
     cash_delta,
   }
 }
+
+

@@ -21,7 +21,7 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
     outflows.push({
       label: 'Thương nghiệp (p_tn)',
       value: result.p_merchant,
-      color: 'bg-yellow-500',
+      color: 'bg-amber-500',
       pct: 0,
     })
   }
@@ -29,7 +29,7 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
     outflows.push({
       label: 'Lãi vay (z)',
       value: result.z_interest,
-      color: 'bg-red-500',
+      color: 'bg-red-700',
       pct: 0,
     })
   }
@@ -51,7 +51,7 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
     {
       label: 'Lợi nhuận ròng',
       value: kept,
-      color: 'bg-green-500',
+      color: 'bg-green-600',
       pct: kept / totalCreated,
     },
   ]
@@ -65,10 +65,10 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
 
   return (
     <div className="mt-4">
-      <h3 className="text-sm font-semibold text-gray-300 mb-1">
+      <h3 className="text-sm font-semibold text-stone-300 mb-1">
         Dòng chảy của {surplusRevealed ? 'Khối m (GTTT)' : 'Lợi nhuận'}
       </h3>
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-stone-500 mb-3">
         Tổng tạo ra: {formatVnd(totalCreated)}
         {result.z_earned > 0 && (
           <span className="text-green-400">
@@ -94,8 +94,8 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
           <div key={item.label} className="flex items-center gap-2 text-xs">
             <div className={`w-3 h-3 rounded-sm shrink-0 ${item.color}`} />
             <div className="min-w-0">
-              <p className="text-gray-300 truncate">{item.label}</p>
-              <p className="text-gray-500">
+              <p className="text-stone-300 truncate">{item.label}</p>
+              <p className="text-stone-500">
                 {formatVnd(item.value, true)} ({(item.pct * 100).toFixed(0)}%)
               </p>
             </div>
@@ -104,16 +104,16 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
       </div>
 
       {surplusRevealed && (
-        <div className="mt-4 bg-gray-900 rounded-xl p-3 text-xs font-mono text-center text-gray-300">
-          <span className="text-blue-300">G</span>
+        <div className="mt-4 bg-stone-950 rounded-xl p-3 text-xs font-mono text-center text-stone-300">
+          <span className="text-amber-300">G</span>
           {' = '}
-          <span className="text-yellow-300">c</span>
+          <span className="text-amber-300">c</span>
           {' + '}
           <span className="text-orange-300">v</span>
           {' + '}
           <span className="text-green-300">m</span>
           {'   '}
-          <span className="text-gray-500">
+          <span className="text-stone-500">
             = {formatVnd(result.c, true)} + {formatVnd(result.k - result.c, true)} +{' '}
             {formatVnd(result.m, true)}
           </span>
@@ -122,3 +122,5 @@ export default function SurplusFlow({ result, surplusRevealed }: Props) {
     </div>
   )
 }
+
+

@@ -1,12 +1,13 @@
+import { useState } from 'react'
 import { useGameStore } from './store/gameStore'
 import { calcNetWorth } from './lib/networth'
 import { formatVnd } from './lib/currency'
+import { FINAL_CHECKLIST } from './data/teachingAids'
 import IntroScreen from './components/IntroScreen'
 import Dashboard from './components/Dashboard'
 import RoundResultModal from './components/RoundResultModal'
 import QuickEventModal from './components/QuickEventModal'
 import Leaderboard from './components/Leaderboard'
-import { useState } from 'react'
 
 export default function App() {
   const { started, gameOver, pendingLesson, pendingQuickEvent } = useGameStore()
@@ -17,12 +18,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0f1e]">
+    <div className="min-h-screen">
       {pendingLesson && <RoundResultModal />}
       {pendingQuickEvent && <QuickEventModal />}
-      {showLeaderboard && (
-        <Leaderboard onClose={() => setShowLeaderboard(false)} />
-      )}
+      {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
       {gameOver && !pendingLesson ? (
         <GameOverScreen onLeaderboard={() => setShowLeaderboard(true)} />
       ) : !gameOver ? (
@@ -30,6 +29,16 @@ export default function App() {
       ) : null}
     </div>
   )
+}
+
+function downloadText(filename: string, content: string, type: string) {
+  const blob = new Blob([content], { type })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  URL.revokeObjectURL(url)
 }
 
 function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
@@ -43,8 +52,12 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     land_units,
     rent_per_unit,
     bank_interest_rate,
+    history,
+    eventLog,
+    lectureMode,
     reset,
   } = useGameStore()
+  const [checkedItems, setCheckedItems] = useState<string[]>([])
   const netWorth = Math.round(
     calcNetWorth({
       cash,
@@ -58,49 +71,166 @@ function GameOverScreen({ onLeaderboard }: { onLeaderboard: () => void }) {
     }),
   )
 
+  const totalSurplus = history.reduce((sum, entry) => sum + entry.result.m + entry.result.m_super, 0)
+  const totalNetProfit = history.reduce((sum, entry) => sum + entry.result.net_profit, 0)
+  const averageSurplusRate = history.length > 0
+    ? history.reduce((sum, entry) => sum + entry.result.m_rate, 0) / history.length
+    : 0
+  const bestRound = history.reduce<typeof history[number] | null>((best, entry) => (
+    !best || entry.result.net_profit > best.result.net_profit ? entry : best
+  ), null)
+  const finalOrganicComp = history.length > 0 ? history[history.length - 1].result.organic_comp : 0
+
+  const overviewItems = [
+    { label: 'Tổng giá trị thặng dư', value: formatVnd(totalSurplus, true) },
+    { label: 'Tổng lợi nhuận ròng', value: formatVnd(totalNetProfit, true) },
+    { label: "m' trung bình", value: `${(averageSurplusRate * 100).toFixed(1)}%` },
+    { label: 'Event đã gặp', value: `${eventLog.length} tình huống` },
+    { label: 'Vòng lời nhất', value: bestRound ? `Vòng ${bestRound.round}` : '—' },
+    { label: 'c/v cuối kỳ', value: finalOrganicComp.toFixed(2) },
+  ]
+
+  const summaryConcepts = [
+    "T–H–T' cho thấy tiền trở thành tư bản khi vận động để tạo giá trị thặng dư.",
+    'c chỉ chuyển giá trị, v gắn với sức lao động sống tạo ra m.',
+    "m' cho thấy mức độ tạo giá trị thặng dư; p' là hình thức lợi nhuận nhìn từ toàn bộ tư bản ứng trước.",
+    'Lợi nhuận thương nghiệp, lợi tức và địa tô là các hình thức/phần phân chia từ giá trị thặng dư trong bài học.',
+  ]
+
+  const toggleChecklist = (item: string) => {
+    setCheckedItems((items) => (
+      items.includes(item) ? items.filter((current) => current !== item) : [...items, item]
+    ))
+  }
+
+  const exportReport = () => {
+    const report = {
+      playerName,
+      completedAt: new Date().toLocaleString('vi-VN'),
+      mode: lectureMode ? 'giang-nhanh' : 'choi-chuan',
+      netWorth: Math.round(netWorth),
+      cash: Math.round(cash),
+      fixedCapital: Math.round(c_fixed_book),
+      circulatingCapital: Math.round(c_circulating_stock),
+      overview: {
+        totalSurplus: Math.round(totalSurplus),
+        totalNetProfit: Math.round(totalNetProfit),
+        averageSurplusRate,
+        bestRound: bestRound?.round ?? null,
+        finalOrganicComp,
+      },
+      checklist: FINAL_CHECKLIST.map((item) => ({ item, done: checkedItems.includes(item) })),
+      events: eventLog.map((event) => ({
+        round: event.round,
+        title: event.title,
+        choice: event.choiceLabel,
+        forcedByTeacher: Boolean(event.forcedByTeacher),
+        teachingPoint: event.teachingPoint,
+      })),
+      rounds: history.map((entry) => ({
+        round: entry.round,
+        netProfit: Math.round(entry.result.net_profit),
+        surplusValue: Math.round(entry.result.m),
+        surplusRate: entry.result.m_rate,
+        profitRate: entry.result.p_rate,
+        organicComposition: entry.result.organic_comp,
+        eventTitle: entry.event?.title ?? null,
+      })),
+    }
+    downloadText(
+      `cao-tu-mln-${playerName || 'bao-cao'}.json`,
+      JSON.stringify(report, null, 2),
+      'application/json;charset=utf-8',
+    )
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-8 px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-8 px-4 py-10">
       <div className="text-center">
-        <div className="text-6xl mb-4">🏭</div>
-        <h1 className="text-4xl font-bold mb-2 text-yellow-400">Kết thúc học phần!</h1>
-        <p className="text-gray-300 text-lg">{playerName}</p>
-        <p className="text-gray-500 text-sm mt-2 max-w-sm mx-auto">
+        <div className="text-6xl mb-4">🦊</div>
+        <h1 className="text-4xl font-bold mb-2 text-amber-300">Kết thúc học phần!</h1>
+        <p className="text-stone-300 text-lg">{playerName}</p>
+        <p className="text-stone-500 text-sm mt-2 max-w-sm mx-auto">
           Bạn đã đi qua các khái niệm chính của Chương 3: giá trị thặng dư,
           tích lũy tư bản, lợi nhuận, lợi tức và địa tô.
         </p>
+        {lectureMode && (
+          <p className="chapter-badge mt-4 mx-auto">📌 Kết quả từ chế độ giảng nhanh</p>
+        )}
       </div>
 
-      <div className="glass-card rounded-2xl p-8 w-full max-w-md text-center">
-        <p className="text-gray-400 text-sm mb-2">Tổng tài sản ròng</p>
-        <p className={`text-5xl font-bold ${netWorth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-          {formatVnd(netWorth)}
-        </p>
-        <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div className="bg-gray-800 rounded-lg p-3">
-            <p className="text-gray-400">Tiền mặt</p>
-            <p className="text-white font-bold">{formatVnd(cash, true)}</p>
-          </div>
-          <div className="bg-gray-800 rounded-lg p-3">
-            <p className="text-gray-400">Tư bản cố định</p>
-            <p className="text-white font-bold">{formatVnd(c_fixed_book, true)}</p>
+      <div className="theory-card rounded-2xl p-8 w-full max-w-md text-center">
+        <div className="relative z-10">
+          <p className="text-stone-400 text-sm mb-2">Tổng tài sản ròng</p>
+          <p className={`text-5xl font-bold leading-tight break-words ${netWorth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {formatVnd(netWorth)}
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+            <div className="bg-stone-900/70 rounded-lg p-3">
+              <p className="text-stone-400">Tiền mặt</p>
+              <p className="text-stone-50 font-bold leading-tight break-words">{formatVnd(cash, true)}</p>
+            </div>
+            <div className="bg-stone-900/70 rounded-lg p-3">
+              <p className="text-stone-400">Tư bản cố định</p>
+              <p className="text-stone-50 font-bold leading-tight break-words">{formatVnd(c_fixed_book, true)}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <button
-          onClick={onLeaderboard}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors"
-        >
+      <div className="glass-card rounded-xl p-4 w-full max-w-2xl">
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-3">Tổng quan học phần</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          {overviewItems.map((item) => (
+            <div key={item.label} className="rounded-lg bg-stone-950/40 border border-amber-900/25 p-3">
+              <p className="text-[11px] text-stone-500">{item.label}</p>
+              <p className="text-sm font-bold text-stone-50 mt-1 leading-tight break-words">{item.value}</p>
+            </div>
+          ))}
+        </div>
+        <div className="space-y-2">
+          {summaryConcepts.map((concept) => (
+            <p key={concept} className="text-sm text-stone-300 leading-relaxed">• {concept}</p>
+          ))}
+        </div>
+      </div>
+
+      <div className="glass-card rounded-xl p-4 w-full max-w-md">
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Checklist cuối bài</p>
+        <div className="space-y-2">
+          {FINAL_CHECKLIST.map((item) => (
+            <label key={item} className="flex items-start gap-2 rounded-lg bg-stone-950/35 p-2 text-sm text-stone-300">
+              <input
+                type="checkbox"
+                checked={checkedItems.includes(item)}
+                onChange={() => toggleChecklist(item)}
+                className="mt-1 accent-amber-500"
+              />
+              <span>{item}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="glass-card rounded-xl p-4 w-full max-w-md">
+        <p className="text-xs uppercase tracking-[0.18em] text-amber-300 mb-2">Câu hỏi ôn tập</p>
+        <p className="text-sm text-stone-300 leading-relaxed">
+          Sau 18 vòng, hãy chỉ ra phần nào của lợi nhuận ròng bắt nguồn từ m và phần nào được phân chia thành lợi tức, địa tô, lợi nhuận thương nghiệp.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
+        <button onClick={onLeaderboard} className="px-6 py-3 bg-amber-700 hover:bg-amber-600 rounded-xl font-semibold transition-colors text-stone-50">
           🏆 Bảng xếp hạng
         </button>
-        <button
-          onClick={reset}
-          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors"
-        >
+        <button onClick={exportReport} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
+          ⬇️ Xuất báo cáo
+        </button>
+        <button onClick={reset} className="px-6 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl font-semibold transition-colors text-stone-50">
           🔄 Chơi lại
         </button>
       </div>
     </div>
   )
 }
+

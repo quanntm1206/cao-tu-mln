@@ -28,16 +28,17 @@ export default function TheoryTooltip({ metricKey, children }: Props) {
       {children}
       <button
         onClick={() => setVisible((v) => !v)}
-        className="w-4 h-4 rounded-full bg-blue-900 text-blue-400 text-xs flex items-center justify-center hover:bg-blue-800 transition-colors shrink-0"
+        className="w-4 h-4 rounded-full bg-amber-950 text-amber-300 text-xs flex items-center justify-center hover:bg-amber-900 transition-colors shrink-0"
         aria-label="Xem công thức"
       >
         ?
       </button>
       {visible && (
-        <div className="absolute bottom-full left-0 mb-2 z-50 w-72 glass-card rounded-xl p-3 shadow-xl border border-blue-800/40">
-          <p className="text-xs text-blue-300 font-mono">{formula}</p>
+        <div className="absolute bottom-full left-0 mb-2 z-50 w-72 glass-card rounded-xl p-3 shadow-xl border border-amber-800/40">
+          <p className="text-xs text-amber-200 font-mono">{formula}</p>
         </div>
       )}
     </span>
   )
 }
+

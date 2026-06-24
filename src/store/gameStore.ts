@@ -13,6 +13,7 @@ import {
   getQuickEventChoice,
   getQuickEventForRound,
   makeEventSeed,
+  seededUnit,
   type QuickEventEffect,
   type QuickEventSelection,
   type ResolvedQuickEvent,
@@ -93,7 +94,6 @@ export interface GameSnapshot {
   debt: number
   lending: number
   land_units: number
-  morale: number
   marketTechLevel: number
   p_bar: number
 }
@@ -127,7 +127,6 @@ export interface GameState {
   use_merchant: boolean
   merchant_rate: number
   alpha: number
-  morale: number
   marketTechLevel: number
   p_bar: number
 
@@ -144,12 +143,17 @@ export interface GameState {
   eventLog: QuickEventSelection[]
   skipQuickEventOnce: boolean
   forceQuickEventForTesting: boolean
+  teacherModeEnabled: boolean
+  lectureMode: boolean
   lastResult: RoundResult | null
   lastEvent: ResolvedGameEvent | null
 
   startGame: (name: string, initialCapital: number) => void
   applyRound: (decisions: RoundDecisions) => void
   chooseQuickEvent: (choiceId: string) => void
+  toggleTeacherMode: () => void
+  forceNextQuickEvent: () => void
+  jumpToRound: (targetRound: number) => void
   dismissLesson: () => void
   reset: () => void
   getLeaderboard: () => LeaderboardEntry[]
@@ -183,7 +187,6 @@ const DEFAULT_STATE = {
   use_merchant: false,
   merchant_rate: 0.08,
   alpha: 0.5,
-  morale: 75,
   marketTechLevel: 0,
   p_bar: 0.18,
   depreciation_rate: 0.05,
@@ -198,6 +201,8 @@ const DEFAULT_STATE = {
   eventLog: [] as QuickEventSelection[],
   skipQuickEventOnce: false,
   forceQuickEventForTesting: false,
+  teacherModeEnabled: false,
+  lectureMode: false,
   lastResult: null as RoundResult | null,
   lastEvent: null as ResolvedGameEvent | null,
 }
@@ -310,6 +315,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       lastQuickEventChoice: null,
       eventLog: [],
       skipQuickEventOnce: false,
+      teacherModeEnabled: false,
+      lectureMode: false,
       pendingLesson: false,
     })
   },
@@ -414,7 +421,6 @@ export const useGameStore = create<GameState>((set, get) => ({
       use_merchant: decisions.use_merchant,
       merchant_rate: decisions.merchant_rate,
       logistics_level,
-      morale: s.morale,
       alpha: decisions.alpha,
     })
 
@@ -434,9 +440,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (tech_lead < 0.05 && s.marketTechLevel > 0.1) {
       new_t_n = Math.max(s.base_t_n, t_n * 0.995)
     }
-    let new_p_bar = s.p_bar + (Math.random() * 2 - 1) * profile.p_bar_volatility
+    const seed = makeEventSeed(s.playerName, s.initialCapital)
+    const pBarNoise = seededUnit(`${seed}::p-bar::round-${s.round}`) * 2 - 1
+    let new_p_bar = s.p_bar + pBarNoise * profile.p_bar_volatility
 
-    const new_morale = s.morale
     const selectedQuickEvent = s.lastQuickEventChoice
     const lastEvent: ResolvedGameEvent | null = selectedQuickEvent
       ? {
@@ -467,7 +474,6 @@ export const useGameStore = create<GameState>((set, get) => ({
       debt,
       lending,
       land_units,
-      morale: new_morale,
       marketTechLevel: new_market_tech,
       p_bar: new_p_bar,
     }
@@ -513,7 +519,6 @@ export const useGameStore = create<GameState>((set, get) => ({
       use_merchant: decisions.use_merchant,
       merchant_rate: decisions.merchant_rate,
       alpha: decisions.alpha,
-      morale: new_morale,
       marketTechLevel: new_market_tech,
       p_bar: new_p_bar,
       history: [...s.history, entry],
@@ -543,6 +548,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!choice) return
 
     const selection: QuickEventSelection = {
+      round: event.round,
       eventId: event.id,
       choiceId: choice.id,
       title: event.title,
@@ -550,6 +556,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       resultText: choice.resultText,
       teachingPoint: choice.teachingPoint,
       effect: choice.effect,
+      forcedByTeacher: s.forceQuickEventForTesting,
     }
 
     const nextDecisions = applyQuickEventEffectToDecisions(decisions, choice.effect)
@@ -563,9 +570,53 @@ export const useGameStore = create<GameState>((set, get) => ({
     get().applyRound(nextDecisions)
   },
 
+
+  toggleTeacherMode: () => {
+    const s = get()
+    set({
+      teacherModeEnabled: !s.teacherModeEnabled,
+      lectureMode: s.teacherModeEnabled ? false : s.lectureMode,
+      forceQuickEventForTesting: s.teacherModeEnabled ? false : s.forceQuickEventForTesting,
+    })
+  },
+
+  forceNextQuickEvent: () => set({
+    forceQuickEventForTesting: true,
+    teacherModeEnabled: true,
+    lectureMode: true,
+  }),
+
+  jumpToRound: (targetRound: number) => {
+    const s = get()
+    if (!s.started || s.gameOver) return
+    const nextRound = clampNumber(Math.round(targetRound), 1, s.maxRounds)
+    set({
+      round: nextRound,
+      unlockedFeatures: getUnlockedFeatures(nextRound),
+      pendingLesson: false,
+      pendingQuickEvent: null,
+      pendingRoundDecisions: null,
+      lastQuickEventChoice: null,
+      lastResult: null,
+      lastEvent: null,
+      forceQuickEventForTesting: false,
+      teacherModeEnabled: true,
+      lectureMode: true,
+    })
+  },
   dismissLesson: () => set({ pendingLesson: false }),
 
   reset: () => set({ ...DEFAULT_STATE }),
 
   getLeaderboard: () => getLeaderboard(),
 }))
+
+
+
+
+
+
+
+
+
+

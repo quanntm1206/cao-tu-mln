@@ -51,7 +51,25 @@ describe('gameStore quick event flow', () => {
     expect(state.pendingLesson).toBe(true)
     expect(state.pendingQuickEvent).toBeNull()
     expect(state.eventLog).toHaveLength(1)
+    expect(state.eventLog[0].round).toBe(1)
     expect(state.lastEvent?.id).toBe(pending!.id)
     expect(state.history[0].event?.choiceId).toBe(pending!.choices[0].id)
   })
+  it('marks teacher-forced events in the event log', () => {
+    useGameStore.getState().forceNextQuickEvent()
+    expect(useGameStore.getState().teacherModeEnabled).toBe(true)
+    expect(useGameStore.getState().lectureMode).toBe(true)
+
+    useGameStore.getState().applyRound(baseDecisions)
+    const pending = useGameStore.getState().pendingQuickEvent
+    expect(pending).not.toBeNull()
+
+    useGameStore.getState().chooseQuickEvent(pending!.choices[0].id)
+
+    const state = useGameStore.getState()
+    expect(state.eventLog[0].forcedByTeacher).toBe(true)
+  })
 })
+
+
+
