@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 
+const APP_VERSION = 'v0.2.1'
+
 interface Props { onShowLeaderboard: () => void }
 
 const PHASES = [
@@ -26,6 +28,7 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
         <div className="absolute bottom-1/4 left-1/4 w-[420px] h-[420px] bg-amber-900/15 rounded-full blur-3xl" />
       </div>
 
+      <p className="text-[10px] text-stone-500 mb-2 text-center relative z-10">{APP_VERSION} · Cập nhật 24/06/2026</p>
       <div className="relative z-10 text-center mb-8">
         <div className="chapter-badge mx-auto mb-4">📖 Chương 3 - Phân chia GTTT</div>
         <div className="flex items-center justify-center gap-3 mb-3">
