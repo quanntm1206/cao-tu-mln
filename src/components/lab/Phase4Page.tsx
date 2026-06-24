@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../../store/gameStore'
 import { formatVnd } from '../../lib/currency'
-import { R_CASE_HOAI_DUC, R_CASE_BAC_NINH, Z_RATE_TABLE_2022_2024 } from '../../data/economyConstants'
-import { calcLandPrice } from '../../engine/economy'
+import { R_CASE_HOAI_DUC, R_CASE_BAC_NINH } from '../../data/economyConstants'
+import { LAND_COMMIT_FRACTION } from '../../engine/distribution'
 import HeroSection from './HeroSection'
 import RoundSection from './RoundSection'
 import ResultSection from './ResultSection'
@@ -15,87 +15,136 @@ const ACCENT = '#EC4899'
 
 type LandChoice = 'buy' | 'rent' | 'speculate' | 'none'
 
-function LandPriceCurve({ choice, roundInPhase }: { choice: LandChoice; roundInPhase: number }) {
-  const z = Z_RATE_TABLE_2022_2024.mid_2024
-  const hoaiDucPrice = calcLandPrice(R_CASE_HOAI_DUC.rentPerSqmYear, z)
-  const bacNinhPrice = calcLandPrice(R_CASE_BAC_NINH.rentPerSqmYear, z)
+// Per-round gain rates (relative to commit amount)
+const RATES = {
+  buy:     [0.2025, 0.2025, 0.2025, 0.2025] as const, // Hoài Đức steady +20%/round
+  rent:    [-0.05, -0.05, -0.05, -0.05] as const,     // pay rent each round
+  speculate: [0.20, 0.20, 0.02, -0.15] as const,      // BN bubble → crash
+  none:    [0, 0, 0, 0] as const,
+}
 
-  // Synthetic price trajectory across 4 rounds for the chosen scenario
-  const points = (() => {
-    if (choice === 'buy') {
-      const base = hoaiDucPrice
-      const growth = R_CASE_HOAI_DUC.priceGrowthPct / 4
-      return [base, base * (1 + growth), base * (1 + 2 * growth), base * (1 + 3 * growth), base * (1 + 4 * growth)]
-    }
-    if (choice === 'speculate') {
-      const base = bacNinhPrice
-      const peak = base * (1 + R_CASE_BAC_NINH.bubbleGrowthPct)
-      const crashed = peak * (1 + R_CASE_BAC_NINH.crashPct)
-      return [base, base * 1.15, base * 1.30, peak, crashed]
-    }
-    if (choice === 'rent') {
-      const base = R_CASE_HOAI_DUC.rentPerSqmYear
-      return [0, -base / 4, -base / 2, -base * 3 / 4, -base]
-    }
-    return [0, 0, 0, 0, 0]
-  })()
+function LandPriceCurve({ choice, mPool, roundInPhase }: { choice: LandChoice; mPool: number; roundInPhase: number }) {
+  const commit = mPool * LAND_COMMIT_FRACTION
+  const rates = RATES[choice]
 
-  const minVal = Math.min(...points, 0)
-  const maxVal = Math.max(...points, 0)
-  const range = maxVal - minVal || 1
+  // Trajectory of cumulative commit value across 4 rounds (relative to commit baseline)
+  // After round k: cumulative gain = sum of (commit * rate_i) for i = 0..k-1
+  const trajectory = [commit]
+  let running = commit
+  for (let i = 0; i < 4; i += 1) {
+    running += commit * rates[i]
+    trajectory.push(running)
+  }
+
+  const maxVal = Math.max(...trajectory, commit * 1.1)
+  const minVal = Math.min(...trajectory, commit * 0.9)
+  const range = maxVal - minVal || commit * 0.2
 
   const W = 320
   const H = 160
-  const path = points.map((p, i) => {
-    const x = (i / (points.length - 1)) * W
-    const y = H - ((p - minVal) / range) * H
-    return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-  }).join(' ')
+
+  const pointsXY = trajectory.map((v, i) => {
+    const x = (i / (trajectory.length - 1)) * W
+    const y = H - ((v - minVal) / range) * H
+    return { x, y, v }
+  })
+
+  const linePath = pointsXY.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const areaPath = `${linePath} L${W},${H} L0,${H} Z`
+
+  const isLoss = trajectory[4] < commit
+  const stroke = isLoss ? '#EF4444' : ACCENT
 
   return (
     <div className="lab-card-elevated p-6 sm:p-8">
-      <p className="lab-cite mb-2" style={{ color: ACCENT }}>BĐS · HOÀI ĐỨC vs BẮC NINH (2024)</p>
-      <h3 className="font-display text-xl font-bold mb-6">
-        Giá đất = <span style={{ color: ACCENT }}>R / i</span> — đầu cơ thì khác thế nào?
+      <p className="lab-cite mb-2" style={{ color: ACCENT }}>QUỸ ĐẤT · {(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool / vòng</p>
+      <h3 className="font-display text-xl font-bold mb-1">
+        {formatVnd(commit, true)} cam kết vào đất mỗi vòng
       </h3>
+      <p className="text-sm text-[var(--color-lab-fg-muted)] mb-5">
+        Đường giá trị quỹ đất {(R_CASE_HOAI_DUC.priceGrowthPct * 100).toFixed(0)}% (Hoài Đức) vs {(R_CASE_BAC_NINH.bubbleGrowthPct * 100).toFixed(0)}% → {(R_CASE_BAC_NINH.crashPct * 100).toFixed(0)}% (Bắc Ninh)
+      </p>
 
       <div className="relative w-full" style={{ paddingBottom: '50%' }}>
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
-          {[0.25, 0.5, 0.75].map((y) => (
-            <line key={y} x1={0} y1={H * y} x2={W} y2={H * y} stroke="var(--color-lab-border)" strokeDasharray="2,4" />
-          ))}
+          <defs>
+            <linearGradient id="landGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={stroke} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {/* Baseline (commit reference) */}
+          {(() => {
+            const baselineY = H - ((commit - minVal) / range) * H
+            return (
+              <line
+                x1={0}
+                y1={baselineY}
+                x2={W}
+                y2={baselineY}
+                stroke="var(--color-lab-fg-dim)"
+                strokeDasharray="3,4"
+                strokeWidth="0.5"
+              />
+            )
+          })()}
           <motion.path
-            d={path}
+            d={areaPath}
+            fill="url(#landGrad)"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          />
+          <motion.path
+            d={linePath}
             fill="none"
-            stroke={choice === 'speculate' ? '#EF4444' : ACCENT}
+            stroke={stroke}
             strokeWidth={2}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.8 }}
           />
-          {points.map((p, i) => {
-            const x = (i / (points.length - 1)) * W
-            const y = H - ((p - minVal) / range) * H
+          {pointsXY.map((pt, i) => {
             const isActive = i === roundInPhase
             return (
-              <circle
-                key={i}
-                cx={x}
-                cy={y}
-                r={isActive ? 6 : 3.5}
-                fill={isActive ? 'var(--color-lab-yellow)' : ACCENT}
-                stroke="var(--color-lab-bg)"
-                strokeWidth={2}
-              />
+              <g key={i}>
+                <circle
+                  cx={pt.x}
+                  cy={pt.y}
+                  r={isActive ? 6 : 3.5}
+                  fill={isActive ? 'var(--color-lab-yellow)' : stroke}
+                  stroke="var(--color-lab-bg)"
+                  strokeWidth={2}
+                />
+              </g>
             )
           })}
         </svg>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-[var(--color-lab-border)]">
-        <Stat label="R Hoài Đức" value={formatVnd(R_CASE_HOAI_DUC.rentPerSqmYear, true) + '/m²/năm'} />
-        <Stat label="Giá đất = R/i" value={formatVnd(hoaiDucPrice, true) + '/m²'} accent={ACCENT} />
-        <Stat label="Bong bóng BN" value={'+' + (R_CASE_BAC_NINH.bubbleGrowthPct * 100).toFixed(0) + '% → ' + (R_CASE_BAC_NINH.crashPct * 100).toFixed(0) + '%'} accent="#EF4444" />
+      <div className="grid grid-cols-4 gap-1 mt-4 text-center">
+        {['Khởi đầu', 'Vòng 1', 'Vòng 2', 'Vòng 3', 'Vòng 4'].slice(1).map((label, i) => {
+          const v = trajectory[i + 1]
+          const delta = v - commit
+          const isCurrent = i + 1 === roundInPhase
+          return (
+            <div key={label}>
+              <p className="font-mono text-[10px] text-[var(--color-lab-fg-dim)]">{label}</p>
+              <p
+                className="lab-display-num text-xs mt-0.5"
+                style={{ color: isCurrent ? 'var(--color-lab-yellow)' : delta >= 0 ? ACCENT : '#EF4444' }}
+              >
+                {delta >= 0 ? '+' : ''}{formatVnd(delta, true)}
+              </p>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-[var(--color-lab-border)]">
+        <Stat label="Cam kết / vòng" value={formatVnd(commit, true)} />
+        <Stat label="Tổng kết dự kiến" value={formatVnd(trajectory[4] - commit, true)} accent={trajectory[4] >= commit ? ACCENT : '#EF4444'} />
+        <Stat label="% biến động" value={`${(((trajectory[4] - commit) / commit) * 100).toFixed(1)}%`} accent={trajectory[4] >= commit ? ACCENT : '#EF4444'} />
       </div>
     </div>
   )
@@ -110,20 +159,28 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   )
 }
 
-function Phase4Round({ onSubmit, roundInPhase }: { onSubmit: (d: { landChoice: LandChoice }) => void; roundInPhase: number }) {
+function Phase4Round({ onSubmit, mPool, roundInPhase }: { onSubmit: (d: { landChoice: LandChoice }) => void; mPool: number; roundInPhase: number }) {
   const [choice, setChoice] = useState<LandChoice>('none')
+  const commit = mPool * LAND_COMMIT_FRACTION
+  const rate = RATES[choice][roundInPhase - 1] ?? 0
+  const projectedGain = commit * rate
 
   return (
     <RoundSection
       roundLabel={`VÒNG ${12 + roundInPhase}/16 · ĐẤT ĐAI · R`}
-      title="Địa tô R — phần m mà chủ đất chiếm về"
-      description={<p>Đất là tư liệu sản xuất không thể tái tạo. Mỗi vòng bạn chọn 1 trong 4 hướng và quan sát biến động giá đất thực tế Việt Nam.</p>}
+      title="Địa tô R — phần m chảy về tay chủ đất"
+      description={
+        <div>
+          <p>Mỗi vòng bạn cam kết <span className="font-mono text-[var(--color-lab-yellow)]">{formatVnd(commit, true)}</span> ({(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool) vào đất.</p>
+          <p className="text-sm mt-1">Choice định hình lợi/lỗ trên cam kết đó — dữ liệu thực Việt Nam 2024.</p>
+        </div>
+      }
       accent={ACCENT}
-      chart={<LandPriceCurve choice={choice} roundInPhase={roundInPhase} />}
+      chart={<LandPriceCurve choice={choice} mPool={mPool} roundInPhase={roundInPhase} />}
       controls={
         <ControlsCard
           title={`Quyết định vòng ${roundInPhase}`}
-          subtitle="Dữ liệu: DKRA 2024, Hoài Đức & Bắc Ninh"
+          subtitle={`Cam kết vòng này: ${formatVnd(commit, true)}`}
           ctaLabel={`Áp dụng vòng ${roundInPhase}`}
           onCommit={() => onSubmit({ landChoice: choice })}
           accent={ACCENT}
@@ -133,12 +190,23 @@ function Phase4Round({ onSubmit, roundInPhase }: { onSubmit: (d: { landChoice: L
             onChange={setChoice}
             accent={ACCENT}
             options={[
-              { value: 'none', label: 'Không liên quan đất', hint: 'Giữ nguyên M-pool, không R cũng không gain/loss' },
-              { value: 'buy', label: 'Mua đất Hoài Đức', hint: 'Giá đất = R/i, tăng 81% trong sóng 2024' },
-              { value: 'rent', label: 'Thuê đất sản xuất', hint: 'Trả địa tô R ổn định mỗi vòng' },
-              { value: 'speculate', label: 'Đầu cơ Bắc Ninh', hint: 'Bong bóng +40% rồi sụp -15%' },
+              { value: 'none', label: 'Không liên quan đất', hint: 'Giữ M-pool ngoài đất, không gain/loss' },
+              { value: 'buy', label: 'Mua đất Hoài Đức', hint: `Tăng đều ~${(RATES.buy[0] * 100).toFixed(0)}%/vòng (sóng BĐS 2024)` },
+              { value: 'rent', label: 'Thuê đất sản xuất', hint: `Trả R ổn định ~${Math.abs(RATES.rent[0] * 100).toFixed(0)}%/vòng (drag)` },
+              { value: 'speculate', label: 'Đầu cơ Bắc Ninh', hint: 'Bong bóng +20%/vòng đầu rồi sụp −15% cuối' },
             ]}
           />
+          {choice !== 'none' && (
+            <div className="rounded-lg p-3 border" style={{ borderColor: `${ACCENT}55`, background: `${ACCENT}10` }}>
+              <p className="lab-cite mb-1" style={{ color: ACCENT }}>DỰ KIẾN VÒNG NÀY</p>
+              <p className="lab-display-num text-lg" style={{ color: projectedGain >= 0 ? ACCENT : '#EF4444' }}>
+                {projectedGain >= 0 ? '+' : ''}{formatVnd(projectedGain, true)}
+              </p>
+              <p className="text-[11px] text-[var(--color-lab-fg-muted)] mt-1">
+                {(rate * 100).toFixed(1)}% × {formatVnd(commit, true)}
+              </p>
+            </div>
+          )}
         </ControlsCard>
       }
     />
@@ -155,7 +223,7 @@ interface Props { onComplete: () => void }
 
 export default function Phase4Page({ onComplete }: Props) {
   const {
-    round, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, gameOver,
+    round, m_pool, applyRound, pendingLesson, pendingQuickEvent, lastResult, dismissLesson, gameOver,
   } = useGameStore()
   const resultRef = useRef<HTMLDivElement | null>(null)
   const eventRef = useRef<HTMLDivElement | null>(null)
@@ -184,8 +252,8 @@ export default function Phase4Page({ onComplete }: Props) {
             { sym: 'Giá đất', meaning: 'Vốn hóa địa tô tương lai về hiện tại (₫/m²)' },
           ],
         }}
-        bigNumber={R_CASE_HOAI_DUC.pricePerSqm}
-        bigNumberLabel="Hoài Đức (giá/m²)"
+        bigNumber={m_pool * LAND_COMMIT_FRACTION}
+        bigNumberLabel={`${(LAND_COMMIT_FRACTION * 100).toFixed(0)}% M-pool cam kết`}
         quote={{ text: 'Đất không phải sản phẩm lao động, nhưng có giá cả — đó là tô bản hóa.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.77' }}
         color={ACCENT}
       />
@@ -202,6 +270,7 @@ export default function Phase4Page({ onComplete }: Props) {
         <Phase4Round
           key={`r${round}`}
           onSubmit={(d) => applyRound(d as unknown as Record<string, unknown>)}
+          mPool={m_pool}
           roundInPhase={roundInPhase}
         />
       )}

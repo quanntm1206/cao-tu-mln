@@ -9,18 +9,20 @@ interface SliderProps {
   onChange: (v: number) => void
   disabled?: boolean
   accent: string
+  formatValue?: (v: number) => string
 }
 
-export function LabSlider({ label, hint, value, max, onChange, disabled, accent }: SliderProps) {
+export function LabSlider({ label, hint, value, max, onChange, disabled, accent, formatValue }: SliderProps) {
   const safeMax = Math.max(1, max)
   const safeValue = Math.min(value, max)
   const pct = max > 0 ? (safeValue / max) * 100 : 0
+  const display = formatValue ? formatValue(safeValue) : formatVnd(safeValue, true)
   return (
     <div className="select-none">
       <div className="flex justify-between items-baseline mb-1.5">
         <span className="text-sm text-[var(--color-lab-fg-muted)]">{label}</span>
         <span className="lab-display-num text-base text-[var(--color-lab-fg)]" style={{ color: accent }}>
-          {formatVnd(safeValue, true)}
+          {display}
         </span>
       </div>
       <div className="lab-slider-track">
@@ -50,16 +52,18 @@ interface ReadOnlyRowProps {
   total: number
   hint?: string
   accent: string
+  formatValue?: (v: number) => string
 }
 
-export function ReadOnlyRow({ label, value, total, hint, accent }: ReadOnlyRowProps) {
+export function ReadOnlyRow({ label, value, total, hint, accent, formatValue }: ReadOnlyRowProps) {
   const pct = total > 0 ? (value / total) * 100 : 0
+  const display = formatValue ? formatValue(value) : formatVnd(value, true)
   return (
     <div className="select-none">
       <div className="flex justify-between items-baseline mb-1.5">
         <span className="text-sm text-[var(--color-lab-fg-muted)]">{label}</span>
         <span className="lab-display-num text-base" style={{ color: accent }}>
-          {formatVnd(value, true)}
+          {display}
         </span>
       </div>
       <div className="h-2 rounded-full bg-[var(--color-lab-surface-2)] overflow-hidden">

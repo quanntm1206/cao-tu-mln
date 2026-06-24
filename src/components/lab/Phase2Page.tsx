@@ -117,8 +117,9 @@ function Phase2Round({ onSubmit, industrial, roundInPhase }: { onSubmit: (d: { m
               value={share}
               max={25}
               onChange={setShare}
-              hint={`${share}% · ${formatVnd(industrial * share / 100, true)} nhường cho TN`}
+              hint={`${formatVnd(industrial * share / 100, true)} sẽ nhường cho thương nhân`}
               accent="var(--color-lab-yellow)"
+              formatValue={(v) => `${v}%`}
             />
           )}
         </ControlsCard>

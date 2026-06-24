@@ -5,7 +5,7 @@ import {
   R_CASE_BAC_NINH,
   ROUNDS_PER_PHASE,
 } from '../data/economyConstants'
-import { calcLandPrice, calcProfitRate } from './economy'
+import { calcProfitRate } from './economy'
 
 export type GamePhase = 1 | 2 | 3 | 4
 
@@ -230,30 +230,40 @@ const PHASE4_LESSONS = [
   'Địa tô tuyệt đối và địa tô chênh lệch phân phối lại giá trị thặng dư trong xã hội.',
 ]
 
+/** Fraction of M-pool committed to land per Phase 4 round */
+export const LAND_COMMIT_FRACTION = 0.25
+
 export function distributePhase4(
-  _m_pool: number,
+  m_pool: number,
   decision: Phase4Decision,
   roundInPhase: number,
 ): Phase4Result {
-  const z_rate = Z_RATE_TABLE_2022_2024.mid_2024
+  // Player commits a meaningful slice of M-pool to land each round
+  const commit = Math.max(0, m_pool) * LAND_COMMIT_FRACTION
 
   let rent_paid = 0
   let land_value = 0
   let land_gain = 0
 
   if (decision.landChoice === 'buy') {
-    const R = R_CASE_HOAI_DUC.rentPerSqmYear
-    land_value = calcLandPrice(R, z_rate)
-    land_gain = land_value * R_CASE_HOAI_DUC.priceGrowthPct / ROUNDS_PER_PHASE
+    // Steady appreciation: Hoài Đức 2022-2024 +81% over the period
+    land_value = commit
+    const growthPerRound = R_CASE_HOAI_DUC.priceGrowthPct / ROUNDS_PER_PHASE
+    land_gain = commit * growthPerRound
   } else if (decision.landChoice === 'rent') {
-    rent_paid = R_CASE_HOAI_DUC.rentPerSqmYear / ROUNDS_PER_PHASE
+    // Pay R each round, no upside (no production model coupled)
+    rent_paid = commit * 0.05 // ~5% of committed = drag
     land_gain = -rent_paid
   } else if (decision.landChoice === 'speculate') {
-    const R = R_CASE_BAC_NINH.rentPerSqmYear
-    land_value = calcLandPrice(R, z_rate)
-    land_gain = roundInPhase < 3
-      ? land_value * R_CASE_BAC_NINH.bubbleGrowthPct / ROUNDS_PER_PHASE
-      : land_value * R_CASE_BAC_NINH.crashPct / ROUNDS_PER_PHASE
+    // Bắc Ninh bubble: rounds 1-2 bubble up, round 3 plateau, round 4 crash
+    land_value = commit
+    if (roundInPhase <= 2) {
+      land_gain = commit * (R_CASE_BAC_NINH.bubbleGrowthPct / 2) // ~+20% / round
+    } else if (roundInPhase === 3) {
+      land_gain = commit * 0.02 // mild peak gain
+    } else {
+      land_gain = commit * R_CASE_BAC_NINH.crashPct // -15% crash
+    }
   }
 
   const idx = Math.max(0, Math.min(3, roundInPhase - 1))

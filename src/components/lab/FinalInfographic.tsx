@@ -6,6 +6,8 @@ import { deriveEnding } from '../../data/endings'
 import { FINAL_CHECKLIST } from '../../data/teachingAids'
 import { Download, Trophy, RotateCcw, Award, ExternalLink, CheckSquare, Square } from 'lucide-react'
 import SankeyFlow from './SankeyFlow'
+import MPoolTrajectory from './MPoolTrajectory'
+import DistributionBreakdown from './DistributionBreakdown'
 
 const SOURCES = [
   { label: 'Giáo trình KTCT Mác–Lênin (BGD)', url: 'https://saomaidata.vn/library/803.Giao-Trinh-Kinh-Te-Chinh-Tri-Mac-Lenin.aspx' },
@@ -30,6 +32,9 @@ function downloadJSON(filename: string, data: unknown) {
   URL.revokeObjectURL(url)
 }
 
+const PHASE_NAMES = ['Sản xuất', 'Thương nghiệp', 'Tài chính', 'Địa tô']
+const PHASE_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899']
+
 export default function FinalInfographic({ onLeaderboard }: Props) {
   const {
     playerName, m_pool, startingM,
@@ -44,7 +49,21 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
 
   const ending = deriveEnding({ industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid, m_pool })
   const growth = startingM > 0 ? ((m_pool - startingM) / startingM) * 100 : 0
-  const totalNet = industrial_profit + merchant_profit + (interest_earned - interest_paid) - rent_paid
+  const positive = m_pool >= startingM
+  const totalEvents = eventLog.length
+
+  // Per-phase contribution summary
+  const phaseStats = [1, 2, 3, 4].map((ph) => {
+    const entries = history.filter((h) => h.result.phase === ph)
+    let delta = 0
+    for (const e of entries) {
+      const r = e.result
+      if (r.phase === 1) delta += r.total_industrial_profit
+      else if (r.phase === 3) delta += r.net_finance
+      else if (r.phase === 4) delta += r.land_gain
+    }
+    return { phase: ph, name: PHASE_NAMES[ph - 1], color: PHASE_COLORS[ph - 1], delta, rounds: entries.length }
+  })
 
   const toggle = (item: string) =>
     setChecked((prev) => prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item])
@@ -64,6 +83,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
         interest_earned: Math.round(interest_earned),
         rent_paid: Math.round(rent_paid),
       },
+      perPhase: phaseStats,
       ending: { id: ending.endingId, title: ending.title, tone: ending.tone },
       checklist: FINAL_CHECKLIST.map((item) => ({ item, done: checked.includes(item) })),
       survey: { difficulty, conceptClarity: concept, comment },
@@ -78,12 +98,12 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
 
   return (
     <div className="min-h-screen pb-16" data-testid="final-infographic">
-      {/* HERO */}
+      {/* ============ HERO ============ */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="border-b border-[var(--color-lab-border)] py-16 lg:py-24"
+        className="border-b border-[var(--color-lab-border)] py-16 lg:py-20"
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-4 text-[var(--color-lab-cyan)]">SESSION REPORT</p>
@@ -92,37 +112,71 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
             <span className="text-[var(--color-lab-cyan)]">m chia về 4 hướng</span>.
           </h1>
           <p className="text-lg text-[var(--color-lab-fg-muted)] max-w-2xl leading-relaxed">
-            Một học phần mô phỏng — 16 vòng, 4 pha — về cách giá trị thặng dư phân chia thành lợi nhuận công nghiệp, lợi nhuận thương nghiệp, lãi tức và địa tô.
+            16 vòng · 4 pha · {totalEvents} sự kiện. Bên dưới là toàn bộ hành trình M-pool, cách m phân chia, và kết cục được rút ra.
           </p>
         </div>
       </motion.section>
 
-      {/* MAIN NUMBER */}
+      {/* ============ HEADLINE NUMBERS ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <p className="lab-cite mb-2">M-POOL CUỐI</p>
-            <p className="lab-display-num text-6xl sm:text-7xl" style={{ color: m_pool >= startingM ? '#10B981' : '#EF4444' }}>
-              {formatVnd(m_pool)}
-            </p>
-            <p className="text-sm text-[var(--color-lab-fg-muted)] mt-2">
-              {growth >= 0 ? '+' : ''}{growth.toFixed(1)}% so với M ban đầu ({formatVnd(startingM, true)})
-            </p>
-          </div>
-          <div className="lab-card p-5">
-            <p className="lab-cite mb-3">KẾT CỤC HỌC PHẦN</p>
-            <div className="flex items-start gap-3">
-              <Award className="w-8 h-8 mt-0.5 shrink-0" style={{ color: ending.tone === 'growth' ? '#10B981' : ending.tone === 'warning' ? '#F59E0B' : '#06B6D4' }} strokeWidth={1.75} />
-              <div>
-                <h2 className="font-display text-2xl font-black mb-1">{ending.title}</h2>
-                <p className="text-sm text-[var(--color-lab-fg-muted)] leading-relaxed">{ending.summary}</p>
-              </div>
-            </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-3 gap-6">
+          <Headline label="M-pool cuối" value={formatVnd(m_pool, true)} color={positive ? '#10B981' : '#EF4444'} big />
+          <Headline
+            label="Tăng trưởng"
+            value={`${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`}
+            color={positive ? '#10B981' : '#EF4444'}
+            sub={`so với ${formatVnd(startingM, true)} M ban đầu`}
+          />
+          <Headline
+            label="Sự kiện đã trải qua"
+            value={`${totalEvents}`}
+            color="var(--color-lab-yellow)"
+            sub={totalEvents > 0 ? 'quyết định ngẫu nhiên định hình kết quả' : 'không sự kiện ngẫu nhiên nào'}
+          />
+        </div>
+      </section>
+
+      {/* ============ M-POOL TRAJECTORY ============ */}
+      <section className="py-12 border-b border-[var(--color-lab-border)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <MPoolTrajectory />
+        </div>
+      </section>
+
+      {/* ============ PER-PHASE CONTRIBUTION ============ */}
+      <section className="py-12 border-b border-[var(--color-lab-border)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <p className="lab-cite mb-2 text-[var(--color-lab-cyan)]">ĐÓNG GÓP THEO PHA</p>
+          <h2 className="font-display text-2xl font-bold mb-6">Pha nào đẩy M-pool, pha nào kéo xuống?</h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {phaseStats.map((ps) => {
+              const positive = ps.delta >= 0
+              return (
+                <div
+                  key={ps.phase}
+                  className="lab-card p-4"
+                  style={{ borderColor: `${ps.color}55` }}
+                >
+                  <p className="lab-cite mb-1" style={{ color: ps.color }}>PHA {ps.phase} · {ps.name}</p>
+                  <p className="lab-display-num text-2xl mt-1" style={{ color: positive ? ps.color : '#EF4444' }}>
+                    {positive ? '+' : ''}{formatVnd(ps.delta, true)}
+                  </p>
+                  <p className="text-[11px] text-[var(--color-lab-fg-dim)] mt-1 font-mono">{ps.rounds} vòng đã chơi</p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* SANKEY */}
+      {/* ============ DISTRIBUTION BREAKDOWN ============ */}
+      <section className="py-12 border-b border-[var(--color-lab-border)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <DistributionBreakdown />
+        </div>
+      </section>
+
+      {/* ============ SANKEY ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <SankeyFlow
@@ -135,31 +189,46 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
         </div>
       </section>
 
-      {/* ENDING DETAIL */}
+      {/* ============ ENDING ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-4">
-          <p className="lab-cite mb-1">VÌ SAO BẠN ĐẾN KẾT CỤC NÀY?</p>
-          <p className="text-base text-[var(--color-lab-fg)] leading-relaxed">{ending.whyThisHappened}</p>
-          <p className="text-sm text-[var(--color-lab-fg-muted)] leading-relaxed">
-            <span className="font-semibold text-[var(--color-lab-cyan)]">Liên hệ giáo trình: </span>
-            {ending.textbookConnection}
-          </p>
-          {ending.secondaryConsequences.length > 0 && (
-            <p className="text-sm text-[var(--color-lab-fg-muted)]">
-              <span className="font-semibold text-[var(--color-lab-yellow)]">Khía cạnh khác: </span>
-              {ending.secondaryConsequences.join('; ')}
-            </p>
-          )}
-          <div className="pt-4 border-t border-[var(--color-lab-border)] space-y-2">
-            <p className="lab-cite text-[var(--color-lab-yellow)]">CÂU HỎI THẢO LUẬN</p>
-            {ending.reflectionQuestions.map((q) => (
-              <p key={q} className="text-sm text-[var(--color-lab-fg)] leading-relaxed">• {q}</p>
-            ))}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="lab-card-elevated p-6 mb-6">
+            <p className="lab-cite mb-3">KẾT CỤC HỌC PHẦN</p>
+            <div className="flex items-start gap-3 mb-4">
+              <Award
+                className="w-10 h-10 mt-0.5 shrink-0"
+                style={{ color: ending.tone === 'growth' ? '#10B981' : ending.tone === 'warning' ? '#F59E0B' : '#06B6D4' }}
+                strokeWidth={1.75}
+              />
+              <div>
+                <h2 className="font-display text-2xl font-black mb-1">{ending.title}</h2>
+                <p className="text-sm text-[var(--color-lab-fg-muted)] leading-relaxed">{ending.summary}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-[var(--color-lab-border)]">
+              <ExplanationRow label="VÌ SAO" body={ending.whyThisHappened} accent="var(--color-lab-cyan)" />
+              <ExplanationRow label="LIÊN HỆ GIÁO TRÌNH" body={ending.textbookConnection} accent="var(--color-lab-yellow)" />
+              {ending.secondaryConsequences.length > 0 && (
+                <ExplanationRow
+                  label="KHÍA CẠNH KHÁC"
+                  body={ending.secondaryConsequences.join('; ')}
+                  accent="#EC4899"
+                />
+              )}
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-[var(--color-lab-border)]">
+              <p className="lab-cite mb-2 text-[var(--color-lab-yellow)]">CÂU HỎI THẢO LUẬN</p>
+              {ending.reflectionQuestions.map((q) => (
+                <p key={q} className="text-sm text-[var(--color-lab-fg)] leading-relaxed mb-1">• {q}</p>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CHECKLIST */}
+      {/* ============ CHECKLIST ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-3">CHECKLIST CUỐI BÀI</p>
@@ -174,8 +243,14 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
                   onClick={() => toggle(item)}
                   className="w-full flex items-start gap-3 p-3 rounded-lg lab-card hover:border-[var(--color-lab-cyan)] transition-colors text-left"
                 >
-                  <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: done ? 'var(--color-lab-cyan)' : 'var(--color-lab-fg-dim)' }} strokeWidth={2} />
-                  <span className={`text-sm leading-relaxed ${done ? 'text-[var(--color-lab-fg)] line-through opacity-70' : 'text-[var(--color-lab-fg)]'}`}>
+                  <Icon
+                    className="w-5 h-5 mt-0.5 shrink-0"
+                    style={{ color: done ? 'var(--color-lab-cyan)' : 'var(--color-lab-fg-dim)' }}
+                    strokeWidth={2}
+                  />
+                  <span
+                    className={`text-sm leading-relaxed ${done ? 'text-[var(--color-lab-fg)] line-through opacity-70' : 'text-[var(--color-lab-fg)]'}`}
+                  >
                     {item}
                   </span>
                 </button>
@@ -185,7 +260,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
         </div>
       </section>
 
-      {/* SURVEY */}
+      {/* ============ SURVEY ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-4">KHẢO SÁT NHANH</p>
@@ -238,7 +313,7 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
         </div>
       </section>
 
-      {/* SOURCES */}
+      {/* ============ SOURCES ============ */}
       <section className="py-12 border-b border-[var(--color-lab-border)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <p className="lab-cite mb-3">TÀI LIỆU THAM KHẢO</p>
@@ -256,24 +331,54 @@ export default function FinalInfographic({ onLeaderboard }: Props) {
               </a>
             ))}
           </div>
-          <p className="lab-cite mt-3">Số ròng cộng dồn (industrial + merchant + Z_net − R): {formatVnd(totalNet, true)}</p>
         </div>
       </section>
 
-      {/* ACTIONS */}
+      {/* ============ ACTIONS ============ */}
       <section className="py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 grid sm:grid-cols-3 gap-3">
-          <button onClick={onLeaderboard} className="lab-btn-ghost py-3.5 rounded-xl flex items-center justify-center gap-2 font-semibold">
+          <button
+            onClick={onLeaderboard}
+            className="lab-btn-ghost py-3.5 rounded-xl flex items-center justify-center gap-2 font-semibold"
+          >
             <Trophy className="w-4 h-4" strokeWidth={2} /> Bảng xếp hạng
           </button>
-          <button onClick={exportReport} data-testid="export-json-btn" className="lab-btn-primary py-3.5 rounded-xl flex items-center justify-center gap-2">
+          <button
+            onClick={exportReport}
+            data-testid="export-json-btn"
+            className="lab-btn-primary py-3.5 rounded-xl flex items-center justify-center gap-2"
+          >
             <Download className="w-4 h-4" strokeWidth={2.5} /> Xuất JSON
           </button>
-          <button onClick={reset} className="lab-btn-ghost py-3.5 rounded-xl flex items-center justify-center gap-2 font-semibold">
+          <button
+            onClick={reset}
+            className="lab-btn-ghost py-3.5 rounded-xl flex items-center justify-center gap-2 font-semibold"
+          >
             <RotateCcw className="w-4 h-4" strokeWidth={2} /> Chơi lại
           </button>
         </div>
       </section>
+    </div>
+  )
+}
+
+function Headline({ label, value, color, sub, big }: { label: string; value: string; color: string; sub?: string; big?: boolean }) {
+  return (
+    <div className="lab-card p-5">
+      <p className="lab-cite mb-2 text-[var(--color-lab-fg-dim)]">{label}</p>
+      <p className={`lab-display-num ${big ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'}`} style={{ color }}>
+        {value}
+      </p>
+      {sub && <p className="text-xs text-[var(--color-lab-fg-muted)] mt-2 leading-relaxed">{sub}</p>}
+    </div>
+  )
+}
+
+function ExplanationRow({ label, body, accent }: { label: string; body: string; accent: string }) {
+  return (
+    <div>
+      <p className="lab-cite mb-1" style={{ color: accent }}>{label}</p>
+      <p className="text-sm text-[var(--color-lab-fg)] leading-relaxed">{body}</p>
     </div>
   )
 }
