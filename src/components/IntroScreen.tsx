@@ -81,6 +81,30 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
               ))}
             </div>
 
+            {/* Mini glossary — symbols at a glance */}
+            <div className="lab-card p-4 mb-6 max-w-md">
+              <p className="lab-cite mb-2 text-[var(--color-lab-fg-dim)]">Ý NGHĨA KÝ HIỆU</p>
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                {[
+                  { sym: 'm', meaning: 'Giá trị thặng dư' },
+                  { sym: 'p', meaning: 'Lợi nhuận công nghiệp' },
+                  { sym: 'p_TN', meaning: 'Lợi nhuận thương nghiệp' },
+                  { sym: 'Z', meaning: 'Lãi tức (tài chính)' },
+                  { sym: 'R', meaning: 'Địa tô (đất đai)' },
+                  { sym: 'i', meaning: 'Lãi suất' },
+                ].map((g) => (
+                  <div key={g.sym} className="flex items-baseline gap-2">
+                    <dt className="font-mono font-bold text-xs text-[var(--color-lab-cyan)] shrink-0 min-w-[2.5rem]">
+                      {g.sym}
+                    </dt>
+                    <dd className="text-[11px] text-[var(--color-lab-fg-muted)] leading-snug">
+                      {g.meaning}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
             {/* 4 phases preview */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PHASES.map(({ n, Icon, label, desc, color }) => (

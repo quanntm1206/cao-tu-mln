@@ -173,7 +173,17 @@ export default function Phase4Page({ onComplete }: Props) {
         phase={4}
         title="Địa tô: phần m chảy về tay chủ đất."
         subtitle="Pha cuối: bạn ra quyết định mua, thuê, hoặc đầu cơ đất — dữ liệu BĐS Việt Nam 2024."
-        formula={{ l: 'Giá đất', r: '= R / i' }}
+        formula={{
+          l: 'Giá đất',
+          r: '= R / i',
+          title: 'Tô bản hóa địa tô',
+          purpose: 'Đất không có giá trị (không do lao động tạo ra) nhưng có giá cả — là số vốn cần gửi ngân hàng để thu lãi bằng R. Khi i giảm → giá đất tăng dù R không đổi.',
+          legend: [
+            { sym: 'R', meaning: 'Địa tô — phần m mà chủ đất chiếm hàng năm (₫/m²/năm)' },
+            { sym: 'i', meaning: 'Lãi suất ngân hàng — dùng làm tỷ lệ tô bản hóa' },
+            { sym: 'Giá đất', meaning: 'Vốn hóa địa tô tương lai về hiện tại (₫/m²)' },
+          ],
+        }}
         bigNumber={R_CASE_HOAI_DUC.pricePerSqm}
         bigNumberLabel="Hoài Đức (giá/m²)"
         quote={{ text: 'Đất không phải sản phẩm lao động, nhưng có giá cả — đó là tô bản hóa.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.77' }}

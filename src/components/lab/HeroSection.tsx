@@ -1,11 +1,24 @@
 import { motion } from 'framer-motion'
 import { formatVnd } from '../../lib/currency'
 
+export interface FormulaLegend {
+  sym: string
+  meaning: string
+}
+
+export interface FormulaSpec {
+  l: string
+  r: string
+  title?: string
+  purpose?: string
+  legend?: FormulaLegend[]
+}
+
 interface Props {
   phase: 1 | 2 | 3 | 4
   title: string
   subtitle: string
-  formula: { l: string; r: string }
+  formula: FormulaSpec
   bigNumber: number
   bigNumberLabel: string
   quote: { text: string; cite: string }
@@ -37,13 +50,46 @@ export default function HeroSection({
             {subtitle}
           </p>
 
-          {/* Formula card */}
-          <div className="lab-card p-6 mb-10 max-w-xl" style={{ borderColor: `${color}55` }}>
-            <p className="lab-cite mb-2">FORMULA</p>
-            <p className="font-mono text-2xl sm:text-3xl font-bold">
+          {/* Formula card with explanation */}
+          <div className="lab-card p-6 mb-10 max-w-2xl" style={{ borderColor: `${color}55` }}>
+            <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
+              <p className="lab-cite" style={{ color }}>
+                FORMULA{formula.title ? ` · ${formula.title}` : ''}
+              </p>
+            </div>
+
+            <p className="font-mono text-2xl sm:text-3xl font-bold mb-4">
               <span style={{ color }}>{formula.l}</span>
               <span className="text-[var(--color-lab-fg-muted)] ml-2">{formula.r}</span>
             </p>
+
+            {formula.purpose && (
+              <div className="mb-4 pb-4 border-b border-[var(--color-lab-border)]">
+                <p className="lab-cite mb-1.5 text-[var(--color-lab-fg-dim)]">DÙNG ĐỂ LÀM GÌ</p>
+                <p className="text-sm text-[var(--color-lab-fg)] leading-relaxed">{formula.purpose}</p>
+              </div>
+            )}
+
+            {formula.legend && formula.legend.length > 0 && (
+              <div>
+                <p className="lab-cite mb-2 text-[var(--color-lab-fg-dim)]">Ý NGHĨA KÝ HIỆU</p>
+                <dl className="grid sm:grid-cols-2 gap-x-5 gap-y-2">
+                  {formula.legend.map((item) => (
+                    <div key={item.sym} className="flex items-baseline gap-2">
+                      <dt
+                        className="font-mono font-bold text-sm shrink-0 min-w-[2.25rem]"
+                        style={{ color }}
+                      >
+                        {item.sym}
+                      </dt>
+                      <dd className="text-xs text-[var(--color-lab-fg-muted)] leading-relaxed">
+                        {item.meaning}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
           </div>
 
           {/* Big number */}

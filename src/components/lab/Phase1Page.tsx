@@ -145,7 +145,18 @@ export default function Phase1Page({ onNextPhase }: Props) {
         phase={1}
         title="Sản xuất tạo ra giá trị — m từ đâu mà có?"
         subtitle="Pha 1: bạn là nhà tư bản công nghiệp với 200 tỷ ₫ M-pool. Phân bổ vào 3 ngành và quan sát giá trị thặng dư sinh ra như thế nào qua 4 vòng."
-        formula={{ l: "p'", r: '= m / (c + v)' }}
+        formula={{
+          l: "p'",
+          r: '= m / (c + v)',
+          title: 'Tỷ suất lợi nhuận',
+          purpose: 'Đo hiệu quả sinh lời của vốn — bao nhiêu m thu được trên mỗi đồng vốn ứng trước (c+v). Là cơ sở để so sánh các ngành.',
+          legend: [
+            { sym: "p'", meaning: 'Tỷ suất lợi nhuận (%)' },
+            { sym: 'm', meaning: 'Giá trị thặng dư — phần lợi nhuận do lao động sống tạo ra' },
+            { sym: 'c', meaning: 'Tư bản bất biến — máy móc, nguyên liệu (không tự sinh giá trị)' },
+            { sym: 'v', meaning: 'Tư bản khả biến — tiền công lao động (biến thành giá trị mới)' },
+          ],
+        }}
         bigNumber={m_pool}
         bigNumberLabel="M-pool hiện có"
         quote={{

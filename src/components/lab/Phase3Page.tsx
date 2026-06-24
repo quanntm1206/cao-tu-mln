@@ -159,7 +159,18 @@ export default function Phase3Page({ onNextPhase }: Props) {
         phase={3}
         title="Tài chính: lãi tức Z là phần nào của m?"
         subtitle="Pha 3: bạn quyết định vay hoặc cho vay với lãi suất NHNN 2022–2024 thực tế."
-        formula={{ l: "Z = T'", r: '− T (lãi tức = T tăng lên)' }}
+        formula={{
+          l: 'Z',
+          r: "= T' − T  ·  i = Z / T",
+          title: 'Lãi tức tư bản cho vay',
+          purpose: 'Z là phần m chuyển cho chủ tư bản cho vay — họ không sản xuất nhưng hưởng một phần giá trị thặng dư qua lãi suất i.',
+          legend: [
+            { sym: 'Z', meaning: 'Lãi tức (tiền lãi) — phần m mà người vay trả cho chủ vốn' },
+            { sym: 'T', meaning: 'Vốn cho vay ban đầu' },
+            { sym: "T'", meaning: 'Vốn + lãi sau kỳ vay' },
+            { sym: 'i', meaning: 'Lãi suất (%/năm) — giá của tư bản tiền tệ' },
+          ],
+        }}
         bigNumber={m_pool}
         bigNumberLabel="M-pool khả dụng"
         quote={{ text: 'Tư bản sinh ra lợi tức trở thành tư bản trừu tượng nhất, tự tăng giá trị trong nhận thức.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.75' }}

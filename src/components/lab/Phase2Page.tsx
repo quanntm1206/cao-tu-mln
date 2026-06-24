@@ -160,7 +160,18 @@ export default function Phase2Page({ onNextPhase }: Props) {
         phase={2}
         title="Thương nghiệp: lưu thông không sinh giá trị mới."
         subtitle="Pha 2: bạn đã có lợi nhuận công nghiệp. Quyết định có nhường một phần cho thương nhân — và hiểu vì sao."
-        formula={{ l: "T - H - T'", r: '(công thức chung của tư bản)' }}
+        formula={{
+          l: "T - H - T'",
+          r: '',
+          title: 'Công thức chung của tư bản',
+          purpose: "T ứng ra mua hàng hóa H (gồm sức lao động + tư liệu sản xuất), bán lại thu T' > T. Phần chênh T' − T chính là m (hoặc p_TN khi qua thương nhân).",
+          legend: [
+            { sym: 'T', meaning: 'Tiền vốn ứng trước ban đầu' },
+            { sym: 'H', meaning: 'Hàng hóa — gồm sức lao động + tư liệu sản xuất' },
+            { sym: "T'", meaning: "Tiền thu về sau lưu thông (T' = T + Δ, với Δ = m)" },
+            { sym: 'p_TN', meaning: 'Lợi nhuận thương nghiệp — phần m nhường cho TN' },
+          ],
+        }}
         bigNumber={industrial_profit}
         bigNumberLabel="Lợi nhuận CN tích lũy"
         quote={{ text: 'Tư bản thương nghiệp không tạo ra giá trị thặng dư, mà chỉ chiếm một phần giá trị thặng dư từ sản xuất.', cite: 'Giáo trình KTCT Mác–Lênin, Ch.3, tr.73' }}
