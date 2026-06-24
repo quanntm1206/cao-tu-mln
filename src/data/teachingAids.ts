@@ -1,4 +1,4 @@
-export interface TeachingAid {
+﻿export interface TeachingAid {
   round: number
   objective: string
   discussionQuestion: string
@@ -49,11 +49,10 @@ export function getTeachingAidForRound(round: number): TeachingAid {
   return TEACHING_AIDS.find((aid) => aid.round === round) ?? TEACHING_AIDS[TEACHING_AIDS.length - 1]
 }
 
-export const FINAL_CHECKLIST = [
-  "Giải thích được công thức T–H–T'",
-  'Phân biệt được c, v và m trong G = c + v + m',
-  "Đọc được m' và p' trên kết quả vòng",
-  'Phân biệt GTTD tuyệt đối, tương đối và siêu ngạch',
-  'Hiểu tích lũy là biến một phần m thành tư bản phụ thêm',
-  'Nhận diện lợi nhuận, lợi tức, địa tô là các hình thức/phần phân chia từ m',
+export const FINAL_CHECKLIST: string[] = [
+  "Co the trinh bay cong thuc T-H-T' va giai thich tai sao m phat sinh trong san xuat, khong phai luu thong.",
+  'Phan biet duoc p (loi nhuan CN), p_TN (TN), Z (lai tuc), R (dia to) va moi quan he voi m.',
+  'Su dung cong thuc gia dat = R/i de giai thich tai sao gia dat tang khi lai suat giam.',
+  'Lien he duoc du lieu thuc te VN (lai suat 2022-2024, dat Hoai Duc, Bac Ninh) voi ly thuyet.',
+  "Tra loi duoc: 'Tien de ra tien' co nghia gi trong khuon kho giao trinh MLN Chuong 3?",
 ]

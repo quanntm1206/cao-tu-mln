@@ -1,126 +1,69 @@
-import type { RoundResult } from '../engine/economy'
+﻿import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
 
-interface Props {
-  result: RoundResult
-  surplusRevealed: boolean
-}
+export default function SurplusFlow() {
+  const { industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid, m_pool } = useGameStore()
+  const netZ = interest_earned - interest_paid
+  const total = Math.max(1, industrial_profit + merchant_profit + Math.abs(interest_paid) + rent_paid)
 
-interface FlowItem {
-  label: string
-  value: number
-  color: string
-  pct: number
-}
-
-export default function SurplusFlow({ result, surplusRevealed }: Props) {
-  const totalCreated = Math.max(1, result.m + result.m_super)
-
-  const outflows: FlowItem[] = []
-  if (result.p_merchant > 0) {
-    outflows.push({
-      label: 'Thương nghiệp (p_tn)',
-      value: result.p_merchant,
-      color: 'bg-amber-500',
-      pct: 0,
-    })
-  }
-  if (result.z_interest > 0) {
-    outflows.push({
-      label: 'Lãi vay (z)',
-      value: result.z_interest,
-      color: 'bg-red-700',
-      pct: 0,
-    })
-  }
-  if (result.rent_cost > 0) {
-    outflows.push({
-      label: 'Địa tô (R)',
-      value: result.rent_cost,
-      color: 'bg-orange-500',
-      pct: 0,
-    })
-  }
-
-  const kept = Math.max(0, result.net_profit)
-  const items: FlowItem[] = [
-    ...outflows.map((item) => ({
-      ...item,
-      pct: item.value / totalCreated,
-    })),
-    {
-      label: 'Lợi nhuận ròng',
-      value: kept,
-      color: 'bg-green-600',
-      pct: kept / totalCreated,
-    },
-  ]
-
-  const totalPct = items.reduce((sum, item) => sum + item.pct, 0)
-  if (totalPct > 0) {
-    items.forEach((item) => {
-      item.pct = item.pct / totalPct
-    })
-  }
+  const items = [
+    { label: 'p (loi nhuan CN)', value: industrial_profit, color: 'bg-blue-500', textColor: 'text-blue-400' },
+    { label: 'p_TN (thuong nghiep)', value: merchant_profit, color: 'bg-amber-500', textColor: 'text-amber-400' },
+    { label: 'Z (lai tuc tra)', value: interest_paid, color: 'bg-red-600', textColor: 'text-red-400' },
+    { label: 'Z thu (cho vay)', value: interest_earned, color: 'bg-green-600', textColor: 'text-green-400' },
+    { label: 'R (dia to)', value: rent_paid, color: 'bg-orange-500', textColor: 'text-orange-400' },
+  ].filter((i) => i.value > 0)
 
   return (
-    <div className="mt-4">
-      <h3 className="text-sm font-semibold text-stone-300 mb-1">
-        Dòng chảy của {surplusRevealed ? 'Khối m (GTTT)' : 'Lợi nhuận'}
-      </h3>
-      <p className="text-xs text-stone-500 mb-3">
-        Tổng tạo ra: {formatVnd(totalCreated)}
-        {result.z_earned > 0 && (
-          <span className="text-green-400">
-            {' '}
-            (+{formatVnd(result.z_earned, true)} lãi cho vay)
-          </span>
-        )}
-      </p>
-
-      <div className="flex h-8 rounded-xl overflow-hidden mb-4 gap-0.5">
-        {items.map((item) => (
-          <div
-            key={item.label}
-            className={`${item.color} transition-all flex items-center justify-center`}
-            style={{ width: `${item.pct * 100}%`, minWidth: item.pct > 0.03 ? '2rem' : '0' }}
-            title={`${item.label}: ${formatVnd(item.value)}`}
-          />
-        ))}
+    <div className="theory-card rounded-xl p-4">
+      <p className="text-xs uppercase tracking-wider text-amber-300 mb-1">Dong chay Gia tri Thang du</p>
+      <div className="text-xs font-mono text-center text-stone-300 mb-3">
+        <span className="text-amber-300">m</span>
+        {' = '}
+        <span className="text-blue-400">p</span>
+        {' + '}
+        <span className="text-amber-400">LN thuong nghiep</span>
+        {' + '}
+        <span className="text-red-400">Z</span>
+        {' + '}
+        <span className="text-orange-400">R</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        {items.map((item) => (
-          <div key={item.label} className="flex items-center gap-2 text-xs">
-            <div className={`w-3 h-3 rounded-sm shrink-0 ${item.color}`} />
-            <div className="min-w-0">
-              <p className="text-stone-300 truncate">{item.label}</p>
-              <p className="text-stone-500">
-                {formatVnd(item.value, true)} ({(item.pct * 100).toFixed(0)}%)
-              </p>
-            </div>
+      {items.length === 0 ? (
+        <p className="text-xs text-stone-600 italic text-center">Chua co phan phoi – bat dau thi dau!</p>
+      ) : (
+        <>
+          <div className="flex h-5 rounded-lg overflow-hidden mb-3 gap-px">
+            {items.map((it) => (
+              <div key={it.label}
+                className={`${it.color} transition-all`}
+                style={{ width: `${(it.value / total) * 100}%` }}
+                title={`${it.label}: ${formatVnd(it.value, true)}`} />
+            ))}
           </div>
-        ))}
-      </div>
-
-      {surplusRevealed && (
-        <div className="mt-4 bg-stone-950 rounded-xl p-3 text-xs font-mono text-center text-stone-300">
-          <span className="text-amber-300">G</span>
-          {' = '}
-          <span className="text-amber-300">c</span>
-          {' + '}
-          <span className="text-orange-300">v</span>
-          {' + '}
-          <span className="text-green-300">m</span>
-          {'   '}
-          <span className="text-stone-500">
-            = {formatVnd(result.c, true)} + {formatVnd(result.k - result.c, true)} +{' '}
-            {formatVnd(result.m, true)}
-          </span>
-        </div>
+          <div className="space-y-1.5">
+            {items.map((it) => (
+              <div key={it.label} className="flex justify-between items-center text-xs">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2.5 h-2.5 rounded-sm ${it.color}`} />
+                  <span className="text-stone-400">{it.label}</span>
+                </div>
+                <span className={`font-bold ${it.textColor}`}>{formatVnd(it.value, true)}</span>
+              </div>
+            ))}
+            {netZ !== 0 && (
+              <div className="flex justify-between items-center text-xs border-t border-stone-700/50 pt-1.5 mt-1.5">
+                <span className="text-stone-500">Tai chinh rong (Z thu - Z tra)</span>
+                <span className={`font-bold ${netZ >= 0 ? 'text-green-400' : 'text-red-400'}`}>{formatVnd(netZ, true)}</span>
+              </div>
+            )}
+          </div>
+          <div className="mt-3 flex justify-between items-center text-xs border-t border-stone-700/50 pt-2">
+            <span className="text-stone-400">M-pool hien tai</span>
+            <span className="font-bold text-emerald-300">{formatVnd(m_pool, true)}</span>
+          </div>
+        </>
       )}
     </div>
   )
 }
-
-

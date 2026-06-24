@@ -1,23 +1,22 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import {
-  CAPITAL_OPTIONS,
-  DEFAULT_CAPITAL,
-} from '../data/economyConstants'
-import { getDifficultyForCapital } from '../data/difficulty'
 
-interface Props {
-  onShowLeaderboard: () => void
-}
+interface Props { onShowLeaderboard: () => void }
+
+const PHASES = [
+  { n: 1, icon: '🏭', label: 'San xuat Cong nghiep', desc: 'Phan bo M-pool cho co khi, det may, da giay. Hoc p\' va ly thuyet loi nhuan.' },
+  { n: 2, icon: '🛒', label: 'Thuong nghiep', desc: 'Quyet dinh dung kenh thuong nhan. Kham pha loi nhuan TN tu GTTT.' },
+  { n: 3, icon: '🏦', label: 'Tu ban Tai chinh', desc: 'Vay hoac cho vay von. Hieu lai tuc Z la phan phoi tu m.' },
+  { n: 4, icon: '🏔', label: 'Dat dai & Dia to', desc: 'Mua / thue / dau co dat. Thay gia dat = R / i trong thuc te VN.' },
+]
 
 export default function IntroScreen({ onShowLeaderboard }: Props) {
   const [name, setName] = useState('')
-  const [capital, setCapital] = useState(DEFAULT_CAPITAL)
   const startGame = useGameStore((s) => s.startGame)
 
   const handleStart = () => {
     if (!name.trim()) return
-    startGame(name.trim(), capital)
+    startGame(name.trim())
   }
 
   return (
@@ -25,106 +24,75 @@ export default function IntroScreen({ onShowLeaderboard }: Props) {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[760px] h-[520px] bg-red-950/30 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-[420px] h-[420px] bg-amber-900/15 rounded-full blur-3xl" />
-        <div className="absolute right-4 top-10 hidden lg:block text-[9rem] opacity-[0.035]">🏭</div>
-        <div className="absolute left-6 bottom-16 hidden lg:block text-[8rem] opacity-[0.04]">📚</div>
       </div>
 
       <div className="relative z-10 text-center mb-8">
-        <div className="chapter-badge mx-auto mb-4">📕 Chương 3 · Giá trị thặng dư</div>
+        <div className="chapter-badge mx-auto mb-4">📖 Chuong 3 – Phan chia GTTT</div>
         <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="text-5xl drop-shadow-lg">🦊</span>
+          <span className="text-5xl drop-shadow-lg">📚</span>
           <h1 className="text-5xl sm:text-6xl font-black dossier-title">
-            Cáo Tử <span className="text-amber-300">MLN</span>
+            Phan chia <span className="text-amber-300">GTTT</span>
           </h1>
         </div>
-        <p className="text-stone-300 text-lg max-w-xl mx-auto">
-          Mô phỏng xưởng sản xuất để học giá trị thặng dư, tích lũy, lợi nhuận, lợi tức và địa tô.
+        <p className="text-stone-300 text-lg max-w-2xl mx-auto leading-relaxed">
+          Mo phong phan chia gia tri thang du va tien de ra tien: <br />
+          <span className="text-amber-300 font-semibold">m = p + LN thuong nghiep + Z + R</span>
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {['T–H–T’', 'G = c + v + m', "m’ = m/v", "p’ = m/(c+v)"].map((formula) => (
-            <span key={formula} className="formula-chip">{formula}</span>
+          {['T-H-T\'', 'p\' = m/(c+v)', 'Z = lai tuc', 'R = dia to', 'Gia dat = R/i'].map((f) => (
+            <span key={f} className="formula-chip">{f}</span>
           ))}
         </div>
       </div>
 
+      {/* 4 phases overview */}
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mb-8">
+        {PHASES.map((ph) => (
+          <div key={ph.n} className="glass-card rounded-xl p-3 text-center">
+            <p className="text-2xl mb-1">{ph.icon}</p>
+            <p className="text-xs font-bold text-amber-300">Pha {ph.n}</p>
+            <p className="text-xs font-semibold text-stone-200 mb-1">{ph.label}</p>
+            <p className="text-[10px] text-stone-500 leading-relaxed">{ph.desc}</p>
+          </div>
+        ))}
+      </div>
+
       <div className="relative z-10 theory-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
         <div className="relative z-10">
-          <p className="text-xs uppercase tracking-[0.22em] text-amber-300 mb-2">Hồ sơ sản xuất</p>
-          <h2 className="text-xl font-bold text-stone-50 mb-6">Bắt đầu vòng tuần hoàn tư bản</h2>
+          <h2 className="text-xl font-bold text-stone-50 mb-5">Bat dau hoc phan</h2>
 
-          <div className="mb-5">
-            <label className="block text-sm text-stone-300 mb-2">Tên người chơi / nhóm học</label>
+          <div className="mb-4">
+            <label className="block text-sm text-stone-300 mb-1">Ten hoc vien</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-              placeholder="Nhóm Tư Bản A..."
-              className="input-field w-full rounded-xl px-4 py-3 placeholder-stone-500 transition-colors"
+              placeholder="Nhap ten cua ban..."
+              className="w-full rounded-xl bg-stone-900/70 border border-amber-900/30 text-stone-100 px-4 py-3 focus:outline-none focus:border-amber-600/60"
             />
           </div>
 
-          <div className="mb-7">
-            <label className="block text-sm text-stone-300 mb-2">Vốn khởi đầu T</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {CAPITAL_OPTIONS.map((opt) => {
-                const profile = getDifficultyForCapital(opt.value)
-                const hints: Record<string, string> = {
-                  easy: 'P̄ thấp · lãi suất 3,5% · vốn nhiều hơn',
-                  normal: 'Cân bằng · lãi suất 4%',
-                  hard: 'P̄ cao · lãi suất 5% · vốn ít hơn',
-                }
-                return (
-                <button
-                  key={opt.value}
-                  onClick={() => setCapital(opt.value)}
-                  className={`py-3 px-2 rounded-xl text-sm font-medium transition-all border ${
-                    capital === opt.value
-                      ? 'bg-red-800/70 border-amber-400 text-amber-50 glow-red'
-                      : 'bg-stone-950/35 border-stone-700/70 text-stone-400 hover:bg-stone-800/60 hover:text-stone-100'
-                  }`}
-                >
-                  <span className="block">{opt.label}</span>
-                  <span className="block text-[10px] mt-1 opacity-80 font-normal">
-                    {hints[profile.id]}
-                  </span>
-                </button>
-              )})}
-            </div>
-          </div>
+          <p className="text-xs text-stone-500 mb-5">
+            16 vong, 4 pha × 4 vong. Giao trinh KTCT Mac-Lenin, Chuong 3, tr. 70–78.
+          </p>
 
           <button
             onClick={handleStart}
             disabled={!name.trim()}
-            className="btn-primary w-full py-4 rounded-xl font-bold text-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${name.trim() ? 'btn-action' : 'bg-stone-900 text-stone-500 cursor-not-allowed'}`}
           >
-            Mở xưởng sản xuất →
+            Bat dau 4 pha hoc tap
+          </button>
+
+          <button
+            onClick={onShowLeaderboard}
+            className="w-full mt-3 py-2.5 rounded-xl font-semibold text-sm bg-stone-800/70 text-stone-300 hover:bg-stone-700 transition-colors"
+          >
+            🏆 Xem bang xep hang
           </button>
         </div>
       </div>
-
-      <div className="relative z-10 mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
-        {[
-          { icon: '⚙️', title: '18 vòng học', desc: 'Mỗi vòng gắn với một ý chính của Chương 3' },
-          { icon: '📚', title: 'Bám giáo trình', desc: 'Chỉ xoay quanh khái niệm Chương 3 trong giáo trình' },
-          { icon: '🧾', title: 'Dạy bằng tình huống', desc: 'Có kết quả, công thức và câu hỏi thảo luận sau mỗi vòng' },
-        ].map((item) => (
-          <div key={item.title} className="glass-card rounded-xl p-4 text-center">
-            <div className="text-3xl mb-2">{item.icon}</div>
-            <p className="text-sm font-semibold text-stone-50 mb-1">{item.title}</p>
-            <p className="text-xs text-stone-400">{item.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={onShowLeaderboard}
-        className="relative z-10 mt-6 text-stone-500 hover:text-amber-200 text-sm transition-colors underline"
-      >
-        Xem bảng xếp hạng
-      </button>
     </div>
   )
 }
-
-

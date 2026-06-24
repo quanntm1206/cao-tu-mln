@@ -1,53 +1,88 @@
-# Cáo Tử MLN – Mô phỏng Chương 3 KTCT Mác–Lênin
+﻿# CapAccumulate — MLN122: Phân chia giá trị thặng dư
 
-**Cáo Tử MLN** là game web giáo dục mô phỏng **Chương 3: Giá trị thặng dư trong nền kinh tế thị trường** theo giáo trình Kinh tế chính trị Mác–Lênin. Người chơi điều chỉnh một mô hình sản xuất tối giản để thấy các quan hệ `c`, `v`, `m`, tích lũy tư bản và các hình thức biểu hiện của giá trị thặng dư.
+**CapAccumulate** là game web giáo dục mô phỏng **phân phối giá trị thặng dư**
+theo giáo trình Kinh tế chính trị Mác-Lênin (Chương 3, tr. 70–78).
+
+Chủ đề: **Phân chia giá trị thặng dư và câu chuyện tiền đẻ ra tiền**  
+Môn học: MLN122 — Kinh tế chính trị Mác-Lênin  
+Cấu trúc: 4 pha × 4 vòng = **16 vòng chơi**
+
+---
 
 ## Phạm vi nội dung
 
-- Công thức chung của tư bản `T–H–T'`.
-- Hàng hóa sức lao động, tiền công, sản xuất giá trị thặng dư.
-- Tư bản bất biến `c`, tư bản khả biến `v`, giá trị thặng dư `m`.
-- Giá trị thặng dư tuyệt đối, tương đối và siêu ngạch.
-- Tuần hoàn, chu chuyển, tái sản xuất giản đơn và tái sản xuất mở rộng.
-- Tích lũy tư bản, cấu tạo hữu cơ, tích tụ và tập trung tư bản.
-- Lợi nhuận, lợi nhuận bình quân, lợi nhuận thương nghiệp, lợi tức, địa tô và giá đất.
-- Quick event ngẫu nhiên có seed, mỗi tình huống gắn với một khái niệm trong Chương 3.
+Game tập trung vào **phân phối** m (giá trị thặng dư), **không** mô phỏng quá trình sản xuất:
 
-## Nguyên tắc thiết kế
+- Pha 1 (Vòng 1–4): Lợi nhuận p, tỷ suất lợi nhuận p'
+- Pha 2 (Vòng 5–8): Lợi nhuận bình quân p̄, giá cả sản xuất
+- Pha 3 (Vòng 9–12): Lợi nhuận thương nghiệp, lãi suất z
+- Pha 4 (Vòng 13–16): Địa tô R, giá đất = R / z'
 
-- Game chỉ bao quát nội dung Chương 3 của giáo trình, không mở rộng thành môn quản trị kinh doanh.
-- Không dùng event ngoài bài như tinh thần công nhân, phá sản, khủng hoảng tín dụng, M&A, đầu cơ hoặc tư bản ảo.
-- Các quyết định trong game chỉ đóng vai trò minh họa công thức và quan hệ lý luận.
-- Quick event chỉ được tác động nhẹ tới biến giáo trình đã có như `c`, `v`, `m`, `t_n`, chu chuyển, lợi tức, thương nghiệp hoặc địa tô.
+---
+
+## Cài đặt và chạy
+
+`ash
+npm install
+npm run dev        # Chạy development server tại localhost:5173
+npm run build      # Build production → thư mục dist/
+npm test           # Chạy test suite (Vitest)
+`
+
+### Yêu cầu
+- Node.js >= 18
+- npm >= 9
+
+---
 
 ## Công nghệ
 
 Vite · React · TypeScript · Zustand · Tailwind v4 · Recharts · Vitest
 
-## Cài đặt
-
-```bash
-npm install
-npm run dev
-npm test
-npm run build
-```
+---
 
 ## Tài liệu
 
 | File | Nội dung |
 |---|---|
+| [GAME_CONTENT.md](./GAME_CONTENT.md) | 16 vòng, 8 case study, 5 khái niệm lý thuyết, kiểu kết thúc |
+| [TEACHING_GUIDE.md](./TEACHING_GUIDE.md) | Hướng dẫn giáo viên, điểm tiết lộ, câu hỏi thảo luận, nút GV |
+| [AI_APPENDIX.md](./AI_APPENDIX.md) | Phụ lục AI (Rubric 1.4) — bảng AI/người, prompt mẫu, tuyên bố |
 | [AGENT_CONTEXT.md](./AGENT_CONTEXT.md) | Bản đồ repo cho AI agent |
-| [GAME_CONTENT.md](./GAME_CONTENT.md) | Nội dung game và mapping giáo trình |
-| [TEACHING_GUIDE.md](./TEACHING_GUIDE.md) | Kịch bản dùng từng màn game để dạy học |
-| [HOSTING.md](./HOSTING.md) | Deploy GitHub Pages / Netlify |
+| [HOSTING.md](./HOSTING.md) | Deploy Netlify / Vercel / GitHub Pages |
 
-## Cấu trúc `src/`
+---
 
-```text
-engine/economy.ts      – công thức mô phỏng giá trị, chu chuyển, phân phối GTTD
-store/gameStore.ts     – state Zustand + vòng chơi 18 quý
-data/theory.ts         – 18 bài học bám Chương 3 giáo trình
-components/            – UI React
-lib/                   – currency, networth, storage
-```
+## Cấu trúc src/
+
+`	ext
+src/engine/distribution.ts   — công thức phân phối m (p, p̄, z, R, giá đất)
+src/data/caseStudies.ts       — 8 tình huống thực tế với nguồn BCTC/VARS/NHNN
+src/store/gameStore.ts        — state Zustand và 16 vòng chơi
+src/data/theory.ts            — 5 khái niệm lý thuyết tr. 70–78
+src/engine/endings.ts         — 5 kiểu kết thúc
+src/components/               — UI React (Dashboard, DecisionPanel, Charts, ...)
+src/lib/                      — currency, networth, storage
+`
+
+---
+
+## Alignment với Rubric MLN122
+
+| Rubric | Nội dung | File liên quan |
+|---|---|---|
+| 1.1 Chủ đề đúng giáo trình | Phân phối m, tr. 70–78 | GAME_CONTENT.md |
+| 1.2 Số liệu thực tế | 8 case study từ BCTC HOSE, VARS, NHNN, Batdongsan | GAME_CONTENT.md |
+| 1.3 Tính học thuật | 5 khái niệm có trích dẫn trang giáo trình | GAME_CONTENT.md |
+| 1.4 AI Appendix | Bảng AI/người, 5 prompt mẫu, tuyên bố liêm chính | AI_APPENDIX.md |
+| 2.1 Thiết kế game | 16 vòng, 4 pha, điểm tiết lộ tại vòng 4/8/12/16 | GAME_CONTENT.md |
+| 2.2 Hỗ trợ giảng dạy | Teacher mode (nút GV), câu hỏi thảo luận | TEACHING_GUIDE.md |
+| 3.1 Kỹ thuật | Build pass, test pass, TypeScript strict | package.json |
+
+---
+
+## Số liệu tài chính
+
+> **Tất cả số liệu trong game do nhóm tự tra cứu** từ:
+> BCTC HOSE (VNM, VHM, TCB, MSN), VARS, NHNN, Batdongsan.com, Bộ Xây dựng.  
+> Không sử dụng AI để tạo số liệu. Chi tiết tại [AI_APPENDIX.md](./AI_APPENDIX.md).

@@ -1,231 +1,92 @@
-import { useGameStore } from '../store/gameStore'
-import { calcNetWorth } from '../lib/networth'
+﻿import { useGameStore } from '../store/gameStore'
 import { formatVnd } from '../lib/currency'
-import TheoryTooltip from './TheoryTooltip'
 
-function fmtPct(n: number) {
-  return (n * 100).toFixed(1) + '%'
-}
-
-interface MetricCardProps {
-  label: string
-  value: string
-  sub?: string
-  color?: string
-  metricKey?: string
-  locked?: boolean
-}
-
-function MetricCard({ label, value, sub, color = 'text-stone-50', metricKey, locked }: MetricCardProps) {
+function MetricCard({ label, value, sub, color = 'text-stone-50' }: {
+  label: string; value: string; sub?: string; color?: string
+}) {
   return (
-    <div className={`glass-card rounded-xl p-4 ${locked ? 'opacity-40' : ''}`}>
-      <p className="text-xs text-stone-400 mb-1">
-        {metricKey ? (
-          <TheoryTooltip metricKey={metricKey}>{label}</TheoryTooltip>
-        ) : (
-          label
-        )}
-      </p>
-      <p className={`text-xl font-bold leading-tight break-words ${color} ${locked ? 'blur-sm' : ''}`}>
-        {locked ? '???' : value}
-      </p>
-      {sub && !locked && <p className="text-xs text-stone-500 mt-0.5">{sub}</p>}
+    <div className="glass-card rounded-xl p-4">
+      <p className="text-xs text-stone-400 mb-1">{label}</p>
+      <p className={`text-xl font-bold leading-tight break-words ${color}`}>{value}</p>
+      {sub && <p className="text-xs text-stone-500 mt-0.5">{sub}</p>}
     </div>
   )
 }
 
 export default function MetricsPanel() {
   const {
-    cash,
-    c_fixed_book,
-    c_circulating_stock,
-    debt,
-    lending,
-    workers,
-    v_per_worker,
+    m_pool, startingM, phase, round, maxRounds,
+    industrial_profit, merchant_profit, interest_paid, interest_earned, rent_paid,
     lastResult,
-    unlockedFeatures,
-    round,
-    land_units,
-    p_bar,
-    rent_per_unit,
-    bank_interest_rate,
   } = useGameStore()
 
-  const surplusRevealed = unlockedFeatures.includes('surplus_reveal')
-  const showOrganic = round >= 4
-  const showTurnover = round >= 7
-
-  const netWorth = Math.round(
-    calcNetWorth({
-      cash,
-      c_fixed_book,
-      c_circulating_stock,
-      lending,
-      debt,
-      land_units,
-      rent_per_unit,
-      bank_interest_rate,
-    }),
-  )
+  const growth = startingM > 0 ? ((m_pool - startingM) / startingM) * 100 : 0
 
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-wider">
-        Bảng chỉ số
-      </h2>
+    <div>
+      <h3 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">Chi so – Pha {phase}/4</h3>
+      <div className="grid grid-cols-2 gap-3">
+        <MetricCard label="M-pool hien tai" value={formatVnd(m_pool, true)} color="text-emerald-300"
+          sub={`${growth >= 0 ? '+' : ''}${growth.toFixed(1)}% tu dau`} />
+        <MetricCard label="Tien do" value={`Vong ${round}/${maxRounds}`}
+          sub={`Pha ${phase}/4`} />
 
-      {/* Net worth */}
-      <div className="glass-card rounded-xl p-4 border border-amber-800/30 glow-red">
-        <p className="text-xs text-stone-400 mb-1">Tài sản ròng</p>
-        <p className="text-2xl font-black text-amber-300 leading-tight break-words">{formatVnd(netWorth)}</p>
-        <div className="flex gap-3 mt-2 text-xs text-stone-500">
-          <span>Tiền: {formatVnd(cash, true)}</span>
-          <span>Nợ: {formatVnd(debt, true)}</span>
+        {/* Phase 1 metrics */}
+        {phase >= 1 && (
+          <MetricCard label="Loi nhuan CN tich luy" value={formatVnd(industrial_profit, true)}
+            color="text-blue-300" />
+        )}
+        {phase >= 1 && lastResult?.phase === 1 && (
+          <MetricCard label="Ty suat p' vong nay" value={`${(lastResult.p_rate * 100).toFixed(1)}%`} />
+        )}
+
+        {/* Phase 2 metrics */}
+        {phase >= 2 && (
+          <MetricCard label="Loi nhuan TN tich luy" value={formatVnd(merchant_profit, true)}
+            color="text-amber-300" />
+        )}
+        {phase >= 2 && lastResult?.phase === 2 && (
+          <MetricCard label="TN giu lai vong nay" value={formatVnd(lastResult.industrial_profit_after, true)} />
+        )}
+
+        {/* Phase 3 metrics */}
+        {phase >= 3 && (
+          <>
+            <MetricCard label="Tong lai da tra (Z)" value={formatVnd(interest_paid, true)}
+              color="text-red-400" />
+            <MetricCard label="Tong lai thu duoc" value={formatVnd(interest_earned, true)}
+              color="text-green-400" />
+          </>
+        )}
+
+        {/* Phase 4 metrics */}
+        {phase >= 4 && (
+          <MetricCard label="Dia to da tra (R)" value={formatVnd(rent_paid, true)}
+            color="text-orange-400" />
+        )}
+        {phase >= 4 && lastResult?.phase === 4 && (
+          <MetricCard label="Gain/loss dat vong nay" value={formatVnd(lastResult.land_gain, true)}
+            color={lastResult.land_gain >= 0 ? 'text-green-300' : 'text-red-400'} />
+        )}
+      </div>
+
+      {/* Distribution summary */}
+      {(industrial_profit + merchant_profit + interest_paid + rent_paid) > 0 && (
+        <div className="mt-4 glass-card rounded-xl p-3">
+          <p className="text-xs text-stone-400 mb-2">Phan phoi GTTT (tich luy)</p>
+          <div className="text-xs font-mono text-center text-stone-300">
+            <span className="text-amber-300">m</span>
+            {' = '}
+            <span className="text-blue-400">p</span> ({formatVnd(industrial_profit, true)})
+            {' + '}
+            <span className="text-amber-400">p_TN</span> ({formatVnd(merchant_profit, true)})
+            {' + '}
+            <span className="text-red-400">Z</span> ({formatVnd(interest_paid, true)})
+            {' + '}
+            <span className="text-orange-400">R</span> ({formatVnd(rent_paid, true)})
+          </div>
         </div>
-      </div>
-
-      {/* Capital structure */}
-      <div className="grid grid-cols-2 gap-3 min-w-0">
-        <MetricCard label="Tư bản cố định" value={formatVnd(c_fixed_book, true)} color="text-amber-300" />
-        <MetricCard label="Tư bản lưu động" value={formatVnd(c_circulating_stock, true)} color="text-orange-400" />
-      </div>
-
-      {/* Labor */}
-      <div className="glass-card rounded-xl p-4">
-        <p className="text-xs text-stone-400 mb-2">Sức lao động</p>
-        <div className="flex justify-between text-sm">
-          <span className="text-stone-300">{workers} công nhân</span>
-          <span className="text-stone-300">{formatVnd(v_per_worker, true)}/người/vòng</span>
-        </div>
-        <p className="text-xs text-stone-500 mt-2">
-          Tiền công biểu hiện bằng tiền của giá trị hàng hóa sức lao động.
-        </p>
-      </div>
-
-      {/* Economy metrics */}
-      {lastResult && (
-        <>
-          <div className="border-t border-amber-900/30 pt-3">
-            <p className="text-xs text-stone-400 uppercase tracking-wider mb-3">Vòng vừa rồi</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 min-w-0">
-            <MetricCard
-              label={surplusRevealed ? 'Giá trị thặng dư m' : 'Lợi nhuận'}
-              value={formatVnd(lastResult.m, true)}
-              color="text-green-400"
-              metricKey={surplusRevealed ? 'm' : undefined}
-            />
-            <MetricCard
-              label={surplusRevealed ? "Tỷ suất GTTT m'" : 'Tỷ suất lợi nhuận'}
-              value={surplusRevealed ? fmtPct(lastResult.m_rate) : fmtPct(lastResult.p_rate)}
-              color="text-emerald-400"
-              metricKey={surplusRevealed ? 'm_rate' : 'p_rate'}
-            />
-          </div>
-
-          {surplusRevealed && (
-            <div className="grid grid-cols-2 gap-3 min-w-0">
-              <MetricCard
-                label="Giá trị tổng G"
-                value={formatVnd(lastResult.G, true)}
-                metricKey="G"
-              />
-              <MetricCard
-                label="Giá thành k"
-                value={formatVnd(lastResult.k, true)}
-                metricKey="k"
-              />
-            </div>
-          )}
-
-          {showOrganic && (
-            <MetricCard
-              label="Thành phần hữu cơ"
-              value={lastResult.organic_comp.toFixed(2)}
-              sub="c / v"
-              metricKey="organic_comp"
-            />
-          )}
-
-          {showTurnover && (
-            <div className="grid grid-cols-2 gap-3 min-w-0">
-              <MetricCard
-                label="Vòng quay n"
-                value={lastResult.n.toFixed(1)}
-                metricKey="n"
-              />
-              <MetricCard
-                label="GTTT hàng năm"
-                value={formatVnd(lastResult.M_year, true)}
-                metricKey="M_year"
-              />
-            </div>
-          )}
-
-          {lastResult.m_super > 0 && (
-            <MetricCard
-              label="Siêu GTTT"
-              value={`+${formatVnd(lastResult.m_super, true)}`}
-              color="text-amber-300"
-              metricKey="m_super"
-            />
-          )}
-
-          <div className="glass-card rounded-xl p-4">
-            <p className="text-xs text-stone-400 mb-2">Phân phối GTTT</p>
-            <div className="space-y-1 text-sm">
-              {lastResult.z_interest > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Lãi vay →</span>
-                  <span className="text-red-400">−{formatVnd(lastResult.z_interest, true)}</span>
-                </div>
-              )}
-              {lastResult.z_earned > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Lãi cho vay ←</span>
-                  <span className="text-green-400">+{formatVnd(lastResult.z_earned, true)}</span>
-                </div>
-              )}
-              {lastResult.rent_cost > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Địa tô →</span>
-                  <span className="text-red-400">−{formatVnd(lastResult.rent_cost, true)}</span>
-                </div>
-              )}
-              {lastResult.p_merchant > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Thương nghiệp →</span>
-                  <span className="text-orange-400">−{formatVnd(lastResult.p_merchant, true)}</span>
-                </div>
-              )}
-              <div className="flex justify-between border-t border-stone-700/70 pt-1 mt-1">
-                <span className="text-stone-300 font-medium">Lợi nhuận ròng</span>
-                <span className={`font-bold ${lastResult.net_profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {formatVnd(lastResult.net_profit, true)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="glass-card rounded-xl p-3">
-            <p className="text-xs text-stone-400 mb-1">P̄ thị trường</p>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 bg-stone-800 rounded-full h-2">
-                <div
-                  className="h-2 rounded-full bg-amber-500 transition-all"
-                  style={{ width: `${Math.min(100, p_bar * 200)}%` }}
-                />
-              </div>
-              <span className="text-xs text-amber-300 font-mono">{fmtPct(p_bar)}</span>
-            </div>
-          </div>
-        </>
       )}
     </div>
   )
 }
-
-
-

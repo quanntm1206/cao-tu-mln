@@ -1,54 +1,44 @@
-import { describe, expect, it } from 'vitest'
-import { THEORY_LESSONS } from './theory'
+﻿import { describe, expect, it } from 'vitest'
+import { THEORY_LESSONS, THEORY_SECTIONS, getLessonForRound } from './theory'
 
-const allLessonText = THEORY_LESSONS.map((lesson) =>
-  [lesson.title, lesson.concept, lesson.formula, lesson.symbolGuide, lesson.formulaPurpose, lesson.explanation, lesson.marxSource]
-    .filter(Boolean)
-    .join(' '),
+const allText = THEORY_LESSONS.map((l) =>
+  [l.title, l.concept, l.formula, l.symbolGuide, l.explanation, l.marxSource].filter(Boolean).join(' ')
+).join('\n') + ' ' + THEORY_SECTIONS.map((s) =>
+  [s.title, s.formula, s.explanation, s.keyPoints.join(' ')].join(' ')
 ).join('\n')
 
-describe('theory lessons align with MLN122 chapter 3 scope', () => {
-  it('covers the missing textbook concepts explicitly', () => {
-    const required = [
-      'T–H–T\'',
-      'hàng hóa sức lao động',
-      'tiền công',
-      'tái sản xuất giản đơn',
-      'tái sản xuất mở rộng',
-      'tích tụ',
-      'tập trung tư bản',
-      'giá đất',
-      'lợi nhuận thương nghiệp',
-      'lợi tức',
-    ]
+describe('theory lessons align with MLN122 chapter 3 tr.70-78', () => {
+  it('has 16 lessons matching 16 rounds', () => {
+    expect(THEORY_LESSONS.length).toBe(16)
+    for (let r = 1; r <= 16; r++) {
+      expect(getLessonForRound(r)).toBeDefined()
+    }
+  })
 
+  it('has 5 sections matching textbook sections', () => {
+    expect(THEORY_SECTIONS.length).toBe(5)
+    const ids = THEORY_SECTIONS.map((s) => s.id)
+    expect(ids).toContain('profit')
+    expect(ids).toContain('average_profit')
+    expect(ids).toContain('merchant_profit')
+    expect(ids).toContain('interest')
+    expect(ids).toContain('land_rent')
+  })
+
+  it('covers key concepts from tr.70-78', () => {
+    const required = ['p\'', 'Z', 'R', 'gia dat', 'lai tuc', 'dia to', 'thuong nghiep', 'phan phoi']
     for (const phrase of required) {
-      expect(allLessonText.toLowerCase()).toContain(phrase.toLowerCase())
+      expect(allText.toLowerCase()).toContain(phrase.toLowerCase())
     }
   })
 
-
-  it('explains every formula for non-economics learners', () => {
-    for (const lesson of THEORY_LESSONS) {
-      expect(lesson.formula, `round ${lesson.round} formula`).toBeTruthy()
-      expect(lesson.symbolGuide, `round ${lesson.round} symbol guide`).toBeTruthy()
-      expect(lesson.formulaPurpose, `round ${lesson.round} formula purpose`).toBeTruthy()
-    }
+  it('mentions Vietnam real data', () => {
+    expect(allText.toLowerCase()).toContain('viet nam')
   })
-  it('does not introduce concepts beyond the chapter 3 teaching brief', () => {
-    const forbidden = [
-      'tư bản ảo',
-      'chứng khoán',
-      'khủng hoảng thanh khoản',
-      'M&A',
-      'sáp nhập',
-      'quy luật xu hướng tỷ suất lợi nhuận',
-      'Tư Bản, Quyển',
-    ]
 
-    for (const phrase of forbidden) {
-      expect(allLessonText).not.toContain(phrase)
-    }
+  it('getLessonForRound falls back to last lesson for out-of-range', () => {
+    const lesson = getLessonForRound(99)
+    expect(lesson).toBeDefined()
+    expect(lesson.round).toBe(16)
   })
 })
-

@@ -1,173 +1,135 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
 import { useGameStore } from '../store/gameStore'
-import { formatVnd, formatVndAxis } from '../lib/currency'
-import { getTeachingAidForRound } from '../data/teachingAids'
+import { formatVndAxis } from '../lib/currency'
 
-type ChartTab = 'netWorth' | 'surplus' | 'profitRate' | 'surplusRate' | 'organic'
+type ChartTab = 'mpool' | 'profits' | 'distribution'
 
-function fmt(n: number) {
-  return formatVndAxis(n)
-}
-
-const CHART_STYLE = { backgroundColor: 'transparent', border: 'none' }
 const tooltipStyle = {
   backgroundColor: '#231914',
-  border: '1px solid rgba(217, 119, 6, 0.35)',
+  border: '1px solid rgba(217,119,6,0.35)',
   borderRadius: '0.75rem',
   color: '#f4ead7',
   fontSize: '12px',
 }
 
 export default function Charts() {
-  const { history, unlockedFeatures, round } = useGameStore()
-  const surplusRevealed = unlockedFeatures.includes('surplus_reveal')
-  const [activeTab, setActiveTab] = useState<ChartTab>('netWorth')
-  const aid = getTeachingAidForRound(round)
+  const { history, phase } = useGameStore()
+  const [tab, setTab] = useState<ChartTab>('mpool')
 
-  const chartData = useMemo(() => history.map((entry) => ({
-    round: `V${entry.round}`,
-    m: Math.round(entry.result.m),
-    m_super: Math.round(entry.result.m_super),
-    net_profit: Math.round(entry.result.net_profit),
-    p_rate: parseFloat((entry.result.p_rate * 100).toFixed(1)),
-    p_bar: parseFloat((entry.state_after.p_bar * 100).toFixed(1)),
-    p_converged: parseFloat((entry.result.p_rate_converged * 100).toFixed(1)),
-    m_rate: parseFloat((entry.result.m_rate * 100).toFixed(1)),
-    organic: parseFloat(entry.result.organic_comp.toFixed(2)),
-    cash: Math.round(entry.state_after.cash),
-    net_worth: Math.round(
-      entry.state_after.cash +
-        entry.state_after.c_fixed_book +
-        entry.state_after.c_circulating_stock +
-        entry.state_after.lending -
-        entry.state_after.debt,
-    ),
-  })), [history])
+  const chartData = useMemo(() => {
+    let runningInd = 0; let runningMer = 0; let runningFin = 0; let runningRent = 0
+    return history.map((entry) => {
+      const r = entry.result
+      if (r.phase === 1) runningInd += r.total_industrial_profit
+      if (r.phase === 2) runningMer += r.merchant_profit
+      if (r.phase === 3) { runningFin += r.interest_earned; runningFin -= r.interest_paid }
+      if (r.phase === 4) runningRent += r.land_gain
+      return {
+        round: `V${entry.round}`,
+        phase: r.phase,
+        ind: r.phase === 1 ? Math.round(r.total_industrial_profit) : 0,
+        mer: r.phase === 2 ? Math.round(r.merchant_profit) : 0,
+        fin: r.phase === 3 ? Math.round(r.net_finance) : 0,
+        ren: r.phase === 4 ? Math.round(r.land_gain) : 0,
+        p_rate: r.phase === 1 ? parseFloat((r.p_rate * 100).toFixed(1)) : null,
+        cumInd: Math.round(runningInd),
+        cumMer: Math.round(runningMer),
+        cumFin: Math.round(runningFin),
+        cumRent: Math.round(runningRent),
+      }
+    })
+  }, [history])
+
+  const tabs: { id: ChartTab; label: string }[] = [
+    { id: 'mpool', label: 'M-pool' },
+    { id: 'profits', label: 'Loi nhuan' },
+    { id: 'distribution', label: 'Phan phoi' },
+  ]
 
   if (history.length === 0) {
     return (
-      <div className="theory-card rounded-xl p-6 min-h-72 flex items-center justify-center text-center">
-        <div className="relative z-10 max-w-md">
-          <p className="text-4xl mb-3">📈</p>
-          <h3 className="text-lg font-bold text-stone-50 mb-2">Chưa có dữ liệu biểu đồ</h3>
-          <p className="text-sm text-stone-300 leading-relaxed">Hoàn thành vòng đầu tiên để thấy số liệu. Trước mắt, hãy tập trung vào mục tiêu: {aid.objective}</p>
-          <p className="text-xs text-amber-200 mt-3">Gợi ý giáo viên: {aid.discussionQuestion}</p>
-        </div>
+      <div className="glass-card rounded-xl p-6 text-center text-stone-500 text-sm">
+        Chua co du lieu – hay bat dau thi dau!
       </div>
     )
   }
 
-  const tabs: Array<{ id: ChartTab; label: string; enabled: boolean }> = [
-    { id: 'netWorth', label: 'Tài sản', enabled: true },
-    { id: 'surplus', label: surplusRevealed ? 'm' : 'Lợi nhuận', enabled: true },
-    { id: 'profitRate', label: "p' / P̄", enabled: surplusRevealed && history.length >= 3 },
-    { id: 'surplusRate', label: "m'", enabled: surplusRevealed && history.length >= 3 },
-    { id: 'organic', label: 'c/v', enabled: history.length >= 4 },
-  ]
-  const visibleTabs = tabs.filter((tab) => tab.enabled)
-  const currentTab = visibleTabs.some((tab) => tab.id === activeTab) ? activeTab : visibleTabs[0].id
-
   return (
     <div className="glass-card rounded-xl p-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-amber-300">Bảng trực quan</p>
-          <h3 className="text-lg font-bold text-stone-50">Biểu đồ liên quan bài hiện tại</h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {visibleTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
-                currentTab === tab.id
-                  ? 'bg-amber-500 text-stone-950'
-                  : 'bg-stone-950/55 text-stone-300 hover:bg-stone-800'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex gap-2 mb-4 flex-wrap">
+        {tabs.map((t) => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${tab === t.id ? 'bg-amber-700 text-stone-50' : 'bg-stone-800 text-stone-400 hover:text-stone-200'}`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {currentTab === 'netWorth' && (
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={chartData} style={CHART_STYLE}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(199,154,107,0.22)" />
-            <XAxis dataKey="round" tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <YAxis tickFormatter={fmt} tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [formatVnd(value, true), '']} />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#c7b299' }} />
-            <Line type="monotone" dataKey="net_worth" stroke="#f59e0b" strokeWidth={2.5} dot={{ fill: '#f59e0b', r: 3 }} name="Tài sản ròng" />
-            <Line type="monotone" dataKey="cash" stroke="#22c55e" strokeWidth={1.5} strokeDasharray="4 4" dot={false} name="Tiền mặt" />
-          </LineChart>
-        </ResponsiveContainer>
+      {tab === 'mpool' && (
+        <div>
+          <p className="text-xs text-stone-500 mb-2">Loi nhuan CN tich luy qua cac vong</p>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={chartData.filter(d => d.ind > 0)}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+              <YAxis tickFormatter={formatVndAxis} tick={{ fill: '#9ca3af', fontSize: 10 }} width={55} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatVndAxis(v)} />
+              <Bar dataKey="ind" name="Loi nhuan CN" fill="#3b82f6" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          {phase >= 2 && (
+            <>
+              <p className="text-xs text-stone-500 mt-4 mb-2">Loi nhuan TN cac vong</p>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={chartData.filter(d => d.mer > 0)}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+                  <YAxis tickFormatter={formatVndAxis} tick={{ fill: '#9ca3af', fontSize: 10 }} width={55} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatVndAxis(v)} />
+                  <Bar dataKey="mer" name="Loi nhuan TN" fill="#f59e0b" radius={[4,4,0,0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </div>
       )}
 
-      {currentTab === 'surplus' && (
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={chartData} style={CHART_STYLE}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(199,154,107,0.22)" />
-            <XAxis dataKey="round" tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <YAxis tickFormatter={fmt} tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [formatVnd(value, true), '']} />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#c7b299' }} />
-            <Bar dataKey="m" name={surplusRevealed ? 'GTTT (m)' : 'Lợi nhuận'} fill="#22c55e" radius={[3, 3, 0, 0]} />
-            {surplusRevealed && <Bar dataKey="m_super" name="Siêu GTTT" fill="#a855f7" radius={[3, 3, 0, 0]} />}
-          </BarChart>
-        </ResponsiveContainer>
+      {tab === 'profits' && (
+        <div>
+          <p className="text-xs text-stone-500 mb-2">Ty suat loi nhuan p' (Pha 1)</p>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={chartData.filter(d => d.p_rate !== null)}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} unit="%" />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => `${v.toFixed(1)}%`} />
+              <Line type="monotone" dataKey="p_rate" name="p'" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4, fill: '#3b82f6' }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
-      {currentTab === 'profitRate' && (
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={chartData} style={CHART_STYLE}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(199,154,107,0.22)" />
-            <XAxis dataKey="round" tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <YAxis tickFormatter={(value) => `${value}%`} tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [`${value}%`, '']} />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#c7b299' }} />
-            <Line type="monotone" dataKey="p_rate" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 3 }} name="p' của bạn (%)" />
-            <Line type="monotone" dataKey="p_bar" stroke="#ef4444" strokeWidth={2} strokeDasharray="6 4" dot={false} name="P̄ thị trường (%)" />
-            <Line type="monotone" dataKey="p_converged" stroke="#a855f7" strokeWidth={1.5} strokeDasharray="2 2" dot={false} name="p' sau kéo về P̄ (%)" />
-          </LineChart>
-        </ResponsiveContainer>
-      )}
-
-      {currentTab === 'surplusRate' && (
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={chartData} style={CHART_STYLE}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(199,154,107,0.22)" />
-            <XAxis dataKey="round" tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <YAxis tickFormatter={(value) => `${value}%`} tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [`${value}%`, '']} />
-            <Line type="monotone" dataKey="m_rate" stroke="#eab308" strokeWidth={2} dot={{ fill: '#eab308', r: 3 }} name="m' (%)" />
-          </LineChart>
-        </ResponsiveContainer>
-      )}
-
-      {currentTab === 'organic' && (
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={chartData} style={CHART_STYLE}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(199,154,107,0.22)" />
-            <XAxis dataKey="round" tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <YAxis tick={{ fill: '#c7b299', fontSize: 11 }} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [value.toFixed(2), 'c/v']} />
-            <Line type="monotone" dataKey="organic" stroke="#f97316" strokeWidth={2} dot={{ fill: '#f97316', r: 3 }} name="c / v" />
-          </LineChart>
-        </ResponsiveContainer>
+      {tab === 'distribution' && (
+        <div>
+          <p className="text-xs text-stone-500 mb-2">Phan phoi GTTT tich luy – m = p + p_TN + Z + R</p>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={chartData.slice(-8)}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="round" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+              <YAxis tickFormatter={formatVndAxis} tick={{ fill: '#9ca3af', fontSize: 10 }} width={55} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatVndAxis(v)} />
+              <Legend wrapperStyle={{ fontSize: 11, color: '#9ca3af' }} />
+              <Bar dataKey="cumInd" name="p (CN)" fill="#3b82f6" stackId="a" />
+              <Bar dataKey="cumMer" name="p_TN" fill="#f59e0b" stackId="a" />
+              <Bar dataKey="cumFin" name="Z" fill="#ef4444" stackId="a" />
+              <Bar dataKey="cumRent" name="R" fill="#f97316" stackId="a" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </div>
   )

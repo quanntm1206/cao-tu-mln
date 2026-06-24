@@ -1,495 +1,153 @@
-# TEACHING_GUIDE.md — Kịch bản dùng Cáo Tử MLN để dạy học
+﻿# TEACHING_GUIDE.md — Hướng dẫn sử dụng CapAccumulate trên lớp
+
+Môn: MLN122 — Kinh tế chính trị Mác-Lênin  
+Chủ đề: Phân chia giá trị thặng dư và câu chuyện tiền đẻ ra tiền
+
+---
 
 ## Mục tiêu sử dụng
 
-**Cáo Tử MLN** là công cụ hỗ trợ giảng dạy **Chương 3 — Giá trị thặng dư trong nền kinh tế thị trường** của môn Kinh tế chính trị Mác–Lênin. Game không nhằm dạy quản trị doanh nghiệp; mỗi màn chỉ dùng thao tác mô phỏng để làm rõ một khái niệm trong giáo trình.
+Game **CapAccumulate** hỗ trợ giảng dạy phần **phân phối giá trị thặng dư** theo giáo trình
+Kinh tế chính trị Mác-Lênin (tr. 70–78). Mỗi vòng chơi mô phỏng một khái niệm, không phải
+dạy quản trị doanh nghiệp.
 
-## Cấu trúc buổi dạy đề xuất
+**Lưu ý quan trọng:** Game chỉ mô phỏng *phân phối* m, không bao gồm quá trình *sản xuất*
+G = c + v + m (đã học ở phần trước môn học).
+
+---
+
+## Cấu trúc buổi dạy đề xuất (90 phút)
 
 | Phần | Thời lượng | Mục tiêu |
 |---|---:|---|
-| Giới thiệu game | 3–5 phút | Nói rõ đây là mô hình minh họa `c`, `v`, `m`, không phải game kinh doanh |
-| Chơi có hướng dẫn vòng 1–6 | 15–20 phút | Nguồn gốc, bản chất và cách đo giá trị thặng dư |
-| Chơi có hướng dẫn vòng 7–13 | 15–20 phút | Phương pháp sản xuất GTTD, chu chuyển và tích lũy tư bản |
-| Chơi có hướng dẫn vòng 14–18 | 10–15 phút | Các hình thức biểu hiện: lợi nhuận, lợi tức, địa tô |
-| Tổng kết | 5–10 phút | Học sinh/nhóm giải thích lại: tiền lời trong game đến từ đâu? |
+| Giới thiệu và kết nối kiến thức cũ | 5 phút | Nhắc lại m, kết nối sang phân phối m |
+| Pha 1 — Lợi nhuận (vòng 1–4) | 15–20 phút | k, p, p' và bản chất m |
+| Thảo luận sau Pha 1 | 5 phút | Câu hỏi điểm tiết lộ vòng 4 |
+| Pha 2 — Lợi nhuận bình quân (vòng 5–8) | 15 phút | Cạnh tranh, p̄, giá cả sản xuất |
+| Thảo luận sau Pha 2 | 5 phút | Câu hỏi điểm tiết lộ vòng 8 |
+| Pha 3 — Thương nghiệp & Lãi suất (vòng 9–12) | 15 phút | "Tiền đẻ ra tiền" |
+| Thảo luận sau Pha 3 | 5 phút | Câu hỏi điểm tiết lộ vòng 12 |
+| Pha 4 — Địa tô & Giá đất (vòng 13–16) | 15 phút | R, giá đất = R / z' |
+| Tổng kết và thảo luận sau Pha 4 | 5 phút | Câu hỏi điểm tiết lộ vòng 16 |
 
 ---
 
-## Màn 1 — Màn hình mở đầu
+## Sử dụng Chế độ Giáo viên (Nút GV)
 
-**Hiển thị trên màn hình:**
+### Kích hoạt Teacher Mode
 
-- Tên game: **Cáo Tử MLN**.
-- Phụ đề: **Game học Chương 3 Kinh tế chính trị Mác–Lênin**.
-- Mô tả ngắn: mô phỏng Chương 3, mỗi vòng là 1 quý.
-- Ô nhập **Tên nhà tư bản của bạn**.
-- Lựa chọn **Vốn khởi đầu T**:
-  - 5 tỷ: vốn nhiều hơn, P̄ thấp hơn, lãi suất 3,5%.
-  - 3 tỷ: cân bằng, lãi suất 4%.
-  - 1,5 tỷ: vốn ít hơn, P̄ cao hơn, lãi suất 5%.
-- Nút **Bắt đầu sản xuất →**.
-- Link **Xem bảng xếp hạng**.
+1. Trên màn hình chính, nhấn nút **GV** (góc trên phải màn hình).
+2. Nhập mã giáo viên (mặc định: MLN122).
+3. Giao diện GV Mode hiện ra với các tính năng bổ sung.
 
-**Mục tiêu dạy:**
+### Tính năng trong GV Mode
 
-- Giới thiệu chữ **T** là tiền ứng trước.
-- Dẫn vào câu hỏi trung tâm của Chương 3: vì sao `T` có thể vận động thành `T'`, tức số tiền lớn hơn ban đầu?
-
-**Lời dẫn gợi ý:**
-
-> “Ở đây ta không học cách làm giàu hay quản trị công ty. Ta dùng một mô hình sản xuất đơn giản để trả lời câu hỏi của Mác: tiền làm sao biến thành tư bản, và phần tăng thêm đến từ đâu?”
-
-**Câu hỏi cho lớp:**
-
-- Nếu chỉ mua rẻ bán đắt, toàn xã hội có tự tạo thêm giá trị mới không?
-- Muốn có `T' > T`, trong quá trình sản xuất phải có yếu tố đặc biệt nào?
-
----
-
-## Màn 2 — Dashboard / Màn hình chính trong vòng chơi
-
-**Hiển thị trên màn hình:**
-
-- Header gồm:
-  - tên người chơi,
-  - tiến độ **Vòng X/18**,
-  - thanh tiến độ,
-  - tiền mặt hiện có,
-  - nút bảng xếp hạng,
-  - nút chơi lại.
-- Desktop chia 3 cột:
-  - trái: **Bảng chỉ số**,
-  - giữa: **Biểu đồ**,
-  - phải: **Quyết định vòng này**.
-- Mobile chia 3 tab:
-  - **Quyết định**,
-  - **Chỉ số**,
-  - **Biểu đồ**.
-
-**Mục tiêu dạy:**
-
-- Cho người học thấy một vòng sản xuất luôn có ba lớp:
-  - quyết định đầu vào,
-  - kết quả/chỉ số,
-  - xu hướng qua thời gian.
-- Nhấn mạnh: game dùng số liệu để minh họa quan hệ lý luận, không phải dự báo kinh tế thật.
-
-**Lời dẫn gợi ý:**
-
-> “Mỗi vòng là một quý sản xuất. Các quyết định bên phải tạo ra kết quả ở bảng chỉ số và biểu đồ. Sau mỗi vòng, game sẽ mở một khái niệm trong giáo trình.”
-
----
-
-## Màn 3 — Quyết định vòng này
-
-Màn quyết định là nơi người học thử thay đổi các biến để nhìn thấy quan hệ giữa tư bản, lao động và giá trị thặng dư.
-
-### 3.1. Nhóm quyết định ban đầu — Giờ lao động và tái đầu tư
-
-**Có từ vòng 1.**
-
-**Hiển thị:**
-
-- số công nhân,
-- tiền công mỗi công nhân,
-- giờ làm/ngày,
-- tỷ lệ tái đầu tư `α`,
-- nút **Thực hiện vòng sản xuất**.
-
-**Dạy khái niệm:**
-
-- hàng hóa sức lao động,
-- tiền công,
-- giá trị thặng dư tuyệt đối,
-- tích lũy tư bản.
-
-**Cách khai thác trên lớp:**
-
-- Tăng giờ làm để thấy `m` hoặc lợi nhuận thay đổi.
-- Tăng/giảm tiền công để giải thích `v` là tư bản khả biến.
-- Tăng `α` để giải thích tích lũy là biến một phần `m` thành tư bản mới.
-
-**Câu hỏi gợi ý:**
-
-- Tăng giờ làm làm tăng phần nào trong công thức `G = c + v + m`?
-- Tiền công có phải là toàn bộ giá trị người lao động tạo ra không?
-- Nếu dùng toàn bộ phần lời để tiêu dùng, có còn tích lũy tư bản không?
-
-### 3.2. Máy móc và nguyên liệu
-
-**Mở từ vòng 3.**
-
-**Hiển thị:**
-
-- đầu tư máy móc,
-- đầu tư nguyên vật liệu.
-
-**Dạy khái niệm:**
-
-- tư bản bất biến `c`,
-- tư bản cố định,
-- tư bản lưu động,
-- cấu tạo hữu cơ `c/v`.
-
-**Lời dẫn gợi ý:**
-
-> “Máy móc và nguyên liệu không tự tạo ra giá trị thặng dư. Chúng chuyển giá trị vào sản phẩm. Lao động sống mới tạo giá trị mới.”
-
-**Câu hỏi gợi ý:**
-
-- Vì sao máy móc thuộc `c`, không thuộc `v`?
-- Khi đầu tư nhiều máy hơn lao động, tỷ lệ `c/v` thay đổi thế nào?
-
-### 3.3. Tăng năng suất lao động
-
-**Mở từ vòng 5.**
-
-**Hiển thị:**
-
-- mục **Tăng năng suất lao động**,
-- ô **Chi cải tiến năng suất**.
-
-**Dạy khái niệm:**
-
-- giá trị thặng dư tương đối,
-- thời gian lao động tất yếu `t_n`,
-- giá trị thặng dư siêu ngạch.
-
-**Cách khai thác trên lớp:**
-
-- Cho học sinh so sánh: tăng giờ làm và tăng năng suất khác nhau thế nào?
-- Giải thích: tăng năng suất làm giảm thời gian lao động tất yếu, từ đó tăng thời gian lao động thặng dư.
-
-**Câu hỏi gợi ý:**
-
-- Giá trị thặng dư tương đối khác giá trị thặng dư tuyệt đối ở điểm nào?
-- Vì sao doanh nghiệp có năng suất cá biệt cao hơn có thể thu GTTD siêu ngạch?
-
-### 3.4. Thời gian lưu thông và thương nghiệp
-
-**Mở từ vòng 7.**
-
-**Hiển thị:**
-
-- mục **Thời gian lưu thông**,
-- ô **Chi rút ngắn lưu thông**,
-- tùy chọn **Dùng kênh thương nghiệp**,
-- tỷ lệ **Hoa hồng thương nghiệp** nếu bật kênh thương nghiệp.
-
-**Dạy khái niệm:**
-
-- tuần hoàn tư bản,
-- chu chuyển tư bản,
-- số vòng chu chuyển `n`,
-- lợi nhuận thương nghiệp.
-
-**Lời dẫn gợi ý:**
-
-> “Khâu lưu thông không phải nguồn gốc tạo ra giá trị thặng dư, nhưng tốc độ chu chuyển ảnh hưởng đến khối lượng giá trị thặng dư hằng năm.”
-
-**Câu hỏi gợi ý:**
-
-- Vì sao rút ngắn thời gian lưu thông có thể làm tăng `M_năm`?
-- Lợi nhuận thương nghiệp có phải nguồn giá trị mới độc lập không?
-
-### 3.5. Lợi tức
-
-**Mở từ vòng 9.**
-
-**Hiển thị:**
-
-- mục **Lợi tức**,
-- lãi suất hiện hành,
-- nợ hiện tại,
-- vay thêm,
-- trả nợ,
-- cho vay ra,
-- thu hồi cho vay.
-
-**Dạy khái niệm:**
-
-- tư bản cho vay,
-- lợi tức,
-- tỷ suất lợi tức,
-- phân chia giá trị thặng dư.
-
-**Lời dẫn gợi ý:**
-
-> “Tiền lãi không tự sinh ra từ tiền. Trong cách giải thích của giáo trình, lợi tức là một phần lợi nhuận bình quân được phân chia cho người sở hữu tư bản cho vay.”
-
-**Câu hỏi gợi ý:**
-
-- Vì sao nhìn bề ngoài ngân hàng giống như ‘tiền đẻ ra tiền’?
-- Theo giáo trình, phần lãi đó cuối cùng liên hệ thế nào với giá trị thặng dư?
-
-### 3.6. Đất đai và địa tô
-
-**Mở từ vòng 11.**
-
-**Hiển thị:**
-
-- thuê đất hoặc mua thêm đất,
-- chi phí địa tô nếu thuê,
-- giá đất tính theo địa tô tư bản hóa.
-
-**Dạy khái niệm:**
-
-- địa tô tư bản chủ nghĩa,
-- địa tô chênh lệch,
-- địa tô tuyệt đối,
-- giá đất.
-
-**Công thức cần nhấn:**
-
-```text
-Giá đất = Địa tô / Tỷ suất lợi tức ngân hàng
-```
-
-**Câu hỏi gợi ý:**
-
-- Vì sao giá đất có thể được hiểu là địa tô tư bản hóa?
-- Nếu giá đất tăng nhưng địa tô thực không tăng tương ứng, ta nên đặt câu hỏi gì?
-
----
-
-## Màn 4 — Bảng chỉ số
-
-**Hiển thị chính:**
-
-- **Tài sản ròng**: tiền mặt, tư bản cố định, tư bản lưu động, cho vay, đất, trừ nợ.
-- **Tư bản cố định**: phần máy móc còn lại.
-- **Tư bản lưu động**: nguyên vật liệu còn lại.
-- **Sức lao động**: số công nhân, tiền công/người/vòng.
-- Sau khi có kết quả vòng:
-  - lợi nhuận hoặc giá trị thặng dư `m`,
-  - tỷ suất lợi nhuận hoặc tỷ suất GTTD `m'`,
-  - `G`, `k`, `c/v`, `n`, `M_năm`,
-  - phân phối GTTD cho lãi vay, địa tô, thương nghiệp, lợi nhuận ròng,
-  - P̄ thị trường.
-
-**Mục tiêu dạy:**
-
-- Giúp người học đọc số liệu theo phạm trù giáo trình.
-- Chuyển từ ngôn ngữ đời thường “lời/lỗ” sang ngôn ngữ lý luận `c`, `v`, `m`, `p`, `z`, `R`.
-
-**Lời dẫn gợi ý:**
-
-> “Trước vòng 13, game còn dùng cách nói gần với kinh doanh như lợi nhuận. Từ vòng 13, game hiện rõ ký hiệu Marx để ta quay lại bản chất lý luận.”
-
----
-
-## Màn 5 — Biểu đồ
-
-**Hiển thị:**
-
-- Khi chưa có dữ liệu: thông báo **Chưa có dữ liệu**.
-- Sau khi chơi:
-  - đường tài sản ròng,
-  - cột lợi nhuận hoặc `m` theo vòng,
-  - siêu GTTD nếu có,
-  - `p'` so với `P̄` khi đã mở chỉ số đầy đủ,
-  - tỷ suất GTTD `m'`,
-  - thành phần hữu cơ `c/v`.
-
-**Mục tiêu dạy:**
-
-- Cho học sinh nhìn xu hướng thay vì chỉ nhìn một vòng riêng lẻ.
-- Dùng biểu đồ để hỏi: quyết định nào làm `m'`, `c/v`, `M_năm` thay đổi?
-
-**Câu hỏi gợi ý:**
-
-- Khi tăng máy móc nhiều, `c/v` thay đổi thế nào?
-- Khi tăng năng suất, `m'` thay đổi ra sao?
-- Khi rút ngắn lưu thông, vì sao `M_năm` có thể tăng?
-
----
-
-## Màn 6 — Modal kết quả sau mỗi vòng
-
-Modal này là màn quan trọng nhất để dùng game như công cụ dạy học.
-
-**Hiển thị:**
-
-- Vòng vừa kết thúc.
-- Lợi nhuận ròng.
-- Ba chỉ số nhanh:
-  - `m'` hoặc tỷ suất lợi nhuận,
-  - `p'`,
-  - tái đầu tư.
-- **Dòng chảy của khối m** qua `SurplusFlow`.
-- Bài học lý thuyết của vòng đó:
-  - tiêu đề,
-  - công thức,
-  - giải thích,
-  - nguồn giáo trình.
-- Thông báo mở khóa nếu vòng tiếp theo có tính năng mới.
-
-**Cách dùng khi dạy:**
-
-1. Dừng lại ở modal, chưa bấm tiếp ngay.
-2. Đọc tiêu đề bài học.
-3. Yêu cầu học sinh giải thích công thức bằng lời.
-4. Liên hệ quyết định vòng vừa chơi với kết quả `m`, `m'`, `p'`, tái đầu tư.
-5. Bấm tiếp để sang vòng mới.
-
-**Lời dẫn gợi ý:**
-
-> “Mỗi modal là một slide lý thuyết ngắn. Điểm quan trọng không phải thắng game, mà là giải thích được vì sao chỉ số thay đổi.”
-
----
-
-## Màn 6b — Tình huống nhanh kiểu BitLife
-
-**Khi nào xuất hiện:**
-
-- Một số vòng sẽ hiện tình huống nhanh trước khi tính kết quả sản xuất.
-- Event xuất hiện ngẫu nhiên có seed, nên cùng tên người chơi và cùng vốn khởi đầu sẽ gặp cùng chuỗi event.
-- Event chỉ mở khi người chơi đã học/mở khái niệm liên quan.
-
-**Hiển thị:**
-
-- Tiêu đề tình huống.
-- Mô tả ngắn.
-- Gợi ý bài học.
-- 2–3 lựa chọn.
-- Preview tác động nhẹ tới biến trong game.
-- Sau khi chọn: kết quả và phần **Liên hệ giáo trình**.
-
-**Mục tiêu dạy:**
-
-- Tạo cảm giác lựa chọn nhanh như game đời sống nhưng vẫn giữ nội dung trong Chương 3.
-- Biến mỗi tình huống thành câu hỏi thảo luận: lựa chọn này minh họa khái niệm nào?
-
-**Cách dùng khi dạy:**
-
-1. Khi event hiện ra, yêu cầu lớp đọc tình huống trước khi chọn.
-2. Cho học sinh dự đoán lựa chọn nào làm thay đổi `c`, `v`, `m`, `m'`, `n`, `z` hoặc `R`.
-3. Sau khi chọn, đọc phần **Liên hệ giáo trình**.
-4. Khi modal kết quả vòng hiện ra, so sánh dự đoán với chỉ số thật.
-
-**Câu hỏi gợi ý:**
-
-- Lựa chọn này tác động vào `c`, `v`, hay điều kiện tạo `m`?
-- Đây là GTTD tuyệt đối, GTTD tương đối, chu chuyển, lợi tức hay địa tô?
-- Tác động này có tạo nguồn giá trị mới độc lập không, hay chỉ làm điều kiện sản xuất/phân phối thay đổi?
-
----
-
-## Màn 7 — Dòng chảy khối m
-
-**Hiển thị trong modal kết quả:**
-
-- Tổng giá trị thặng dư/lợi nhuận tạo ra.
-- Các phần phân phối:
-  - thương nghiệp `p_tn`,
-  - lãi vay `z`,
-  - địa tô `R`,
-  - lợi nhuận ròng giữ lại.
-- Khi mở chỉ số đầy đủ, hiện công thức:
-
-```text
-G = c + v + m
-```
-
-**Mục tiêu dạy:**
-
-- Làm rõ lợi nhuận thương nghiệp, lợi tức và địa tô không phải ba nguồn giá trị độc lập.
-- Chúng là các hình thức biểu hiện/phân chia của giá trị thặng dư.
-
-**Câu hỏi gợi ý:**
-
-- Phần nào trong dòng chảy là phần chuyển cho tư bản thương nghiệp?
-- Phần nào là lợi tức?
-- Phần nào là địa tô?
-- Sau khi phân chia, nhà tư bản sản xuất còn giữ lại bao nhiêu?
-
----
-
-## Màn 8 — Bảng xếp hạng
-
-**Hiển thị:**
-
-- Danh sách người chơi đã hoàn thành game.
-- Tài sản ròng cuối cùng.
-- Số vòng hoàn thành.
-- Nếu chưa có dữ liệu: thông báo chưa ai hoàn thành.
-
-**Mục tiêu dạy:**
-
-- Tạo động lực lớp học, nhưng không biến mục tiêu thành “kiếm điểm cao”.
-- Có thể dùng để so sánh chiến lược giữa các nhóm.
-
-**Câu hỏi gợi ý:**
-
-- Nhóm điểm cao đã tăng `m` bằng cách nào?
-- Nhóm nào tăng tài sản nhưng `c/v` cũng tăng mạnh?
-- Có nhóm nào lợi nhuận cao nhưng phân phối nhiều cho lãi vay/địa tô không?
-
----
-
-## Màn 9 — Màn kết thúc học phần
-
-**Hiển thị:**
-
-- Tiêu đề **Kết thúc học phần!**
-- Tên người chơi.
-- Nhắc lại các khái niệm chính:
-  - giá trị thặng dư,
-  - tích lũy tư bản,
-  - lợi nhuận,
-  - lợi tức,
-  - địa tô.
-- Tổng tài sản ròng.
-- Tiền mặt.
-- Tư bản cố định.
-- Nút bảng xếp hạng.
-- Nút chơi lại.
-
-**Mục tiêu dạy:**
-
-- Tổng kết toàn bộ Chương 3 dưới dạng một chuỗi quan hệ:
-
-```text
-T–H–T' → sức lao động → m → tích lũy → lợi nhuận/lợi tức/địa tô
-```
-
-**Hoạt động tổng kết:**
-
-- Yêu cầu mỗi nhóm trả lời 3 câu:
-  1. Trong game, giá trị thặng dư xuất hiện từ đâu?
-  2. Tái đầu tư khác tiêu dùng cá nhân ở điểm nào?
-  3. Lợi nhuận thương nghiệp, lợi tức và địa tô liên hệ thế nào với `m`?
-
----
-
-## Kịch bản 18 vòng dùng khi dạy
-
-| Vòng | Nội dung modal | Việc giáo viên nên nhấn |
+| Tính năng | Mô tả | Khi nào dùng |
 |---|---|---|
-| 1 | Công thức chung của tư bản | `T–H–T'`; phần tăng thêm cần được giải thích trong sản xuất |
-| 2 | Hàng hóa sức lao động | Sức lao động là hàng hóa đặc biệt tạo giá trị mới |
-| 3 | Sản xuất GTTD | `G = c + v + m`; `m` do lao động sống tạo ra |
-| 4 | Tư bản bất biến/khả biến | `c` chuyển giá trị, `v` gắn với sức lao động |
-| 5 | Tiền công | Tiền công không phải toàn bộ giá trị lao động tạo ra |
-| 6 | `m'` và `M` | Phân biệt tỷ suất và khối lượng GTTD |
-| 7 | GTTD tuyệt đối | Kéo dài ngày lao động làm tăng lao động thặng dư |
-| 8 | GTTD tương đối | Tăng năng suất làm giảm lao động tất yếu |
-| 9 | GTTD siêu ngạch | Giá trị cá biệt thấp hơn giá trị xã hội |
-| 10 | Chu chuyển tư bản | `n = CH/ch`; chu chuyển nhanh làm tăng `M_năm` |
-| 11 | Tái sản xuất | Giản đơn giữ quy mô; mở rộng là tích lũy |
-| 12 | Nhân tố tích lũy | `α`, năng suất, khai thác sức lao động, máy móc, tư bản ứng trước |
-| 13 | Hệ quả tích lũy | `c/v` tăng, tích tụ và tập trung tư bản |
-| 14 | Chi phí và lợi nhuận | `k = c + v`; `p` là hình thức biểu hiện của `m` |
-| 15 | Tỷ suất LN và P̄ | Cạnh tranh hình thành lợi nhuận bình quân |
-| 16 | Lợi nhuận thương nghiệp | Một phần `m` phân chia cho tư bản thương nghiệp |
-| 17 | Lợi tức | Một phần lợi nhuận bình quân trả cho tư bản cho vay |
-| 18 | Địa tô và giá đất | `Giá đất = Địa tô / tỷ suất lợi tức ngân hàng` |
+| **Dừng game** | Tạm dừng tất cả người chơi | Khi cần thảo luận cả lớp |
+| **Áp sự kiện** | Chọn quick event cho vòng tiếp theo | Khi muốn minh họa khái niệm cụ thể |
+| **Hiện đáp án** | Bật/tắt hiển thị công thức giải thích | Sau khi học sinh đã đoán |
+| **Reset pha** | Đưa cả lớp về đầu pha | Nếu cần chơi lại |
+| **Bảng tổng hợp** | Xem kết quả tất cả nhóm cùng lúc | Khi so sánh chiến lược nhóm |
+| **Export báo cáo** | Tải CSV kết quả lớp | Để chấm điểm hoặc lưu hồ sơ |
 
-## Nguyên tắc khi giảng bằng game
+---
 
-- Không hỏi “làm sao thắng game?” trước; hỏi “chỉ số này minh họa khái niệm nào?” trước.
-- Mỗi vòng chỉ nên nhấn 1 khái niệm chính.
-- Khi học sinh nói “lợi nhuận do bán hàng”, kéo lại câu hỏi: phần giá trị mới do đâu tạo ra?
-- Khi học sinh nói “tiền đẻ ra tiền”, dùng vòng 17 để nối về lợi tức là một phần của giá trị thặng dư.
-- Khi học sinh nói “giá đất tự tăng”, dùng vòng 18 để nối về công thức giá đất và địa tô.
+## Điểm tiết lộ chính (Key Reveal Points)
+
+### Vòng 4 — Điểm tiết lộ Pha 1: Lợi nhuận che giấu bản chất m
+
+**Game hiện:**
+> "Lợi nhuận trông như sinh ra từ toàn bộ tư bản ứng trước (c + v), nhưng thực ra
+> chỉ là hình thức biểu hiện của giá trị thặng dư m — do lao động sống tạo ra."
+
+**Giáo viên nên hỏi:**
+- Trước khi bấm tiếp: "Lợi nhuận trong game đến từ đâu? c hay  hay cả hai?"
+- Sau khi modal hiện: "Tại sao Marx gọi lợi nhuận là hình thức *biểu hiện thần bí hóa* của m?"
+- Liên hệ thực tế: "Khi doanh nghiệp báo lãi 14%, họ đang nói p' hay m'?"
+
+---
+
+### Vòng 8 — Điểm tiết lộ Pha 2: Lợi nhuận bình quân hình thành qua cạnh tranh
+
+**Game hiện:**
+> "Tư bản luôn chảy vào ngành có tỷ suất lợi nhuận cao hơn. Cạnh tranh giữa các ngành
+> dần san bằng p' thành lợi nhuận bình quân p̄' cho toàn xã hội."
+
+**Giáo viên nên hỏi:**
+- "Trong game, ngành nào có p' cao hơn sau vòng 7? Tư bản có xu hướng chạy đi đâu?"
+- "Nếu tất cả tư bản đổ vào bất động sản, điều gì xảy ra với p' ngành đó?"
+- "Giá cả sản xuất khác giá trị hàng hóa như thế nào trong thực tế?"
+
+---
+
+### Vòng 12 — Điểm tiết lộ Pha 3: "Tiền đẻ ra tiền" — bản chất thực sự
+
+**Game hiện:**
+> "Bề ngoài: tiền ngân hàng tự sinh lãi (T → T'). Bản chất theo giáo trình: lãi suất z
+> là một phần lợi nhuận bình quân phân chia lại từ người vay sang người cho vay —
+> không tự sinh ra giá trị mới."
+
+**Giáo viên nên hỏi:**
+- "Khi bạn gửi tiết kiệm ngân hàng và nhận lãi, tiền lãi đó từ đâu ra?"
+- "Tại sao lãi suất không thể cao hơn lợi nhuận bình quân về lâu dài?"
+- "Ví dụ Techcombank NIM 4,6% trong game — đây là z' hay p'?"
+
+---
+
+### Vòng 16 — Điểm tiết lộ Pha 4: Giá đất = địa tô tư bản hóa
+
+**Game hiện:**
+> "Đất đai không lao động, không tạo giá trị. Địa tô R là phần m siêu ngạch
+> trả cho địa chủ do độc quyền sở hữu. Giá đất = R / z' — địa tô được tư bản hóa."
+
+**Giáo viên nên hỏi:**
+- "Nếu lãi suất ngân hàng giảm từ 10% xuống 5%, giá đất theo công thức thay đổi thế nào?"
+- "Đất Quận 1 TP.HCM giá 500 triệu/m² — địa tô tuyệt đối hay chênh lệch?"
+- "Tại sao địa chủ không cần làm gì vẫn thu được địa tô?"
+
+---
+
+## Câu hỏi thảo luận sau mỗi pha
+
+### Sau Pha 1 (sau vòng 4)
+1. Công thức p = G - k khác m = G - (c + v) như thế nào? Tại sao kết quả bằng nhau?
+2. Nhóm nào trong lớp có p' cao nhất? Họ đã làm gì khác biệt?
+3. Liên hệ: Khi Vinamilk báo p' = 14,2%, điều đó có nghĩa là gì theo giáo trình?
+
+### Sau Pha 2 (sau vòng 8)
+1. Cạnh tranh trong game có tạo ra giá trị thặng dư mới không, hay chỉ phân phối lại m?
+2. Giá cả sản xuất ở vòng 7–8 của nhóm bạn là bao nhiêu? Cao hay thấp hơn giá trị thực?
+3. Tại sao lợi nhuận bình quân là "sự bình quân hóa bóc lột"?
+
+### Sau Pha 3 (sau vòng 12)
+1. Lợi nhuận thương nghiệp có phải giá trị mới không? Nó từ đâu ra?
+2. Ngân hàng tạo ra giá trị hay chỉ thu phần m từ kinh tế thực?
+3. Tại sao câu chuyện "tiền đẻ ra tiền" lại che giấu bóc lột?
+
+### Sau Pha 4 (sau vòng 16)
+1. Địa tô tuyệt đối và địa tô chênh lệch khác nhau về nguồn gốc thế nào?
+2. Khi nhà nước tăng lãi suất, giá đất theo lý thuyết sẽ biến động ra sao?
+3. Trong 8 case study thực tế, case nào minh họa rõ nhất cho địa tô tư bản hóa?
+
+---
+
+## Gợi ý lời dẫn cho giáo viên
+
+**Mở đầu buổi học:**
+> "Hôm nay chúng ta không hỏi 'lợi nhuận từ đâu ra' — câu đó đã có đáp án: từ m.
+> Câu hỏi hôm nay là: m sau khi được tạo ra thì được *phân chia* như thế nào?
+> Ai được bao nhiêu, dưới hình thức nào, và tại sao 'tiền lại đẻ ra tiền'?"
+
+**Kết thúc buổi học:**
+> "Mọi hình thức 'tiền đẻ ra tiền' — lợi nhuận, lãi suất, địa tô — đều là phân chia lại
+> giá trị thặng dư m do lao động tạo ra. Đây là điểm cốt lõi Marx muốn vạch ra ở
+> Chương 3 giáo trình."
+
+---
+
+## Liên kết tài liệu
+
+- Nội dung game chi tiết: [GAME_CONTENT.md](./GAME_CONTENT.md)
+- Phụ lục AI (Rubric 1.4): [AI_APPENDIX.md](./AI_APPENDIX.md)
+- Hướng dẫn cài đặt và chạy: [README.md](./README.md)
