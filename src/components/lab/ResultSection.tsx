@@ -106,13 +106,11 @@ export default function ResultSection({ result, accent, prevRound, onContinue, o
                   <MetricRow label="Lợi tức Z thu được (vòng)" value={formatVnd(r.interest_earned, true)} accent="#10B981" />
                   <MetricRow label={`Z′ = ${(r.z_prime * 100).toFixed(1)}% · Z = TBCV × Z′`} value={formatVnd(r.t_cho_vay * r.z_prime, true)} accent={accent} />
                   <MetricRow label="m mới do tài chính tạo ra" value="= 0" />
-                  <MetricRow label="Lợi tức Z ròng (vòng)" value={formatVnd(r.net_finance, true)} accent={accent} />
-                  <MetricRow label="Δ thanh khoản tổng" value={formatVnd(r.pool_delta, true)} accent={accent} big />
+                  <MetricRow label="Lợi tức Z ròng (vòng)" value={formatVnd(r.net_finance, true)} accent={accent} big />
                   {(r.lent_principal_delta > 0 || r.borrowed_principal > 0) && (
                     <p className="text-[11px] text-[var(--color-lab-fg-dim)] leading-relaxed mt-1">
-                      Δ thanh khoản = tiền vay vào + lợi tức Z ròng − tiền khóa cho vay.
-                      {r.lent_principal_delta > 0 && ' Cho vay âm vì tiền chuyển từ mặt sang TBCV — tài sản ròng không đổi (đổi chỗ tiền mặt ↔ cho vay).'}
-                      {r.borrowed_principal > 0 && ' Vay làm dương tiền mặt nhưng tăng nợ; không tạo m.'}
+                      {r.lent_principal_delta > 0 && 'Cho vay chuyển tiền mặt sang TBCV — tài sản ròng không đổi (đổi chỗ tiền mặt ↔ cho vay).'}
+                      {r.borrowed_principal > 0 && ' Vay tăng tiền mặt nhưng tăng nợ; không tạo m.'}
                     </p>
                   )}
                 </>
