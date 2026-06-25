@@ -220,6 +220,18 @@ describe('distributePhase3', () => {
     expect(result.pool_delta).toBeCloseTo(1_000_000_000)
   })
 
+
+  it('pool_delta scales with lend amount (not a fixed negative)', () => {
+    const cash = 400_000_000_000
+    const existingLent = 100_000_000_000
+    const rSmall = distributePhase3(cash, 0, existingLent, { action: 'lend', amount: 20_000_000_000 }, 2)
+    const rLarge = distributePhase3(cash, 0, existingLent, { action: 'lend', amount: 80_000_000_000 }, 2)
+    expect(rSmall.pool_delta).toBeGreaterThan(rLarge.pool_delta)
+    expect(rSmall.lent_principal_delta).toBe(20_000_000_000)
+    expect(rLarge.lent_principal_delta).toBe(80_000_000_000)
+    expect(rSmall.pool_delta).toBeCloseTo(rSmall.net_finance - rSmall.lent_principal_delta)
+  })
+
   it('lend action adds to lent_after and reduces pool', () => {
     const result = distributePhase3(M, 0, 0, { action: 'lend', amount: 500_000_000 }, 2)
     expect(result.lent_after).toBe(500_000_000)
