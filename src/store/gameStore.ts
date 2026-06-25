@@ -27,7 +27,7 @@ import {
   type QuickEventSelection,
   type ResolvedQuickEvent,
 } from '../data/quickEvents'
-import { saveLeaderboard, getLeaderboard, type LeaderboardEntry } from '../lib/storage'
+import { saveLeaderboard, getLeaderboard, clearLeaderboard, type LeaderboardEntry } from '../lib/storage'
 import { calcSessionNetWorth } from '../lib/networth'
 
 export type Feature =
@@ -138,6 +138,7 @@ export interface GameState {
   reset: () => void
   forceNextQuickEvent: () => void
   getLeaderboard: () => LeaderboardEntry[]
+  clearLeaderboard: () => void
   toggleTeacherMode: () => void
   jumpToRound: (round: number) => void
   saveOpenAnswer: (phase: GamePhase, answer: string) => void
@@ -145,7 +146,7 @@ export interface GameState {
 
 const DEFAULT_STATE: Omit<
   GameState,
-  'startGame' | 'applyRound' | 'chooseQuickEvent' | 'dismissLesson' | 'reset' | 'forceNextQuickEvent' | 'getLeaderboard' | 'toggleTeacherMode' | 'jumpToRound' | 'saveOpenAnswer'
+  'startGame' | 'applyRound' | 'chooseQuickEvent' | 'dismissLesson' | 'reset' | 'forceNextQuickEvent' | 'getLeaderboard' | 'clearLeaderboard' | 'toggleTeacherMode' | 'jumpToRound' | 'saveOpenAnswer'
 > = {
   playerName: '',
   started: false,
@@ -532,6 +533,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   reset: () => set({ ...DEFAULT_STATE }),
 
   getLeaderboard: () => getLeaderboard(),
+  clearLeaderboard: () => clearLeaderboard(),
   toggleTeacherMode: () => set((s) => ({ teacherModeEnabled: !s.teacherModeEnabled, lectureMode: !s.teacherModeEnabled })),
   jumpToRound: (round: number) => {
     const clamped = Math.max(1, Math.min(round, TOTAL_ROUNDS))
